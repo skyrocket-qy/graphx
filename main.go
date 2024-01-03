@@ -3,6 +3,9 @@ package main
 import (
 	"net/http"
 	"zanzibar-dag/config"
+	"zanzibar-dag/internal/delivery"
+	"zanzibar-dag/internal/infra/sql"
+	"zanzibar-dag/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,17 +20,32 @@ func main() {
 		c.JSON(http.StatusOK, nil)
 	})
 
+	db, err := sql.InitDb()
+	if err != nil {
+		panic(err)
+	}
+
+	sqlRepo, err := sql.NewOrmRepository(db)
+	if err != nil {
+		panic(err)
+	}
+
+	usecaseRepo := usecase.NewUsecaseRepository(sqlRepo)
+
+	handlerRepo := delivery.NewHandlerRepository(usecaseRepo)
+
+	relationHandler := handlerRepo.RelationHandler
 	relationRoute := server.Group("/relation")
 	{
-		relationRoute.GET("/")
-		relationRoute.POST("/")
-		relationRoute.DELETE("/")
+		relationRoute.GET("/", relationHandler.Get)
+		relationRoute.POST("/", relationHandler.Create)
+		relationRoute.DELETE("/", relationHandler.Delete)
 
-		relationRoute.POST("/check")
-		relationRoute.POST("/get-shortest-path")
-		relationRoute.POST("/get-all-paths")
-		relationRoute.POST("/get-all-object-relations")
-		relationRoute.POST("/clear-all-relations")
+		relationRoute.POST("/check", relationHandler.Check)
+		relationRoute.POST("/get-shortest-path", relationHandler.GetShortestPath)
+		relationRoute.POST("/get-all-paths", relationHandler.GetAllPaths)
+		relationRoute.POST("/get-all-object-relations", relationHandler.GetAllObjectRelations)
+		relationRoute.POST("/clear-all-relations", relationHandler.ClearAllRelations)
 	}
 
 	server.Run()

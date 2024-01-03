@@ -27,7 +27,7 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 // @Success 200 {object} domain.DataResponse
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-all-relations [get]
-func (h *RelationHandler) GetAll(c *gin.Context) error {
+func (h *RelationHandler) Get(c *gin.Context) {
 	relations, err := h.RelationUsecase.GetAll()
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
@@ -40,11 +40,11 @@ func (h *RelationHandler) GetAll(c *gin.Context) error {
 	})
 }
 
-func (h *RelationHandler) Query(c *gin.Context) error
+func (h *RelationHandler) Query(c *gin.Context)
 
-func (h *RelationHandler) Create(c *gin.Context) error
+func (h *RelationHandler) Create(c *gin.Context)
 
-func (h *RelationHandler) Delete(c *gin.Context) error
+func (h *RelationHandler) Delete(c *gin.Context)
 
 // @Summary Check if a relation link exists
 // @Description Check if a relation link exists between two entities
@@ -56,7 +56,7 @@ func (h *RelationHandler) Delete(c *gin.Context) error
 // @Failure 403 {string} string "Relation link does not exist"
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/check [post]
-func (h *RelationHandler) Check(c *gin.Context) error {
+func (h *RelationHandler) Check(c *gin.Context) {
 	type request struct {
 		ObjectNamespace  string `json:"object_namespace"`
 		ObjectName       string `json:"object_name"`
@@ -102,7 +102,7 @@ func (h *RelationHandler) Check(c *gin.Context) error {
 // @Failure 403 {string} string "No path found"
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/path [post]
-func (h *RelationHandler) GetShortestPath(c *gin.Context) error {
+func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 	type request struct {
 		ObjectNamespace  string `json:"object_namespace"`
 		ObjectName       string `json:"object_name"`
@@ -153,7 +153,7 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) error {
 // @Failure 403 {string} string "No path found"
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/path [post]
-func (h *RelationHandler) GetAllPaths(c *gin.Context) error {
+func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 	type request struct {
 		ObjectNamespace  string `json:"object_namespace"`
 		ObjectName       string `json:"object_name"`
@@ -194,7 +194,7 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) error {
 	return c.SendStatus(http.StatusForbidden)
 }
 
-func (h *RelationHandler) GetObjectRelations(c *gin.Context) error
+func (h *RelationHandler) GetAllObjectRelations(c *gin.Context)
 
 // @Summary Clear all relations
 // @Description Clear all relations in the system
@@ -204,7 +204,7 @@ func (h *RelationHandler) GetObjectRelations(c *gin.Context) error
 // @Success 200 {string} string "All relations cleared"
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/clear-all-relations [post]
-func (h *RelationHandler) ClearAllRelations(c *gin.Context) error {
+func (h *RelationHandler) ClearAllRelations(c *gin.Context) {
 	err := h.RelationUsecase.ClearAllRelations()
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
