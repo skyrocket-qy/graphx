@@ -1,6 +1,6 @@
 database:
   postgres:
-    dsn: "host=localhost user=hrbac password=hrbac dbname=hrbac port=5432 sslmode=disable TimeZone=Asia/Taipei"
+    dsn: "host=localhost user=zanzibar-dag password=zanzibar-dag dbname=zanzibar-dag port=5432 sslmode=disable TimeZone=Asia/Taipei"
 
 main:
   max-search-depth: 30

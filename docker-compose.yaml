@@ -1,0 +1,15 @@
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: zanzibar-dag
+      POSTGRES_PASSWORD: zanzibar-dag
+      POSTGRES_DB: zanzibar-dag
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
