@@ -1,7 +1,6 @@
 package delivery
 
 import (
-	"fmt"
 	"net/http"
 	"zanzibar-dag/domain"
 	usecasedomain "zanzibar-dag/domain/usecase"
@@ -30,12 +29,12 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 func (h *RelationHandler) GetAll(c *gin.Context) {
 	relations, err := h.RelationUsecase.GetAll()
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
+		return
 	}
-
-	return c.JSON(domain.DataResponse{
+	c.JSON(http.StatusOK, domain.DataResponse{
 		Data: relations,
 	})
 }
@@ -55,16 +54,50 @@ func (h *RelationHandler) Query(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
+		return
 	}
 
-	c.JSON(http.StatusInternalServerError, domain.DataResponse{
+	type Response struct {
+		Data []domain.Relation `json:"data"`
+	}
+	c.JSON(http.StatusOK, Response{
 		Data: relations,
 	})
 }
 
-func (h *RelationHandler) Create(c *gin.Context)
+func (h *RelationHandler) Create(c *gin.Context) {
+	relation := domain.Relation{}
+	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := h.RelationUsecase.Create(relation); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	c.Status(http.StatusOK)
+}
 
-func (h *RelationHandler) Delete(c *gin.Context)
+func (h *RelationHandler) Delete(c *gin.Context) {
+	relation := domain.Relation{}
+	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := h.RelationUsecase.Delete(relation); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	c.Status(http.StatusOK)
+}
 
 // @Summary Check if a relation link exists
 // @Description Check if a relation link exists between two entities
@@ -77,39 +110,35 @@ func (h *RelationHandler) Delete(c *gin.Context)
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/check [post]
 func (h *RelationHandler) Check(c *gin.Context) {
-	type request struct {
-		ObjectNamespace  string `json:"object_namespace"`
-		ObjectName       string `json:"object_name"`
-		Relation         string `json:"relation"`
-		SubjectNamespace string `json:"subject_namespace"`
-		SubjectName      string `json:"subject_name"`
-		SubjectRelation  string `json:"subject_relation"`
-	}
-
-	req := request{}
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(domain.ErrResponse{
-			Error: fmt.Sprintf("Parse body error: %s", err.Error()),
-		})
-	}
-
-	ok, err := h.RelationUsecase.Check(domain.RelationTuple{
-		ObjectNamespace:  req.ObjectNamespace,
-		ObjectName:       req.ObjectName,
-		Relation:         req.Relation,
-		SubjectNamespace: req.SubjectNamespace,
-		SubjectName:      req.SubjectName,
-		SubjectRelation:  req.SubjectRelation,
-	})
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
+	relation := domain.Relation{}
+	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
+		return
 	}
-	if ok {
-		return nil
+	ok, err := h.RelationUsecase.Check(
+		domain.Node{
+			Namespace: relation.SubjectNamespace,
+			Name:      relation.SubjectName,
+			Relation:  relation.SubjectRelation,
+		},
+		domain.Node{
+			Namespace: relation.ObjectNamespace,
+			Name:      relation.ObjectName,
+			Relation:  relation.Relation,
+		},
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
 	}
-	return c.SendStatus(http.StatusForbidden)
+	if !ok {
+		c.Status(http.StatusForbidden)
+	}
+	c.Status(http.StatusOK)
 }
 
 // @Summary Get the shortest path between two entities in a relation graph
@@ -123,44 +152,37 @@ func (h *RelationHandler) Check(c *gin.Context) {
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/path [post]
 func (h *RelationHandler) GetShortestPath(c *gin.Context) {
-	type request struct {
-		ObjectNamespace  string `json:"object_namespace"`
-		ObjectName       string `json:"object_name"`
-		Relation         string `json:"relation"`
-		SubjectNamespace string `json:"subject_namespace"`
-		SubjectName      string `json:"subject_name"`
-		SubjectRelation  string `json:"subject_relation"`
-	}
-
-	req := request{}
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(domain.ErrResponse{
-			Error: fmt.Sprintf("Parse body error: %s", err.Error()),
-		})
-	}
-
-	path, err := h.RelationUsecase.GetShortestPath(domain.RelationTuple{
-		ObjectNamespace:  req.ObjectNamespace,
-		ObjectName:       req.ObjectName,
-		Relation:         req.Relation,
-		SubjectNamespace: req.SubjectNamespace,
-		SubjectName:      req.SubjectName,
-		SubjectRelation:  req.SubjectRelation,
-	})
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
+	relation := domain.Relation{}
+	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
+		return
 	}
-	if len(path) > 0 {
-		type response struct {
-			Data []string
-		}
-		return c.JSON(response{
-			Data: path,
+	paths, err := h.RelationUsecase.GetShortestPath(
+		domain.Node{
+			Namespace: relation.SubjectNamespace,
+			Name:      relation.SubjectName,
+			Relation:  relation.SubjectRelation,
+		},
+		domain.Node{
+			Namespace: relation.ObjectNamespace,
+			Name:      relation.ObjectName,
+			Relation:  relation.Relation,
+		},
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
 		})
+		return
 	}
-	return c.SendStatus(http.StatusForbidden)
+	if len(paths) == 0 {
+		c.Status(http.StatusForbidden)
+	}
+	c.JSON(http.StatusOK, domain.DataResponse{
+		Data: paths,
+	})
 }
 
 // @Summary Get the shortest path between two entities in a relation graph
@@ -174,47 +196,65 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/path [post]
 func (h *RelationHandler) GetAllPaths(c *gin.Context) {
-	type request struct {
-		ObjectNamespace  string `json:"object_namespace"`
-		ObjectName       string `json:"object_name"`
-		Relation         string `json:"relation"`
-		SubjectNamespace string `json:"subject_namespace"`
-		SubjectName      string `json:"subject_name"`
-		SubjectRelation  string `json:"subject_relation"`
-	}
-
-	req := request{}
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(http.StatusBadRequest).JSON(domain.ErrResponse{
-			Error: fmt.Sprintf("Parse body error: %s", err.Error()),
-		})
-	}
-
-	path, err := h.RelationUsecase.GetShortestPath(domain.RelationTuple{
-		ObjectNamespace:  req.ObjectNamespace,
-		ObjectName:       req.ObjectName,
-		Relation:         req.Relation,
-		SubjectNamespace: req.SubjectNamespace,
-		SubjectName:      req.SubjectName,
-		SubjectRelation:  req.SubjectRelation,
-	})
-	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
+	relation := domain.Relation{}
+	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
+		return
 	}
-	if len(path) > 0 {
-		type response struct {
-			Data []string
-		}
-		return c.JSON(response{
-			Data: path,
+	paths, err := h.RelationUsecase.GetAllPaths(
+		domain.Node{
+			Namespace: relation.SubjectNamespace,
+			Name:      relation.SubjectName,
+			Relation:  relation.SubjectRelation,
+		},
+		domain.Node{
+			Namespace: relation.ObjectNamespace,
+			Name:      relation.ObjectName,
+			Relation:  relation.Relation,
+		},
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
 		})
+		return
 	}
-	return c.SendStatus(http.StatusForbidden)
+	if len(paths) == 0 {
+		c.Status(http.StatusForbidden)
+	}
+	c.JSON(http.StatusOK, domain.DataResponse{
+		Data: paths,
+	})
 }
 
-func (h *RelationHandler) GetAllObjectRelations(c *gin.Context)
+func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
+	type request struct {
+		Namespace string `json:"namespace"`
+		Name      string `json:"name"`
+		Relation  string `json:"relation"`
+	}
+	from := request{}
+	if err := c.ShouldBindJSON(&from); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	relations, err := h.RelationUsecase.GetObjectRelations(
+		domain.Node(from),
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, domain.DataResponse{
+		Data: relations,
+	})
+}
 
 // @Summary Clear all relations
 // @Description Clear all relations in the system
@@ -227,9 +267,10 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context)
 func (h *RelationHandler) ClearAllRelations(c *gin.Context) {
 	err := h.RelationUsecase.ClearAllRelations()
 	if err != nil {
-		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
+		return
 	}
-	return nil
+	c.Status(http.StatusOK)
 }
