@@ -1,0 +1,1 @@
+find . -type f -not -path '*/\.git/*' -exec wc -l {} + | grep -v '/\.git/' | awk '{ total += $1 } END { print "Total lines: " total }'
