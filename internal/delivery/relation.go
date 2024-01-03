@@ -27,7 +27,7 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 // @Success 200 {object} domain.DataResponse
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-all-relations [get]
-func (h *RelationHandler) Get(c *gin.Context) {
+func (h *RelationHandler) GetAll(c *gin.Context) {
 	relations, err := h.RelationUsecase.GetAll()
 	if err != nil {
 		return c.Status(http.StatusInternalServerError).JSON(domain.ErrResponse{
@@ -40,7 +40,27 @@ func (h *RelationHandler) Get(c *gin.Context) {
 	})
 }
 
-func (h *RelationHandler) Query(c *gin.Context)
+func (h *RelationHandler) Query(c *gin.Context) {
+	query := domain.Relation{
+		ObjectNamespace:  c.Query("object-namespace"),
+		ObjectName:       c.Query("object-name"),
+		Relation:         c.Query("relation"),
+		SubjectNamespace: c.Query("subject-namespace"),
+		SubjectName:      c.Query("subject-name"),
+		SubjectRelation:  c.Query("subject-relation"),
+	}
+
+	relations, err := h.RelationUsecase.Query(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+	}
+
+	c.JSON(http.StatusInternalServerError, domain.DataResponse{
+		Data: relations,
+	})
+}
 
 func (h *RelationHandler) Create(c *gin.Context)
 
