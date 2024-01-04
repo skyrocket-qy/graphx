@@ -71,7 +71,6 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 	}
 
 	visited := utils.NewSet[domain.Relation]()
-
 	firstQuery := domain.Relation{
 		SubjectNamespace: from.Namespace,
 		SubjectName:      from.Name,
@@ -277,7 +276,7 @@ func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([][]dom
 	return paths, nil
 }
 
-func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]domain.Relation, error) {
+func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Relation, error) {
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
@@ -311,6 +310,55 @@ func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]domain.Relatio
 					SubjectNamespace: tuple.ObjectNamespace,
 					SubjectName:      tuple.ObjectName,
 					SubjectRelation:  tuple.Relation,
+				}
+				if !visited.Exist(nextQuery) {
+					visited.Add(nextQuery)
+					q.Push(nextQuery)
+				}
+			}
+		}
+		depth++
+		if depth >= maxDepth {
+			break
+		}
+	}
+
+	return relations.ToSlice(), nil
+}
+
+func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node) ([]domain.Relation, error) {
+	depth := 0
+	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
+	if err != nil {
+		return nil, err
+	}
+	relations := utils.NewSet[domain.Relation]()
+	visited := utils.NewSet[domain.Relation]()
+
+	firstQuery := domain.Relation{
+		ObjectNamespace: object.Namespace,
+		ObjectName:      object.Name,
+		Relation:        object.Relation,
+	}
+	q := queue.NewQueue[domain.Relation]()
+	visited.Add(firstQuery)
+	q.Push(firstQuery)
+
+	for !q.IsEmpty() {
+		qLen := q.Len()
+		for i := 0; i < qLen; i++ {
+			query, _ := q.Pop()
+			tuples, err := u.RelationRepo.Query(query)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, tuple := range tuples {
+				relations.Add(tuple)
+				nextQuery := domain.Relation{
+					ObjectNamespace: tuple.ObjectNamespace,
+					ObjectName:      tuple.ObjectName,
+					Relation:        tuple.Relation,
 				}
 				if !visited.Exist(nextQuery) {
 					visited.Add(nextQuery)

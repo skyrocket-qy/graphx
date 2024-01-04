@@ -45,6 +45,7 @@ func main() {
 		relationRoute.POST("/get-shortest-path", relationHandler.GetShortestPath)
 		relationRoute.POST("/get-all-paths", relationHandler.GetAllPaths)
 		relationRoute.POST("/get-all-object-relations", relationHandler.GetAllObjectRelations)
+		relationRoute.POST("/get-all-subbject-relations", relationHandler.GetAllSubjectRelations)
 		relationRoute.POST("/clear-all-relations", relationHandler.ClearAllRelations)
 	}
 

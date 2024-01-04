@@ -5,7 +5,7 @@ import (
 )
 
 func ReadConfig() error {
-	viper.AddConfigPath("./config")
+	viper.AddConfigPath(".")
 	viper.SetConfigType("yaml")
 
 	if err := viper.ReadInConfig(); err != nil {

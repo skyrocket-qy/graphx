@@ -13,6 +13,9 @@ type RelationUsecase interface {
 	Check(from domain.Node, to domain.Node) (bool, error)
 	GetShortestPath(from domain.Node, to domain.Node) ([]domain.Relation, error)
 	GetAllPaths(from domain.Node, to domain.Node) ([][]domain.Relation, error)
-	GetObjectRelations(from domain.Node) ([]domain.Relation, error)
+	GetAllObjectRelations(subject domain.Node) ([]domain.Relation, error)
+
+	GetAllSubjectRelations(object domain.Node) ([]domain.Relation, error)
+
 	ClearAllRelations() error
 }

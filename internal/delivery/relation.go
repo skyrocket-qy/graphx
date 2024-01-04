@@ -238,15 +238,42 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 		Name      string `json:"name"`
 		Relation  string `json:"relation"`
 	}
-	from := request{}
-	if err := c.ShouldBindJSON(&from); err != nil {
+	subject := request{}
+	if err := c.ShouldBindJSON(&subject); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	relations, err := h.RelationUsecase.GetObjectRelations(
-		domain.Node(from),
+	relations, err := h.RelationUsecase.GetAllObjectRelations(
+		domain.Node(subject),
+	)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, domain.DataResponse{
+		Data: relations,
+	})
+}
+
+func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
+	type request struct {
+		Namespace string `json:"namespace"`
+		Name      string `json:"name"`
+		Relation  string `json:"relation"`
+	}
+	object := request{}
+	if err := c.ShouldBindJSON(&object); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	relations, err := h.RelationUsecase.GetAllSubjectRelations(
+		domain.Node(object),
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
