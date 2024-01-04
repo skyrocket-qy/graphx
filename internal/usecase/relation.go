@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"zanzibar-dag/domain"
 	sqldomain "zanzibar-dag/domain/infra/sql"
@@ -67,10 +66,10 @@ func (u *RelationUsecase) Delete(relation domain.Relation) error {
 }
 
 func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) {
-	queryTimes := 0
-	defer func() {
-		fmt.Println(queryTimes)
-	}()
+	// queryTimes := 0
+	// defer func() {
+	// 	fmt.Println(queryTimes)
+	// }()
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
@@ -93,7 +92,7 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 		for i := 0; i < qLen; i++ {
 			query, _ := q.Pop()
 			tuples, err := u.RelationRepo.Query(query)
-			queryTimes += 1
+			// queryTimes += 1
 			if err != nil {
 				return false, err
 			}
@@ -122,16 +121,74 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 	return false, nil
 }
 
-func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]string, error) {
-	return nil, errors.New("not implemented")
+func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]domain.Relation, error) {
+	depth := 0
+	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
+	if err != nil {
+		return nil, err
+	}
+	visited := utils.NewSet[domain.Node]()
+	type NodeItem struct {
+		Cur  domain.Node
+		Path []domain.Relation
+	}
+	firstNode := NodeItem{
+		Cur:  from,
+		Path: []domain.Relation{},
+	}
+	q := queue.NewQueue[NodeItem]()
+	visited.Add(from)
+	q.Push(firstNode)
+	for !q.IsEmpty() {
+		qLen := q.Len()
+		for i := 0; i < qLen; i++ {
+			node, _ := q.Pop()
+			query := domain.Relation{
+				SubjectNamespace: node.Cur.Namespace,
+				SubjectName:      node.Cur.Name,
+				SubjectRelation:  node.Cur.Relation,
+			}
+			tuples, err := u.RelationRepo.Query(query)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, tuple := range tuples {
+				if tuple.ObjectNamespace == to.Namespace && tuple.ObjectName == to.Name && tuple.Relation == to.Relation {
+					return append(node.Path, tuple), nil
+				}
+				child := domain.Node{
+					Namespace: tuple.ObjectNamespace,
+					Name:      tuple.ObjectName,
+					Relation:  tuple.Relation,
+				}
+				if !visited.Exist(child) {
+					visited.Add(child)
+					copyPath := append([]domain.Relation{}, node.Path...)
+					copyPath = append(copyPath, tuple)
+					q.Push(NodeItem{
+						Cur:  child,
+						Path: copyPath,
+					})
+				}
+			}
+		}
+		depth++
+		if depth >= maxDepth {
+			break
+		}
+	}
+
+	return nil, nil
 }
 
 func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([]string, error) {
-	return nil, errors.New("not implemented")
-}
-
-func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]string, error) {
-	objectRelations := utils.NewSet[string]()
+	depth := 0
+	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
+	if err != nil {
+		return nil, err
+	}
+	relations := utils.NewSet[domain.Relation]()
 	visited := utils.NewSet[domain.Relation]()
 
 	firstQuery := domain.Relation{
@@ -153,7 +210,7 @@ func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]string, error)
 			}
 
 			for _, tuple := range tuples {
-				objectRelations.Add(utils.RelationToString(tuple))
+				relations.Add(tuple)
 				nextQuery := domain.Relation{
 					SubjectNamespace: tuple.ObjectNamespace,
 					SubjectName:      tuple.ObjectName,
@@ -165,9 +222,63 @@ func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]string, error)
 				}
 			}
 		}
+		depth++
+		if depth >= maxDepth {
+			break
+		}
 	}
 
-	return objectRelations.ToSlice(), nil
+	return relations.ToSlice(), nil
+}
+
+func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]domain.Relation, error) {
+	depth := 0
+	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
+	if err != nil {
+		return nil, err
+	}
+	relations := utils.NewSet[domain.Relation]()
+
+	visited := utils.NewSet[domain.Relation]()
+
+	firstQuery := domain.Relation{
+		SubjectNamespace: from.Namespace,
+		SubjectName:      from.Name,
+		SubjectRelation:  from.Relation,
+	}
+	q := queue.NewQueue[domain.Relation]()
+	visited.Add(firstQuery)
+	q.Push(firstQuery)
+
+	for !q.IsEmpty() {
+		qLen := q.Len()
+		for i := 0; i < qLen; i++ {
+			query, _ := q.Pop()
+			tuples, err := u.RelationRepo.Query(query)
+			if err != nil {
+				return nil, err
+			}
+
+			for _, tuple := range tuples {
+				relations.Add(tuple)
+				nextQuery := domain.Relation{
+					SubjectNamespace: tuple.ObjectNamespace,
+					SubjectName:      tuple.ObjectName,
+					SubjectRelation:  tuple.Relation,
+				}
+				if !visited.Exist(nextQuery) {
+					visited.Add(nextQuery)
+					q.Push(nextQuery)
+				}
+			}
+		}
+		depth++
+		if depth >= maxDepth {
+			break
+		}
+	}
+
+	return relations.ToSlice(), nil
 }
 
 func (u *RelationUsecase) ClearAllRelations() error {
