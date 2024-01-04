@@ -1,2 +1,0 @@
-- check reversed word
-- check required request attr

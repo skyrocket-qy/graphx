@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"zanzibar-dag/domain"
 	usecasedomain "zanzibar-dag/domain/usecase"
+	"zanzibar-dag/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -79,6 +80,12 @@ func (h *RelationHandler) Create(c *gin.Context) {
 		})
 		return
 	}
+	if err := utils.ValidateRelation(relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
 	if err := h.RelationUsecase.Create(relation); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
@@ -101,6 +108,12 @@ func (h *RelationHandler) Create(c *gin.Context) {
 func (h *RelationHandler) Delete(c *gin.Context) {
 	relation := domain.Relation{}
 	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := utils.ValidateRelation(relation); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -154,6 +167,12 @@ func (h *RelationHandler) Check(c *gin.Context) {
 		})
 		return
 	}
+	if err := utils.ValidateRelation(relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
 	ok, err := h.RelationUsecase.Check(
 		domain.Node{
 			Namespace: relation.SubjectNamespace,
@@ -192,6 +211,12 @@ func (h *RelationHandler) Check(c *gin.Context) {
 func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 	relation := domain.Relation{}
 	if err := c.ShouldBindJSON(&relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := utils.ValidateRelation(relation); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -242,6 +267,12 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 		})
 		return
 	}
+	if err := utils.ValidateRelation(relation); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
 	paths, err := h.RelationUsecase.GetAllPaths(
 		domain.Node{
 			Namespace: relation.SubjectNamespace,
@@ -283,13 +314,14 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-all-object-relations [post]
 func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
-	type request struct {
-		Namespace string `json:"namespace"`
-		Name      string `json:"name"`
-		Relation  string `json:"relation"`
-	}
-	subject := request{}
+	subject := domain.Node{}
 	if err := c.ShouldBindJSON(&subject); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := utils.ValidateNode(subject, true); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -323,6 +355,12 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 	object := domain.Node{}
 	if err := c.ShouldBindJSON(&object); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := utils.ValidateNode(object, false); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
