@@ -74,20 +74,20 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 		return false, err
 	}
 
-	visited := utils.NewSet[domain.Relation]()
-	firstQuery := domain.Relation{
-		SubjectNamespace: from.Namespace,
-		SubjectName:      from.Name,
-		SubjectRelation:  from.Relation,
-	}
-	q := queue.NewQueue[domain.Relation]()
-	visited.Add(firstQuery)
-	q.Push(firstQuery)
+	visited := utils.NewSet[domain.Node]()
+	q := queue.NewQueue[domain.Node]()
+	visited.Add(from)
+	q.Push(from)
 
 	for !q.IsEmpty() {
 		qLen := q.Len()
 		for i := 0; i < qLen; i++ {
-			query, _ := q.Pop()
+			node, _ := q.Pop()
+			query := domain.Relation{
+				SubjectNamespace: node.Namespace,
+				SubjectName:      node.Name,
+				SubjectRelation:  node.Relation,
+			}
 			tuples, err := u.RelationRepo.Query(query)
 			// queryTimes += 1
 			if err != nil {
@@ -98,14 +98,14 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 				if tuple.ObjectNamespace == to.Namespace && tuple.ObjectName == to.Name && tuple.Relation == to.Relation {
 					return true, nil
 				}
-				nextQuery := domain.Relation{
-					SubjectNamespace: tuple.ObjectNamespace,
-					SubjectName:      tuple.ObjectName,
-					SubjectRelation:  tuple.Relation,
+				child := domain.Node{
+					Namespace: tuple.ObjectNamespace,
+					Name:      tuple.ObjectName,
+					Relation:  tuple.Relation,
 				}
-				if !visited.Exist(nextQuery) {
-					visited.Add(nextQuery)
-					q.Push(nextQuery)
+				if !visited.Exist(child) {
+					visited.Add(child)
+					q.Push(child)
 				}
 			}
 		}
@@ -287,22 +287,19 @@ func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Rela
 		return nil, err
 	}
 	relations := utils.NewSet[domain.Relation]()
-
-	visited := utils.NewSet[domain.Relation]()
-
-	firstQuery := domain.Relation{
-		SubjectNamespace: from.Namespace,
-		SubjectName:      from.Name,
-		SubjectRelation:  from.Relation,
-	}
-	q := queue.NewQueue[domain.Relation]()
-	visited.Add(firstQuery)
-	q.Push(firstQuery)
-
+	visited := utils.NewSet[domain.Node]()
+	q := queue.NewQueue[domain.Node]()
+	visited.Add(from)
+	q.Push(from)
 	for !q.IsEmpty() {
 		qLen := q.Len()
 		for i := 0; i < qLen; i++ {
-			query, _ := q.Pop()
+			node, _ := q.Pop()
+			query := domain.Relation{
+				SubjectNamespace: node.Namespace,
+				SubjectName:      node.Name,
+				SubjectRelation:  node.Relation,
+			}
 			tuples, err := u.RelationRepo.Query(query)
 			if err != nil {
 				return nil, err
@@ -310,14 +307,14 @@ func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Rela
 
 			for _, tuple := range tuples {
 				relations.Add(tuple)
-				nextQuery := domain.Relation{
-					SubjectNamespace: tuple.ObjectNamespace,
-					SubjectName:      tuple.ObjectName,
-					SubjectRelation:  tuple.Relation,
+				child := domain.Node{
+					Namespace: tuple.ObjectNamespace,
+					Name:      tuple.ObjectName,
+					Relation:  tuple.Relation,
 				}
-				if !visited.Exist(nextQuery) {
-					visited.Add(nextQuery)
-					q.Push(nextQuery)
+				if !visited.Exist(child) {
+					visited.Add(child)
+					q.Push(child)
 				}
 			}
 		}
@@ -337,21 +334,19 @@ func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node) ([]domain.R
 		return nil, err
 	}
 	relations := utils.NewSet[domain.Relation]()
-	visited := utils.NewSet[domain.Relation]()
-
-	firstQuery := domain.Relation{
-		ObjectNamespace: object.Namespace,
-		ObjectName:      object.Name,
-		Relation:        object.Relation,
-	}
-	q := queue.NewQueue[domain.Relation]()
-	visited.Add(firstQuery)
-	q.Push(firstQuery)
-
+	visited := utils.NewSet[domain.Node]()
+	q := queue.NewQueue[domain.Node]()
+	visited.Add(object)
+	q.Push(object)
 	for !q.IsEmpty() {
 		qLen := q.Len()
 		for i := 0; i < qLen; i++ {
-			query, _ := q.Pop()
+			node, _ := q.Pop()
+			query := domain.Relation{
+				ObjectNamespace: node.Namespace,
+				ObjectName:      node.Name,
+				Relation:        node.Relation,
+			}
 			tuples, err := u.RelationRepo.Query(query)
 			if err != nil {
 				return nil, err
@@ -359,14 +354,14 @@ func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node) ([]domain.R
 
 			for _, tuple := range tuples {
 				relations.Add(tuple)
-				nextQuery := domain.Relation{
-					ObjectNamespace: tuple.ObjectNamespace,
-					ObjectName:      tuple.ObjectName,
-					Relation:        tuple.Relation,
+				parent := domain.Node{
+					Namespace: tuple.SubjectNamespace,
+					Name:      tuple.SubjectName,
+					Relation:  tuple.SubjectRelation,
 				}
-				if !visited.Exist(nextQuery) {
-					visited.Add(nextQuery)
-					q.Push(nextQuery)
+				if !visited.Exist(parent) {
+					visited.Add(parent)
+					q.Push(parent)
 				}
 			}
 		}
