@@ -59,6 +59,10 @@ func (u *RelationUsecase) Delete(relation domain.Relation) error {
 	return u.RelationRepo.Delete(relation)
 }
 
+func (u *RelationUsecase) GetAllNamespaces() ([]string, error) {
+	return u.RelationRepo.GetAllNamespaces()
+}
+
 func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) {
 	// queryTimes := 0
 	// defer func() {

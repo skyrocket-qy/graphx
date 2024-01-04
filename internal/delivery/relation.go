@@ -99,6 +99,22 @@ func (h *RelationHandler) Delete(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func (h *RelationHandler) GetAllNamespaces(c *gin.Context) {
+	namespaces, err := h.RelationUsecase.GetAllNamespaces()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	type response struct {
+		Data []string `json:"data"`
+	}
+	c.JSON(http.StatusOK, response{
+		Data: namespaces,
+	})
+}
+
 // @Summary Check if a relation link exists
 // @Description Check if a relation link exists between two entities
 // @Tags Relation

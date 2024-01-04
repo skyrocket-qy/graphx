@@ -35,18 +35,19 @@ func main() {
 	handlerRepo := delivery.NewHandlerRepository(usecaseRepo)
 
 	relationHandler := handlerRepo.RelationHandler
-	relationRoute := server.Group("/relation")
+	relationRouter := server.Group("/relation")
 	{
-		relationRoute.GET("/", relationHandler.GetAll)
-		relationRoute.POST("/", relationHandler.Create)
-		relationRoute.DELETE("/", relationHandler.Delete)
+		relationRouter.GET("/", relationHandler.GetAll)
+		relationRouter.POST("/", relationHandler.Create)
+		relationRouter.DELETE("/", relationHandler.Delete)
 
-		relationRoute.POST("/check", relationHandler.Check)
-		relationRoute.POST("/get-shortest-path", relationHandler.GetShortestPath)
-		relationRoute.POST("/get-all-paths", relationHandler.GetAllPaths)
-		relationRoute.POST("/get-all-object-relations", relationHandler.GetAllObjectRelations)
-		relationRoute.POST("/get-all-subbject-relations", relationHandler.GetAllSubjectRelations)
-		relationRoute.POST("/clear-all-relations", relationHandler.ClearAllRelations)
+		relationRouter.POST("get-all-namespaces", relationHandler.GetAllNamespaces)
+		relationRouter.POST("/check", relationHandler.Check)
+		relationRouter.POST("/get-shortest-path", relationHandler.GetShortestPath)
+		relationRouter.POST("/get-all-paths", relationHandler.GetAllPaths)
+		relationRouter.POST("/get-all-object-relations", relationHandler.GetAllObjectRelations)
+		relationRouter.POST("/get-all-subbject-relations", relationHandler.GetAllSubjectRelations)
+		relationRouter.POST("/clear-all-relations", relationHandler.ClearAllRelations)
 	}
 
 	server.Run()
