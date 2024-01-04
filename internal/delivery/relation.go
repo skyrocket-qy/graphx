@@ -18,27 +18,6 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 	}
 }
 
-// @Summary Get all relations
-// @Description Get a list of all relations
-// @Tags Relation
-// @Accept json
-// @Produce json
-// @Success 200 {object} domain.DataResponse
-// @Failure 500 {object} domain.ErrResponse
-// @Router /relation/ [get]
-func (h *RelationHandler) GetAll(c *gin.Context) {
-	relations, err := h.RelationUsecase.GetAll()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	c.JSON(http.StatusOK, domain.DataResponse{
-		Data: relations,
-	})
-}
-
 // @Summary Query relations based on parameters
 // @Description Query relations based on specified parameters.
 // @Tags Relation
@@ -52,8 +31,8 @@ func (h *RelationHandler) GetAll(c *gin.Context) {
 // @Param subject-relation query string false "Subject Relation"
 // @Success 200 {object} domain.DataResponse
 // @Failure 500 {object} domain.ErrResponse
-// @Router /relation/query [get]
-func (h *RelationHandler) Query(c *gin.Context) {
+// @Router /relation/ [get]
+func (h *RelationHandler) Get(c *gin.Context) {
 	query := domain.Relation{
 		ObjectNamespace:  c.Query("object-namespace"),
 		ObjectName:       c.Query("object-name"),
@@ -62,8 +41,14 @@ func (h *RelationHandler) Query(c *gin.Context) {
 		SubjectName:      c.Query("subject-name"),
 		SubjectRelation:  c.Query("subject-relation"),
 	}
-
-	relations, err := h.RelationUsecase.Query(query)
+	var relations []domain.Relation
+	var err error
+	if query.ObjectNamespace == "" && query.ObjectName == "" && query.Relation == "" &&
+		query.SubjectNamespace == "" && query.SubjectName == "" && query.SubjectRelation == "" {
+		relations, err = h.RelationUsecase.GetAll()
+	} else {
+		relations, err = h.RelationUsecase.Query(query)
+	}
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),

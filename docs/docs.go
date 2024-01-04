@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/relation/": {
             "get": {
-                "description": "Get a list of all relations",
+                "description": "Query relations based on specified parameters.",
                 "consumes": [
                     "application/json"
                 ],
@@ -36,7 +36,45 @@ const docTemplate = `{
                 "tags": [
                     "Relation"
                 ],
-                "summary": "Get all relations",
+                "summary": "Query relations based on parameters",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Object Namespace",
+                        "name": "object-namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Object Name",
+                        "name": "object-name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Relation",
+                        "name": "relation",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject Namespace",
+                        "name": "subject-namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject Name",
+                        "name": "subject-name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject Relation",
+                        "name": "subject-relation",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -419,73 +457,6 @@ const docTemplate = `{
                     },
                     "403": {
                         "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/relation/query": {
-            "get": {
-                "description": "Query relations based on specified parameters.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Relation"
-                ],
-                "summary": "Query relations based on parameters",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Object Namespace",
-                        "name": "object-namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Object Name",
-                        "name": "object-name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Relation",
-                        "name": "relation",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Subject Namespace",
-                        "name": "subject-namespace",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Subject Name",
-                        "name": "subject-name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Subject Relation",
-                        "name": "subject-relation",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/domain.DataResponse"
-                        }
                     },
                     "500": {
                         "description": "Internal Server Error",

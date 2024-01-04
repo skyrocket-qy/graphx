@@ -98,7 +98,32 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get a list of all relations
+      description: Query relations based on specified parameters.
+      parameters:
+      - description: Object Namespace
+        in: query
+        name: object-namespace
+        type: string
+      - description: Object Name
+        in: query
+        name: object-name
+        type: string
+      - description: Relation
+        in: query
+        name: relation
+        type: string
+      - description: Subject Namespace
+        in: query
+        name: subject-namespace
+        type: string
+      - description: Subject Name
+        in: query
+        name: subject-name
+        type: string
+      - description: Subject Relation
+        in: query
+        name: subject-relation
+        type: string
       produces:
       - application/json
       responses:
@@ -110,7 +135,7 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/domain.ErrResponse'
-      summary: Get all relations
+      summary: Query relations based on parameters
       tags:
       - Relation
     post:
@@ -332,50 +357,6 @@ paths:
           schema:
             $ref: '#/definitions/domain.ErrResponse'
       summary: Get the shortest path between two entities in a relation graph
-      tags:
-      - Relation
-  /relation/query:
-    get:
-      consumes:
-      - application/json
-      description: Query relations based on specified parameters.
-      parameters:
-      - description: Object Namespace
-        in: query
-        name: object-namespace
-        type: string
-      - description: Object Name
-        in: query
-        name: object-name
-        type: string
-      - description: Relation
-        in: query
-        name: relation
-        type: string
-      - description: Subject Namespace
-        in: query
-        name: subject-namespace
-        type: string
-      - description: Subject Name
-        in: query
-        name: subject-name
-        type: string
-      - description: Subject Relation
-        in: query
-        name: subject-relation
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/domain.DataResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/domain.ErrResponse'
-      summary: Query relations based on parameters
       tags:
       - Relation
 securityDefinitions:
