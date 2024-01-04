@@ -224,7 +224,10 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 	if len(paths) == 0 {
 		c.Status(http.StatusForbidden)
 	}
-	c.JSON(http.StatusOK, domain.DataResponse{
+	type response struct {
+		Data [][]domain.Relation `json:"data"`
+	}
+	c.JSON(http.StatusOK, response{
 		Data: paths,
 	})
 }

@@ -21,18 +21,12 @@ func NewRelationUsecase(relationRepo sqldomain.RelationRepository) *RelationUsec
 	}
 }
 
-func (u *RelationUsecase) GetAll() ([]string, error) {
+func (u *RelationUsecase) GetAll() ([]domain.Relation, error) {
 	tuples, err := u.RelationRepo.GetAll()
 	if err != nil {
 		return nil, err
 	}
-
-	relations := []string{}
-	for _, tuple := range tuples {
-		relations = append(relations, utils.RelationToString(tuple))
-	}
-
-	return relations, nil
+	return tuples, nil
 }
 
 func (u *RelationUsecase) Query(query domain.Relation) ([]domain.Relation, error) {
@@ -164,8 +158,7 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 				}
 				if !visited.Exist(child) {
 					visited.Add(child)
-					copyPath := append([]domain.Relation{}, node.Path...)
-					copyPath = append(copyPath, tuple)
+					copyPath := append(node.Path, tuple)
 					q.Push(NodeItem{
 						Cur:  child,
 						Path: copyPath,
@@ -180,46 +173,99 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 	}
 
 	return nil, nil
+
+	// maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// visited := utils.NewSet[domain.Node]()
+	// type NodeItem struct {
+	// 	Cur  domain.Node
+	// 	Path []domain.Relation
+	// }
+	// finalPath := []domain.Relation{}
+	// var dfsErr error
+	// var dfs func(from, to domain.Node, path *[]domain.Relation, cur_depth int)
+	// dfs = func(from, to domain.Node, path *[]domain.Relation, cur_depth int) {
+	// 	if visited.Exist(from) || cur_depth >= maxDepth || len(finalPath) != 0 || dfsErr != nil {
+	// 		return
+	// 	}
+	// 	visited.Add(from)
+	// 	if from == to {
+	// 		finalPath = *path
+	// 		return
+	// 	}
+	// 	relations, err := u.RelationRepo.Query(domain.Relation{
+	// 		SubjectNamespace: from.Namespace,
+	// 		SubjectName:      from.Name,
+	// 		SubjectRelation:  from.Relation,
+	// 	})
+	// 	if err != nil {
+	// 		dfsErr = err
+	// 		return
+	// 	}
+	// 	for _, relation := range relations {
+	// 		*path = append(*path, relation)
+	// 		child := domain.Node{
+	// 			Namespace: relation.ObjectNamespace,
+	// 			Name:      relation.ObjectName,
+	// 			Relation:  relation.Relation,
+	// 		}
+	// 		dfs(child, to, path, cur_depth+1)
+	// 		*path = (*path)[:len(*path)-1]
+	// 	}
+	// }
+	// initPath := []domain.Relation{}
+	// dfs(from, to, &initPath, 1)
+	// return finalPath, nil
 }
 
-func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([]string, error) {
+func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([][]domain.Relation, error) {
+	paths := [][]domain.Relation{}
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
 		return nil, err
 	}
-	relations := utils.NewSet[domain.Relation]()
-	visited := utils.NewSet[domain.Relation]()
-
-	firstQuery := domain.Relation{
-		SubjectNamespace: from.Namespace,
-		SubjectName:      from.Name,
-		SubjectRelation:  from.Relation,
+	type NodeItem struct {
+		Cur  domain.Node
+		Path []domain.Relation
 	}
-	q := queue.NewQueue[domain.Relation]()
-	visited.Add(firstQuery)
-	q.Push(firstQuery)
-
+	firstNode := NodeItem{
+		Cur:  from,
+		Path: []domain.Relation{},
+	}
+	q := queue.NewQueue[NodeItem]()
+	q.Push(firstNode)
 	for !q.IsEmpty() {
 		qLen := q.Len()
 		for i := 0; i < qLen; i++ {
-			query, _ := q.Pop()
+			node, _ := q.Pop()
+			query := domain.Relation{
+				SubjectNamespace: node.Cur.Namespace,
+				SubjectName:      node.Cur.Name,
+				SubjectRelation:  node.Cur.Relation,
+			}
 			tuples, err := u.RelationRepo.Query(query)
 			if err != nil {
 				return nil, err
 			}
 
 			for _, tuple := range tuples {
-				relations.Add(tuple)
-				nextQuery := domain.Relation{
-					SubjectNamespace: tuple.ObjectNamespace,
-					SubjectName:      tuple.ObjectName,
-					SubjectRelation:  tuple.Relation,
+				if tuple.ObjectNamespace == to.Namespace && tuple.ObjectName == to.Name && tuple.Relation == to.Relation {
+					paths = append(paths, append(node.Path, tuple))
 				}
-				if !visited.Exist(nextQuery) {
-					visited.Add(nextQuery)
-					q.Push(nextQuery)
+				child := domain.Node{
+					Namespace: tuple.ObjectNamespace,
+					Name:      tuple.ObjectName,
+					Relation:  tuple.Relation,
 				}
+				copyPath := append(node.Path, tuple)
+				q.Push(NodeItem{
+					Cur:  child,
+					Path: copyPath,
+				})
+
 			}
 		}
 		depth++
@@ -228,7 +274,7 @@ func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([]strin
 		}
 	}
 
-	return relations.ToSlice(), nil
+	return paths, nil
 }
 
 func (u *RelationUsecase) GetObjectRelations(from domain.Node) ([]domain.Relation, error) {
