@@ -11,5 +11,10 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  zanzibar-dag:
+   image: zanzibar-dag:latest
+   ports:
+   - "8080:8080"
+
 volumes:
   postgres_data:
