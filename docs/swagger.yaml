@@ -1,0 +1,140 @@
+basePath: /api/v1
+definitions:
+  domain.DataResponse:
+    properties:
+      data:
+        items:
+          $ref: '#/definitions/domain.Relation'
+        type: array
+    type: object
+  domain.ErrResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  domain.Relation:
+    properties:
+      object_name:
+        type: string
+      object_namespace:
+        type: string
+      relation:
+        type: string
+      subject_name:
+        type: string
+      subject_namespace:
+        type: string
+      subject_relation:
+        type: string
+    type: object
+externalDocs:
+  description: OpenAPI
+  url: https://swagger.io/resources/open-api/
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger API
+  version: "1.0"
+paths:
+  /relation/check:
+    post:
+      consumes:
+      - application/json
+      description: Check if a relation link exists between two entities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Relation link exists
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+        "403":
+          description: Relation link does not exist
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+      summary: Check if a relation link exists
+      tags:
+      - Relation
+  /relation/clear-all-relations:
+    post:
+      consumes:
+      - application/json
+      description: Clear all relations in the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All relations cleared
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+      summary: Clear all relations
+      tags:
+      - Relation
+  /relation/get-all-relations:
+    get:
+      consumes:
+      - application/json
+      description: Get a list of all relations
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.DataResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+      summary: Get all relations
+      tags:
+      - Relation
+  /relation/path:
+    post:
+      consumes:
+      - application/json
+      description: Get the shortest path between two entities in a relation graph
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Shortest path between entities
+          schema:
+            $ref: '#/definitions/domain.DataResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+        "403":
+          description: No path found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrResponse'
+      summary: Get the shortest path between two entities in a relation graph
+      tags:
+      - Relation
+securityDefinitions:
+  BasicAuth:
+    type: basic
+swagger: "2.0"
