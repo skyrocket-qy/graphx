@@ -15,7 +15,7 @@ gen-apidoc:
 	swag init -g internal/delivery/*
 
 build-image:
-	docker build -t hrbac .
+	docker build -t zanzibar-dag .
 
 run-container:
-	docker run -p 3000:3000 hrbac
+	docker run -p 3000:3000 zanzibar-dag
