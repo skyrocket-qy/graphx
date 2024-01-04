@@ -62,6 +62,7 @@ func main() {
 	relationRouter := server.Group("/relation")
 	{
 		relationRouter.GET("/", relationHandler.GetAll)
+		relationRouter.GET("/query", relationHandler.Query)
 		relationRouter.POST("/", relationHandler.Create)
 		relationRouter.DELETE("/", relationHandler.Delete)
 

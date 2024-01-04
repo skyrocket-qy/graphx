@@ -25,7 +25,7 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 // @Produce json
 // @Success 200 {object} domain.DataResponse
 // @Failure 500 {object} domain.ErrResponse
-// @Router /relation/get-all-relations [get]
+// @Router /relation/ [get]
 func (h *RelationHandler) GetAll(c *gin.Context) {
 	relations, err := h.RelationUsecase.GetAll()
 	if err != nil {
@@ -39,6 +39,20 @@ func (h *RelationHandler) GetAll(c *gin.Context) {
 	})
 }
 
+// @Summary Query relations based on parameters
+// @Description Query relations based on specified parameters.
+// @Tags Relation
+// @Accept json
+// @Produce json
+// @Param object-namespace query string false "Object Namespace"
+// @Param object-name query string false "Object Name"
+// @Param relation query string false "Relation"
+// @Param subject-namespace query string false "Subject Namespace"
+// @Param subject-name query string false "Subject Name"
+// @Param subject-relation query string false "Subject Relation"
+// @Success 200 {object} domain.DataResponse
+// @Failure 500 {object} domain.ErrResponse
+// @Router /relation/query [get]
 func (h *RelationHandler) Query(c *gin.Context) {
 	query := domain.Relation{
 		ObjectNamespace:  c.Query("object-namespace"),
@@ -57,14 +71,21 @@ func (h *RelationHandler) Query(c *gin.Context) {
 		return
 	}
 
-	type Response struct {
-		Data []domain.Relation `json:"data"`
-	}
-	c.JSON(http.StatusOK, Response{
+	c.JSON(http.StatusOK, domain.DataResponse{
 		Data: relations,
 	})
 }
 
+// @Summary Create a new relation
+// @Description Create a new relation based on the provided JSON payload.
+// @Tags Relation
+// @Accept json
+// @Produce json
+// @Param relation body domain.Relation true "Relation object to be created"
+// @Success 200
+// @Failure 400 {object} domain.ErrResponse
+// @Failure 500 {object} domain.ErrResponse
+// @Router /relation/ [post]
 func (h *RelationHandler) Create(c *gin.Context) {
 	relation := domain.Relation{}
 	if err := c.ShouldBindJSON(&relation); err != nil {
@@ -82,6 +103,16 @@ func (h *RelationHandler) Create(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// @Summary Delete a relation
+// @Description Delete a relation based on the provided JSON payload.
+// @Tags Relation
+// @Accept json
+// @Produce json
+// @Param relation body domain.Relation true "Relation object to be deleted"
+// @Success 200
+// @Failure 400 {object} domain.ErrResponse
+// @Failure 500 {object} domain.ErrResponse
+// @Router /relation/ [delete]
 func (h *RelationHandler) Delete(c *gin.Context) {
 	relation := domain.Relation{}
 	if err := c.ShouldBindJSON(&relation); err != nil {
@@ -99,6 +130,13 @@ func (h *RelationHandler) Delete(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+// @Summary Get all unique namespaces
+// @Description Retrieve all unique namespaces for relations.
+// @Tags Relation
+// @Produce json
+// @Success 200 {object} domain.StringsResponse
+// @Failure 500 {object} domain.ErrResponse
+// @Router /relation/get-all-namespaces [post]
 func (h *RelationHandler) GetAllNamespaces(c *gin.Context) {
 	namespaces, err := h.RelationUsecase.GetAllNamespaces()
 	if err != nil {
@@ -107,10 +145,7 @@ func (h *RelationHandler) GetAllNamespaces(c *gin.Context) {
 		})
 		return
 	}
-	type response struct {
-		Data []string `json:"data"`
-	}
-	c.JSON(http.StatusOK, response{
+	c.JSON(http.StatusOK, domain.StringsResponse{
 		Data: namespaces,
 	})
 }
@@ -120,9 +155,10 @@ func (h *RelationHandler) GetAllNamespaces(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Success 200 {string} string "Relation link exists"
+// @Param relation body domain.Relation true "comment"
+// @Success 200
 // @Failure 400 {object} domain.ErrResponse
-// @Failure 403 {string} string "Relation link does not exist"
+// @Failure 403
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/check [post]
 func (h *RelationHandler) Check(c *gin.Context) {
@@ -162,11 +198,12 @@ func (h *RelationHandler) Check(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
+// @Param relation body domain.Relation true "comment"
 // @Success 200 {object} domain.DataResponse "Shortest path between entities"
 // @Failure 400 {object} domain.ErrResponse
-// @Failure 403 {string} string "No path found"
+// @Failure 403
 // @Failure 500 {object} domain.ErrResponse
-// @Router /relation/path [post]
+// @Router /relation/get-shortest-path [post]
 func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 	relation := domain.Relation{}
 	if err := c.ShouldBindJSON(&relation); err != nil {
@@ -201,16 +238,17 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 	})
 }
 
-// @Summary Get the shortest path between two entities in a relation graph
-// @Description Get the shortest path between two entities in a relation graph
+// @Summary Get all paths between two entities in a relation graph
+// @Description Get all paths between two entities in a relation graph
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Success 200 {object} domain.DataResponse "Shortest path between entities"
+// @Param relation body domain.Relation true "Relation object specifying the entities"
+// @Success 200 {object} delivery.GetAllPaths.response "All paths between entities"
 // @Failure 400 {object} domain.ErrResponse
-// @Failure 403 {string} string "No path found"
+// @Failure 403
 // @Failure 500 {object} domain.ErrResponse
-// @Router /relation/path [post]
+// @Router /relation/get-all-paths [post]
 func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 	relation := domain.Relation{}
 	if err := c.ShouldBindJSON(&relation); err != nil {
@@ -248,6 +286,17 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 	})
 }
 
+// @Summary Get all relations for a given object
+// @Description Get all relations for a given object specified by namespace, name, and relation
+// @Tags Relation
+// @Accept json
+// @Produce json
+// @Param subject body domain.Node true "Object information (namespace, name, relation)"
+// @Success 200 {object} domain.DataResponse "All relations for the specified object"
+// @Failure 400 {object} domain.ErrResponse
+// @Failure 403
+// @Failure 500 {object} domain.ErrResponse
+// @Router /relation/get-all-object-relations [post]
 func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 	type request struct {
 		Namespace string `json:"namespace"`
@@ -275,13 +324,19 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 	})
 }
 
+// @Summary Get all relations for a given subject
+// @Description Get all relations for a given subject specified by namespace, name, and relation
+// @Tags Relation
+// @Accept json
+// @Produce json
+// @Param object body domain.Node true "Subject information (namespace, name, relation)"
+// @Success 200 {object} domain.DataResponse "All relations for the specified subject"
+// @Failure 400 {object} domain.ErrResponse
+// @Failure 403
+// @Failure 500 {object} domain.ErrResponse
+// @Router /relation/get-all-subject-relations [post]
 func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
-	type request struct {
-		Namespace string `json:"namespace"`
-		Name      string `json:"name"`
-		Relation  string `json:"relation"`
-	}
-	object := request{}
+	object := domain.Node{}
 	if err := c.ShouldBindJSON(&object); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
@@ -307,7 +362,7 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Success 200 {string} string "All relations cleared"
+// @Success 200
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/clear-all-relations [post]
 func (h *RelationHandler) ClearAllRelations(c *gin.Context) {

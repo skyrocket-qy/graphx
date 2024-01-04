@@ -16,77 +16,7 @@
     },
     "basePath": "/api/v1",
     "paths": {
-        "/relation/check": {
-            "post": {
-                "description": "Check if a relation link exists between two entities",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Relation"
-                ],
-                "summary": "Check if a relation link exists",
-                "responses": {
-                    "200": {
-                        "description": "Relation link exists",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "Relation link does not exist",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/relation/clear-all-relations": {
-            "post": {
-                "description": "Clear all relations in the system",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Relation"
-                ],
-                "summary": "Clear all relations",
-                "responses": {
-                    "200": {
-                        "description": "All relations cleared",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/relation/get-all-relations": {
+        "/relation/": {
             "get": {
                 "description": "Get a list of all relations",
                 "consumes": [
@@ -113,9 +43,336 @@
                         }
                     }
                 }
+            },
+            "post": {
+                "description": "Create a new relation based on the provided JSON payload.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Create a new relation",
+                "parameters": [
+                    {
+                        "description": "Relation object to be created",
+                        "name": "relation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Relation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete a relation based on the provided JSON payload.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Delete a relation",
+                "parameters": [
+                    {
+                        "description": "Relation object to be deleted",
+                        "name": "relation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Relation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
             }
         },
-        "/relation/path": {
+        "/relation/check": {
+            "post": {
+                "description": "Check if a relation link exists between two entities",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Check if a relation link exists",
+                "parameters": [
+                    {
+                        "description": "comment",
+                        "name": "relation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Relation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/clear-all-relations": {
+            "post": {
+                "description": "Clear all relations in the system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Clear all relations",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/get-all-namespaces": {
+            "post": {
+                "description": "Retrieve all unique namespaces for relations.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Get all unique namespaces",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.StringsResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/get-all-object-relations": {
+            "post": {
+                "description": "Get all relations for a given object specified by namespace, name, and relation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Get all relations for a given object",
+                "parameters": [
+                    {
+                        "description": "Object information (namespace, name, relation)",
+                        "name": "subject",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All relations for the specified object",
+                        "schema": {
+                            "$ref": "#/definitions/domain.DataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/get-all-paths": {
+            "post": {
+                "description": "Get all paths between two entities in a relation graph",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Get all paths between two entities in a relation graph",
+                "parameters": [
+                    {
+                        "description": "Relation object specifying the entities",
+                        "name": "relation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Relation"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All paths between entities",
+                        "schema": {
+                            "$ref": "#/definitions/delivery.GetAllPaths.response"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/get-all-subject-relations": {
+            "post": {
+                "description": "Get all relations for a given subject specified by namespace, name, and relation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Get all relations for a given subject",
+                "parameters": [
+                    {
+                        "description": "Subject information (namespace, name, relation)",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Node"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "All relations for the specified subject",
+                        "schema": {
+                            "$ref": "#/definitions/domain.DataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/get-shortest-path": {
             "post": {
                 "description": "Get the shortest path between two entities in a relation graph",
                 "consumes": [
@@ -128,6 +385,17 @@
                     "Relation"
                 ],
                 "summary": "Get the shortest path between two entities in a relation graph",
+                "parameters": [
+                    {
+                        "description": "comment",
+                        "name": "relation",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.Relation"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Shortest path between entities",
@@ -142,9 +410,73 @@
                         }
                     },
                     "403": {
-                        "description": "No path found",
+                        "description": "Forbidden"
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/definitions/domain.ErrResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/relation/query": {
+            "get": {
+                "description": "Query relations based on specified parameters.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Relation"
+                ],
+                "summary": "Query relations based on parameters",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Object Namespace",
+                        "name": "object-namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Object Name",
+                        "name": "object-name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Relation",
+                        "name": "relation",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject Namespace",
+                        "name": "subject-namespace",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject Name",
+                        "name": "subject-name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Subject Relation",
+                        "name": "subject-relation",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.DataResponse"
                         }
                     },
                     "500": {
@@ -158,6 +490,20 @@
         }
     },
     "definitions": {
+        "delivery.GetAllPaths.response": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/definitions/domain.Relation"
+                        }
+                    }
+                }
+            }
+        },
         "domain.DataResponse": {
             "type": "object",
             "properties": {
@@ -173,6 +519,20 @@
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Node": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "relation": {
                     "type": "string"
                 }
             }
@@ -197,6 +557,17 @@
                 },
                 "subject_relation": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.StringsResponse": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         }

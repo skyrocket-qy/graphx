@@ -10,9 +10,9 @@ type Relation struct {
 }
 
 type Node struct {
-	Namespace string
-	Name      string
-	Relation  string
+	Namespace string `json:"namespace"`
+	Name      string `json:"name"`
+	Relation  string `json:"relation"`
 }
 
 type ErrResponse struct {
@@ -21,4 +21,8 @@ type ErrResponse struct {
 
 type DataResponse struct {
 	Data []Relation `json:"data"`
+}
+
+type StringsResponse struct {
+	Data []string `json:"data"`
 }
