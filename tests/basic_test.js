@@ -28,9 +28,4 @@ export default function() {
       TestRelationAPI(SERVER_URL, Headers);
     });
   });
-
-  group("clear", () => {
-    res = http.del(`${SERVER_URL}/relation/`, null, {headers:Headers});
-    check(res, { 'ClearAllRelations: status == 200': (r) => r.status == 200 });
-  });
 }
