@@ -3,19 +3,21 @@ import { check } from 'k6';
 
 export function Check(serverUrl, headers, layer, base){
     const relationUrl = `${serverUrl}/relation`
+    let res, payload;
+    const namespace = "role", relation = "parent";
     const start = "0_0";
     let end = (layer).toString() + "_" + (Math.pow(base, layer)-1).toString();
 
 
-    let payload = {
-        object_namespace: "role",
+    payload = {
+        object_namespace: namespace,
         object_name: end,
-        relation: "modify-permission",
-        subject_namespace: "role",
+        relation: relation,
+        subject_namespace: namespace,
         subject_name: start,
-        subject_relation: "",
+        subject_relation: relation,
     };
-    let res = http.post(`${relationUrl}/check`, JSON.stringify(payload), {
+    res = http.post(`${relationUrl}/check`, JSON.stringify(payload), {
         headers: headers, 
         timeout: '900s',
     });
