@@ -51,15 +51,24 @@ func (r *RelationRepository) Query(query domain.Relation) ([]domain.Relation, er
 }
 
 func (r *RelationRepository) GetAllNamespaces() ([]string, error) {
+	sqlQuery := `
+		SELECT DISTINCT namespace
+		FROM (
+			SELECT object_namespace AS namespace FROM relations
+			UNION
+			SELECT subject_namespace AS namespace FROM relations
+		) AS namespaces
+	`
 	var namespaces []string
-	if err := r.DB.Model(&sqldom.Relation{}).Pluck("DISTINCT obj_ns", &namespaces).Error; err != nil {
+	if err := r.DB.Raw(sqlQuery).Scan(&namespaces).Error; err != nil {
 		return nil, err
 	}
+
 	return namespaces, nil
 }
 
 func (r *RelationRepository) DeleteAll() error {
-	query := "DELETE FROM relation_relations"
+	query := "DELETE FROM relations"
 	if err := r.DB.Exec(query).Error; err != nil {
 		return err
 	}

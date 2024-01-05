@@ -17,7 +17,7 @@ export function TestRelationAPI(serverUrl, headers){
         subject_name: "1",
         subject_relation: "write",
     };
-    res = http.post(`${relationUrl}`, null, {headers:headers});
+    res = http.post(`${relationUrl}`, JSON.stringify(payload), {headers:headers});
     check(res, { 'Create': (r) => r.status == 200 });
 
     payload = {
@@ -80,7 +80,7 @@ export function TestRelationAPI(serverUrl, headers){
         subject_name: "1",
         subject_relation: "write",
     };
-    res = http.del(`${relationUrl}`, null, {headers:headers});
+    res = http.del(`${relationUrl}`, JSON.stringify(payload), {headers:headers});
     check(res, { 'Delete': (r) => r.status == 200 });
 
     res = http.post(`${relationUrl}/clear-all-relations`, null, {headers:headers});

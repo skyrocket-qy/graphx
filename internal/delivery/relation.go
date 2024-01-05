@@ -87,6 +87,12 @@ func (h *RelationHandler) Create(c *gin.Context) {
 		return
 	}
 	if err := h.RelationUsecase.Create(relation); err != nil {
+		if _, ok := err.(domain.CauseCycleError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})

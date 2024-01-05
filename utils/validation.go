@@ -2,13 +2,15 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"reflect"
 	"strings"
 	"zanzibar-dag/domain"
 )
 
 func ValidateRelation(rel domain.Relation) error {
-	if rel.ObjectNamespace == "" || rel.ObjectName == "" || rel.Relation == "" &&
+	fmt.Printf("%+v\n", rel)
+	if rel.ObjectNamespace == "" || rel.ObjectName == "" || rel.Relation == "" ||
 		rel.SubjectNamespace == "" || rel.SubjectName == "" {
 		return errors.New("invalid relation: some attr can't be empty")
 	}

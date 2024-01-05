@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"strconv"
 	"zanzibar-dag/domain"
 	sqldomain "zanzibar-dag/domain/infra/sql"
@@ -50,7 +49,7 @@ func (u *RelationUsecase) Create(relation domain.Relation) error {
 		return err
 	}
 	if ok {
-		return errors.New("create cycle detected")
+		return domain.CauseCycleError{}
 	}
 	return u.RelationRepo.Create(relation)
 }
