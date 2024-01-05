@@ -2,6 +2,10 @@
 
 A permission architecture based on Zanzibar and DAG, which can be used to build lots of permission system
 
+## Example
+
+[HRBAC](https://github.com/skyrocketOoO/hrbac/tree/main)
+
 ## Reserved words
 
 %
