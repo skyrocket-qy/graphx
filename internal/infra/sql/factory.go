@@ -1,9 +1,10 @@
 package sql
 
 import (
+	"fmt"
+	"os"
 	sqldomain "zanzibar-dag/domain/infra/sql"
 
-	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -11,11 +12,16 @@ import (
 var Db *gorm.DB
 
 func InitDb() (*gorm.DB, error) {
+	connStr := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		getEnv("POSTGRES_HOST", "localhost"),
+		getEnv("POSTGRES_PORT", "5432"),
+		getEnv("POSTGRES_USER", "zanzibar-dag"),
+		getEnv("POSTGRES_PASSWORD", "zanzibar-dag"),
+		getEnv("POSTGRES_DB", "zanzibar-dag"),
+	)
 	return gorm.Open(
-		// sqlite.Open("gorm.db"), &gorm.Config{
-		// 	Logger: nil,
-		// },
-		postgres.Open(viper.GetString("database.postgres.dsn")), &gorm.Config{
+		postgres.Open(connStr), &gorm.Config{
 			Logger: nil,
 		},
 	)
@@ -33,4 +39,12 @@ func NewOrmRepository(db *gorm.DB) (*OrmRepository, error) {
 	return &OrmRepository{
 		RelationshipRepo: *NewRelationRepository(db),
 	}, nil
+}
+
+func getEnv(key, defaultValue string) string {
+	value, exists := os.LookupEnv(key)
+	if !exists {
+		return defaultValue
+	}
+	return value
 }

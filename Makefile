@@ -16,9 +16,6 @@ gen-apidoc:
 
 build-image:
 	docker build -t zanzibar-dag .
-
-run-container:
-	docker run -p 3000:3000 zanzibar-dag
-
+	
 update-dependencies:
 	go get -u ./...
