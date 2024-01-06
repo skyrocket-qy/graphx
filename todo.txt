@@ -1,1 +1,2 @@
 - let used svc decide the max depth
+- add param for which to collect and which to stop

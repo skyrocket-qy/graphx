@@ -159,38 +159,38 @@ func (h *RelationHandler) GetAllNamespaces(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param relation body domain.Relation true "comment"
+// @Param relation body delivery.Check.requestBody true "comment"
 // @Success 200
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 403
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/check [post]
 func (h *RelationHandler) Check(c *gin.Context) {
-	relation := domain.Relation{}
-	if err := c.ShouldBindJSON(&relation); err != nil {
+	type requestBody struct {
+		Subject         domain.Node            `json:"subject"`
+		Object          domain.Node            `json:"object"`
+		SearchCondition domain.SearchCondition `json:"search_condition"`
+	}
+	body := requestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := utils.ValidateRelation(relation); err != nil {
+	if err := utils.ValidateNode(body.Object, false); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	ok, err := h.RelationUsecase.Check(
-		domain.Node{
-			Namespace: relation.SubjectNamespace,
-			Name:      relation.SubjectName,
-			Relation:  relation.SubjectRelation,
-		},
-		domain.Node{
-			Namespace: relation.ObjectNamespace,
-			Name:      relation.ObjectName,
-			Relation:  relation.Relation,
-		},
-	)
+	if err := utils.ValidateNode(body.Subject, true); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	ok, err := h.RelationUsecase.Check(body.Subject, body.Object, body.SearchCondition)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
@@ -208,38 +208,38 @@ func (h *RelationHandler) Check(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param relation body domain.Relation true "comment"
+// @Param relation body delivery.GetShortestPath.requestBody true "comment"
 // @Success 200 {object} domain.DataResponse "Shortest path between entities"
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 403
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-shortest-path [post]
 func (h *RelationHandler) GetShortestPath(c *gin.Context) {
-	relation := domain.Relation{}
-	if err := c.ShouldBindJSON(&relation); err != nil {
+	type requestBody struct {
+		Subject         domain.Node            `json:"subject"`
+		Object          domain.Node            `json:"object"`
+		SearchCondition domain.SearchCondition `json:"search_condition"`
+	}
+	body := requestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := utils.ValidateRelation(relation); err != nil {
+	if err := utils.ValidateNode(body.Object, false); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	paths, err := h.RelationUsecase.GetShortestPath(
-		domain.Node{
-			Namespace: relation.SubjectNamespace,
-			Name:      relation.SubjectName,
-			Relation:  relation.SubjectRelation,
-		},
-		domain.Node{
-			Namespace: relation.ObjectNamespace,
-			Name:      relation.ObjectName,
-			Relation:  relation.Relation,
-		},
-	)
+	if err := utils.ValidateNode(body.Subject, true); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	paths, err := h.RelationUsecase.GetShortestPath(body.Subject, body.Object, body.SearchCondition)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
@@ -259,38 +259,38 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param relation body domain.Relation true "Relation object specifying the entities"
+// @Param relation body delivery.GetAllPaths.requestBody true "Relation object specifying the entities"
 // @Success 200 {object} delivery.GetAllPaths.response "All paths between entities"
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 403
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-all-paths [post]
 func (h *RelationHandler) GetAllPaths(c *gin.Context) {
-	relation := domain.Relation{}
-	if err := c.ShouldBindJSON(&relation); err != nil {
+	type requestBody struct {
+		Subject         domain.Node            `json:"subject"`
+		Object          domain.Node            `json:"object"`
+		SearchCondition domain.SearchCondition `json:"search_condition"`
+	}
+	body := requestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := utils.ValidateRelation(relation); err != nil {
+	if err := utils.ValidateNode(body.Object, false); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	paths, err := h.RelationUsecase.GetAllPaths(
-		domain.Node{
-			Namespace: relation.SubjectNamespace,
-			Name:      relation.SubjectName,
-			Relation:  relation.SubjectRelation,
-		},
-		domain.Node{
-			Namespace: relation.ObjectNamespace,
-			Name:      relation.ObjectName,
-			Relation:  relation.Relation,
-		},
-	)
+	if err := utils.ValidateNode(body.Subject, true); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	paths, err := h.RelationUsecase.GetAllPaths(body.Subject, body.Object, body.SearchCondition)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
@@ -313,28 +313,35 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param subject body domain.Node true "Object information (namespace, name, relation)"
+// @Param subject body delivery.GetAllObjectRelations.requestBody true "Object information (namespace, name, relation)"
 // @Success 200 {object} domain.DataResponse "All relations for the specified object"
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 403
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-all-object-relations [post]
 func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
-	subject := domain.Node{}
-	if err := c.ShouldBindJSON(&subject); err != nil {
+	type requestBody struct {
+		Subject          domain.Node             `json:"subject"`
+		SearchCondition  domain.SearchCondition  `json:"search_condition"`
+		CollectCondition domain.CollectCondition `json:"collect_condition"`
+	}
+	body := requestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := utils.ValidateNode(subject, true); err != nil {
+	if err := utils.ValidateNode(body.Subject, true); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
 	relations, err := h.RelationUsecase.GetAllObjectRelations(
-		domain.Node(subject),
+		domain.Node(body.Subject),
+		body.SearchCondition,
+		body.CollectCondition,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
@@ -359,21 +366,28 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/get-all-subject-relations [post]
 func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
-	object := domain.Node{}
-	if err := c.ShouldBindJSON(&object); err != nil {
+	type requestBody struct {
+		Object           domain.Node             `json:"object"`
+		SearchCondition  domain.SearchCondition  `json:"search_condition"`
+		CollectCondition domain.CollectCondition `json:"collect_condition"`
+	}
+	body := requestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := utils.ValidateNode(object, false); err != nil {
+	if err := utils.ValidateNode(body.Object, false); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
 	relations, err := h.RelationUsecase.GetAllSubjectRelations(
-		domain.Node(object),
+		domain.Node(body.Object),
+		body.SearchCondition,
+		body.CollectCondition,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{

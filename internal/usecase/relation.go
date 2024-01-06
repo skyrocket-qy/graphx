@@ -44,6 +44,7 @@ func (u *RelationUsecase) Create(relation domain.Relation) error {
 			Name:      relation.SubjectName,
 			Relation:  relation.SubjectRelation,
 		},
+		domain.SearchCondition{},
 	)
 	if err != nil {
 		return err
@@ -62,11 +63,7 @@ func (u *RelationUsecase) GetAllNamespaces() ([]string, error) {
 	return u.RelationRepo.GetAllNamespaces()
 }
 
-func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) {
-	// queryTimes := 0
-	// defer func() {
-	// 	fmt.Println(queryTimes)
-	// }()
+func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) (bool, error) {
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
@@ -75,8 +72,8 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 
 	visited := utils.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
-	visited.Add(from)
-	q.Push(from)
+	visited.Add(subject)
+	q.Push(subject)
 
 	for !q.IsEmpty() {
 		qLen := q.Len()
@@ -88,13 +85,12 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 				SubjectRelation:  node.Relation,
 			}
 			tuples, err := u.RelationRepo.Query(query)
-			// queryTimes += 1
 			if err != nil {
 				return false, err
 			}
 
 			for _, tuple := range tuples {
-				if tuple.ObjectNamespace == to.Namespace && tuple.ObjectName == to.Name && tuple.Relation == to.Relation {
+				if tuple.ObjectNamespace == object.Namespace && tuple.ObjectName == object.Name && tuple.Relation == object.Relation {
 					return true, nil
 				}
 				child := domain.Node{
@@ -102,7 +98,7 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 					Name:      tuple.ObjectName,
 					Relation:  tuple.Relation,
 				}
-				if !visited.Exist(child) {
+				if !searchCondition.ShouldStop(child) && !visited.Exist(child) {
 					visited.Add(child)
 					q.Push(child)
 				}
@@ -117,7 +113,7 @@ func (u *RelationUsecase) Check(from domain.Node, to domain.Node) (bool, error) 
 	return false, nil
 }
 
-func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]domain.Relation, error) {
+func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([]domain.Relation, error) {
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
@@ -129,11 +125,11 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 		Path []domain.Relation
 	}
 	firstNode := NodeItem{
-		Cur:  from,
+		Cur:  subject,
 		Path: []domain.Relation{},
 	}
 	q := queue.NewQueue[NodeItem]()
-	visited.Add(from)
+	visited.Add(subject)
 	q.Push(firstNode)
 	for !q.IsEmpty() {
 		qLen := q.Len()
@@ -150,7 +146,7 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 			}
 
 			for _, tuple := range tuples {
-				if tuple.ObjectNamespace == to.Namespace && tuple.ObjectName == to.Name && tuple.Relation == to.Relation {
+				if tuple.ObjectNamespace == object.Namespace && tuple.ObjectName == object.Name && tuple.Relation == object.Relation {
 					return append(node.Path, tuple), nil
 				}
 				child := domain.Node{
@@ -158,7 +154,7 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 					Name:      tuple.ObjectName,
 					Relation:  tuple.Relation,
 				}
-				if !visited.Exist(child) {
+				if !searchCondition.ShouldStop(child) && !visited.Exist(child) {
 					visited.Add(child)
 					copyPath := append(node.Path, tuple)
 					q.Push(NodeItem{
@@ -187,20 +183,20 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 	// }
 	// finalPath := []domain.Relation{}
 	// var dfsErr error
-	// var dfs func(from, to domain.Node, path *[]domain.Relation, cur_depth int)
-	// dfs = func(from, to domain.Node, path *[]domain.Relation, cur_depth int) {
-	// 	if visited.Exist(from) || cur_depth >= maxDepth || len(finalPath) != 0 || dfsErr != nil {
+	// var dfs func(subject, object domain.Node, path *[]domain.Relation, cur_depth int)
+	// dfs = func(subject, object domain.Node, path *[]domain.Relation, cur_depth int) {
+	// 	if visited.Exist(subject) || cur_depth >= maxDepth || len(finalPath) != 0 || dfsErr != nil {
 	// 		return
 	// 	}
-	// 	visited.Add(from)
-	// 	if from == to {
+	// 	visited.Add(subject)
+	// 	if subject == object {
 	// 		finalPath = *path
 	// 		return
 	// 	}
 	// 	relations, err := u.RelationRepo.Query(domain.Relation{
-	// 		SubjectNamespace: from.Namespace,
-	// 		SubjectName:      from.Name,
-	// 		SubjectRelation:  from.Relation,
+	// 		SubjectNamespace: subject.Namespace,
+	// 		SubjectName:      subject.Name,
+	// 		SubjectRelation:  subject.Relation,
 	// 	})
 	// 	if err != nil {
 	// 		dfsErr = err
@@ -213,16 +209,16 @@ func (u *RelationUsecase) GetShortestPath(from domain.Node, to domain.Node) ([]d
 	// 			Name:      relation.ObjectName,
 	// 			Relation:  relation.Relation,
 	// 		}
-	// 		dfs(child, to, path, cur_depth+1)
+	// 		dfs(child, object, path, cur_depth+1)
 	// 		*path = (*path)[:len(*path)-1]
 	// 	}
 	// }
 	// initPath := []domain.Relation{}
-	// dfs(from, to, &initPath, 1)
+	// dfs(subject, object, &initPath, 1)
 	// return finalPath, nil
 }
 
-func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([][]domain.Relation, error) {
+func (u *RelationUsecase) GetAllPaths(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([][]domain.Relation, error) {
 	paths := [][]domain.Relation{}
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
@@ -234,7 +230,7 @@ func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([][]dom
 		Path []domain.Relation
 	}
 	firstNode := NodeItem{
-		Cur:  from,
+		Cur:  subject,
 		Path: []domain.Relation{},
 	}
 	q := queue.NewQueue[NodeItem]()
@@ -254,13 +250,16 @@ func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([][]dom
 			}
 
 			for _, tuple := range tuples {
-				if tuple.ObjectNamespace == to.Namespace && tuple.ObjectName == to.Name && tuple.Relation == to.Relation {
+				if tuple.ObjectNamespace == object.Namespace && tuple.ObjectName == object.Name && tuple.Relation == object.Relation {
 					paths = append(paths, append(node.Path, tuple))
 				}
 				child := domain.Node{
 					Namespace: tuple.ObjectNamespace,
 					Name:      tuple.ObjectName,
 					Relation:  tuple.Relation,
+				}
+				if searchCondition.ShouldStop(child) {
+					continue
 				}
 				copyPath := append(node.Path, tuple)
 				q.Push(NodeItem{
@@ -279,7 +278,7 @@ func (u *RelationUsecase) GetAllPaths(from domain.Node, to domain.Node) ([][]dom
 	return paths, nil
 }
 
-func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Relation, error) {
+func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition) ([]domain.Relation, error) {
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
@@ -288,8 +287,8 @@ func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Rela
 	relations := utils.NewSet[domain.Relation]()
 	visited := utils.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
-	visited.Add(from)
-	q.Push(from)
+	visited.Add(subject)
+	q.Push(subject)
 	for !q.IsEmpty() {
 		qLen := q.Len()
 		for i := 0; i < qLen; i++ {
@@ -305,13 +304,15 @@ func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Rela
 			}
 
 			for _, tuple := range tuples {
-				relations.Add(tuple)
 				child := domain.Node{
 					Namespace: tuple.ObjectNamespace,
 					Name:      tuple.ObjectName,
 					Relation:  tuple.Relation,
 				}
-				if !visited.Exist(child) {
+				if collectCondition.ShouldCollect(child) {
+					relations.Add(tuple)
+				}
+				if !searchCondition.ShouldStop(child) && !visited.Exist(child) {
 					visited.Add(child)
 					q.Push(child)
 				}
@@ -326,7 +327,7 @@ func (u *RelationUsecase) GetAllObjectRelations(from domain.Node) ([]domain.Rela
 	return relations.ToSlice(), nil
 }
 
-func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node) ([]domain.Relation, error) {
+func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition) ([]domain.Relation, error) {
 	depth := 0
 	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
 	if err != nil {
@@ -352,13 +353,15 @@ func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node) ([]domain.R
 			}
 
 			for _, tuple := range tuples {
-				relations.Add(tuple)
 				parent := domain.Node{
 					Namespace: tuple.SubjectNamespace,
 					Name:      tuple.SubjectName,
 					Relation:  tuple.SubjectRelation,
 				}
-				if !visited.Exist(parent) {
+				if collectCondition.ShouldCollect(parent) {
+					relations.Add(tuple)
+				}
+				if !searchCondition.ShouldStop(parent) && !visited.Exist(parent) {
 					visited.Add(parent)
 					q.Push(parent)
 				}
