@@ -1,5 +1,32 @@
 basePath: /api/v1
 definitions:
+  delivery.Check.requestBody:
+    properties:
+      object:
+        $ref: '#/definitions/domain.Node'
+      search_condition:
+        $ref: '#/definitions/domain.SearchCondition'
+      subject:
+        $ref: '#/definitions/domain.Node'
+    type: object
+  delivery.GetAllObjectRelations.requestBody:
+    properties:
+      collect_condition:
+        $ref: '#/definitions/domain.CollectCondition'
+      search_condition:
+        $ref: '#/definitions/domain.SearchCondition'
+      subject:
+        $ref: '#/definitions/domain.Node'
+    type: object
+  delivery.GetAllPaths.requestBody:
+    properties:
+      object:
+        $ref: '#/definitions/domain.Node'
+      search_condition:
+        $ref: '#/definitions/domain.SearchCondition'
+      subject:
+        $ref: '#/definitions/domain.Node'
+    type: object
   delivery.GetAllPaths.response:
     properties:
       data:
@@ -7,6 +34,35 @@ definitions:
           items:
             $ref: '#/definitions/domain.Relation'
           type: array
+        type: array
+    type: object
+  delivery.GetShortestPath.requestBody:
+    properties:
+      object:
+        $ref: '#/definitions/domain.Node'
+      search_condition:
+        $ref: '#/definitions/domain.SearchCondition'
+      subject:
+        $ref: '#/definitions/domain.Node'
+    type: object
+  domain.CollectCondition:
+    properties:
+      in:
+        $ref: '#/definitions/domain.Compare'
+    type: object
+  domain.Compare:
+    properties:
+      names:
+        items:
+          type: string
+        type: array
+      namespaces:
+        items:
+          type: string
+        type: array
+      relations:
+        items:
+          type: string
         type: array
     type: object
   domain.DataResponse:
@@ -44,6 +100,11 @@ definitions:
         type: string
       subject_relation:
         type: string
+    type: object
+  domain.SearchCondition:
+    properties:
+      in:
+        $ref: '#/definitions/domain.Compare'
     type: object
   domain.StringsResponse:
     properties:
@@ -176,7 +237,7 @@ paths:
         name: relation
         required: true
         schema:
-          $ref: '#/definitions/domain.Relation'
+          $ref: '#/definitions/delivery.Check.requestBody'
       produces:
       - application/json
       responses:
@@ -241,7 +302,7 @@ paths:
         name: subject
         required: true
         schema:
-          $ref: '#/definitions/domain.Node'
+          $ref: '#/definitions/delivery.GetAllObjectRelations.requestBody'
       produces:
       - application/json
       responses:
@@ -273,7 +334,7 @@ paths:
         name: relation
         required: true
         schema:
-          $ref: '#/definitions/domain.Relation'
+          $ref: '#/definitions/delivery.GetAllPaths.requestBody'
       produces:
       - application/json
       responses:
@@ -338,7 +399,7 @@ paths:
         name: relation
         required: true
         schema:
-          $ref: '#/definitions/domain.Relation'
+          $ref: '#/definitions/delivery.GetShortestPath.requestBody'
       produces:
       - application/json
       responses:

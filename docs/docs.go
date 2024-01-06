@@ -193,7 +193,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Relation"
+                            "$ref": "#/definitions/delivery.Check.requestBody"
                         }
                     }
                 ],
@@ -291,7 +291,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Node"
+                            "$ref": "#/definitions/delivery.GetAllObjectRelations.requestBody"
                         }
                     }
                 ],
@@ -340,7 +340,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Relation"
+                            "$ref": "#/definitions/delivery.GetAllPaths.requestBody"
                         }
                     }
                 ],
@@ -438,7 +438,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Relation"
+                            "$ref": "#/definitions/delivery.GetShortestPath.requestBody"
                         }
                     }
                 ],
@@ -469,6 +469,48 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "delivery.Check.requestBody": {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "$ref": "#/definitions/domain.Node"
+                },
+                "search_condition": {
+                    "$ref": "#/definitions/domain.SearchCondition"
+                },
+                "subject": {
+                    "$ref": "#/definitions/domain.Node"
+                }
+            }
+        },
+        "delivery.GetAllObjectRelations.requestBody": {
+            "type": "object",
+            "properties": {
+                "collect_condition": {
+                    "$ref": "#/definitions/domain.CollectCondition"
+                },
+                "search_condition": {
+                    "$ref": "#/definitions/domain.SearchCondition"
+                },
+                "subject": {
+                    "$ref": "#/definitions/domain.Node"
+                }
+            }
+        },
+        "delivery.GetAllPaths.requestBody": {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "$ref": "#/definitions/domain.Node"
+                },
+                "search_condition": {
+                    "$ref": "#/definitions/domain.SearchCondition"
+                },
+                "subject": {
+                    "$ref": "#/definitions/domain.Node"
+                }
+            }
+        },
         "delivery.GetAllPaths.response": {
             "type": "object",
             "properties": {
@@ -479,6 +521,51 @@ const docTemplate = `{
                         "items": {
                             "$ref": "#/definitions/domain.Relation"
                         }
+                    }
+                }
+            }
+        },
+        "delivery.GetShortestPath.requestBody": {
+            "type": "object",
+            "properties": {
+                "object": {
+                    "$ref": "#/definitions/domain.Node"
+                },
+                "search_condition": {
+                    "$ref": "#/definitions/domain.SearchCondition"
+                },
+                "subject": {
+                    "$ref": "#/definitions/domain.Node"
+                }
+            }
+        },
+        "domain.CollectCondition": {
+            "type": "object",
+            "properties": {
+                "in": {
+                    "$ref": "#/definitions/domain.Compare"
+                }
+            }
+        },
+        "domain.Compare": {
+            "type": "object",
+            "properties": {
+                "names": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "namespaces": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "relations": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
                     }
                 }
             }
@@ -536,6 +623,14 @@ const docTemplate = `{
                 },
                 "subject_relation": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.SearchCondition": {
+            "type": "object",
+            "properties": {
+                "in": {
+                    "$ref": "#/definitions/domain.Compare"
                 }
             }
         },

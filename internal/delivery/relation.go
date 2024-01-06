@@ -167,8 +167,8 @@ func (h *RelationHandler) GetAllNamespaces(c *gin.Context) {
 // @Router /relation/check [post]
 func (h *RelationHandler) Check(c *gin.Context) {
 	type requestBody struct {
-		Subject         domain.Node            `json:"subject"`
-		Object          domain.Node            `json:"object"`
+		Subject         domain.Node            `json:"subject" binding:"required"`
+		Object          domain.Node            `json:"object" binding:"required"`
 		SearchCondition domain.SearchCondition `json:"search_condition"`
 	}
 	body := requestBody{}
@@ -216,8 +216,8 @@ func (h *RelationHandler) Check(c *gin.Context) {
 // @Router /relation/get-shortest-path [post]
 func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 	type requestBody struct {
-		Subject         domain.Node            `json:"subject"`
-		Object          domain.Node            `json:"object"`
+		Subject         domain.Node            `json:"subject" binding:"required"`
+		Object          domain.Node            `json:"object" binding:"required"`
 		SearchCondition domain.SearchCondition `json:"search_condition"`
 	}
 	body := requestBody{}
@@ -267,8 +267,8 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 // @Router /relation/get-all-paths [post]
 func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 	type requestBody struct {
-		Subject         domain.Node            `json:"subject"`
-		Object          domain.Node            `json:"object"`
+		Subject         domain.Node            `json:"subject" binding:"required"`
+		Object          domain.Node            `json:"object" binding:"required"`
 		SearchCondition domain.SearchCondition `json:"search_condition"`
 	}
 	body := requestBody{}
@@ -321,7 +321,7 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 // @Router /relation/get-all-object-relations [post]
 func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 	type requestBody struct {
-		Subject          domain.Node             `json:"subject"`
+		Subject          domain.Node             `json:"subject" binding:"required"`
 		SearchCondition  domain.SearchCondition  `json:"search_condition"`
 		CollectCondition domain.CollectCondition `json:"collect_condition"`
 	}
@@ -367,7 +367,7 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 // @Router /relation/get-all-subject-relations [post]
 func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 	type requestBody struct {
-		Object           domain.Node             `json:"object"`
+		Object           domain.Node             `json:"object" binding:"required"`
 		SearchCondition  domain.SearchCondition  `json:"search_condition"`
 		CollectCondition domain.CollectCondition `json:"collect_condition"`
 	}

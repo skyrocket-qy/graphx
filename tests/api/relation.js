@@ -21,50 +21,66 @@ export function TestRelationAPI(serverUrl, headers){
     check(res, { 'Create': (r) => r.status == 200 });
 
     payload = {
-        object_namespace: "test_file",
-        object_name: "1",
-        relation: "read",
-        subject_namespace: "test_file",
-        subject_name: "1",
-        subject_relation: "write",
+        subject: {
+            namespace: "test_file",
+            name: "1",
+            relation: "write",
+        },
+        object: {
+            namespace: "test_file",
+            name: "1",
+            relation: "read",
+        },
     };
     res = http.post(`${relationUrl}/check`, JSON.stringify(payload), {headers:headers});
     check(res, { 'Check': (r) => r.status ==  200 });
 
     payload = {
-        object_namespace: "test_file",
-        object_name: "1",
-        relation: "read",
-        subject_namespace: "test_file",
-        subject_name: "1",
-        subject_relation: "write",
+        subject: {
+            namespace: "test_file",
+            name: "1",
+            relation: "write",
+        },
+        object: {
+            namespace: "test_file",
+            name: "1",
+            relation: "read",
+        },
     };
     res = http.post(`${relationUrl}/get-shortest-path`, JSON.stringify(payload), {headers:headers});
     check(res, { 'GetShortestPath': (r) => r.status ==  200 });
 
     payload = {
-        object_namespace: "test_file",
-        object_name: "1",
-        relation: "read",
-        subject_namespace: "test_file",
-        subject_name: "1",
-        subject_relation: "write",
+        subject: {
+            namespace: "test_file",
+            name: "1",
+            relation: "write",
+        },
+        object: {
+            namespace: "test_file",
+            name: "1",
+            relation: "read",
+        },
     };
     res = http.post(`${relationUrl}/get-all-paths`, JSON.stringify(payload), {headers:headers});
     check(res, { 'GetAllPaths': (r) => r.status ==  200 });
 
     payload = {
-        namespace: "test_file",
-        name: "1",
-        relation: "write",
+        subject: {
+            namespace: "test_file",
+            name: "1",
+            relation: "write",
+        },
     };
     res = http.post(`${relationUrl}/get-all-object-relations`, JSON.stringify(payload), {headers:headers});
     check(res, { 'GetAllObjectRelations': (r) => r.status ==  200 });
 
     payload = {
-        namespace: "test_file",
-        name: "1",
-        relation: "read",
+        object: {
+            namespace: "test_file",
+            name: "1",
+            relation: "read",
+        },
     };
     res = http.post(`${relationUrl}/get-all-subject-relations`, JSON.stringify(payload), {headers:headers});
     check(res, { 'GetAllSubjectRelations': (r) => r.status ==  200 });

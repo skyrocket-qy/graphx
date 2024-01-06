@@ -6,16 +6,20 @@ export function Check(serverUrl, headers, layer, base){
     let res, payload;
     const namespace = "role", relation = "parent";
     const start = "0_0";
-    let end = (layer).toString() + "_" + (Math.pow(base, layer)-1).toString();
+    const end = (layer).toString() + "_" + (Math.pow(base, layer)-1).toString();
 
 
     payload = {
-        object_namespace: namespace,
-        object_name: end,
-        relation: relation,
-        subject_namespace: namespace,
-        subject_name: start,
-        subject_relation: relation,
+        object: {
+            namespace: namespace,
+            name: start,
+            relation: relation,
+        },
+        subject: {
+            namespace: namespace,
+            name: end,
+            relation: relation,
+        },
     };
     res = http.post(`${relationUrl}/check`, JSON.stringify(payload), {
         headers: headers, 
