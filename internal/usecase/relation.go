@@ -1,13 +1,10 @@
 package usecase
 
 import (
-	"strconv"
 	"zanzibar-dag/domain"
 	sqldomain "zanzibar-dag/domain/infra/sql"
 	"zanzibar-dag/utils"
 	"zanzibar-dag/utils/queue"
-
-	"github.com/spf13/viper"
 )
 
 type RelationUsecase struct {
@@ -64,12 +61,6 @@ func (u *RelationUsecase) GetAllNamespaces() ([]string, error) {
 }
 
 func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) (bool, error) {
-	depth := 0
-	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
-	if err != nil {
-		return false, err
-	}
-
 	visited := utils.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
 	visited.Add(subject)
@@ -104,21 +95,12 @@ func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchC
 				}
 			}
 		}
-		depth++
-		if depth >= maxDepth {
-			break
-		}
 	}
 
 	return false, nil
 }
 
 func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([]domain.Relation, error) {
-	depth := 0
-	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
-	if err != nil {
-		return nil, err
-	}
 	visited := utils.NewSet[domain.Node]()
 	type NodeItem struct {
 		Cur  domain.Node
@@ -163,10 +145,6 @@ func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Nod
 					})
 				}
 			}
-		}
-		depth++
-		if depth >= maxDepth {
-			break
 		}
 	}
 
@@ -220,11 +198,6 @@ func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Nod
 
 func (u *RelationUsecase) GetAllPaths(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([][]domain.Relation, error) {
 	paths := [][]domain.Relation{}
-	depth := 0
-	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
-	if err != nil {
-		return nil, err
-	}
 	type NodeItem struct {
 		Cur  domain.Node
 		Path []domain.Relation
@@ -269,21 +242,13 @@ func (u *RelationUsecase) GetAllPaths(subject domain.Node, object domain.Node, s
 
 			}
 		}
-		depth++
-		if depth >= maxDepth {
-			break
-		}
 	}
 
 	return paths, nil
 }
 
-func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition) ([]domain.Relation, error) {
+func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error) {
 	depth := 0
-	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
-	if err != nil {
-		return nil, err
-	}
 	relations := utils.NewSet[domain.Relation]()
 	visited := utils.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
@@ -327,12 +292,8 @@ func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondi
 	return relations.ToSlice(), nil
 }
 
-func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition) ([]domain.Relation, error) {
+func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error) {
 	depth := 0
-	maxDepth, err := strconv.Atoi(viper.GetString("main.max-search-depth"))
-	if err != nil {
-		return nil, err
-	}
 	relations := utils.NewSet[domain.Relation]()
 	visited := utils.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()

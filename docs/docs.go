@@ -389,7 +389,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.Node"
+                            "$ref": "#/definitions/delivery.GetAllSubjectRelations.requestBody"
                         }
                     }
                 ],
@@ -471,6 +471,10 @@ const docTemplate = `{
     "definitions": {
         "delivery.Check.requestBody": {
             "type": "object",
+            "required": [
+                "object",
+                "subject"
+            ],
             "properties": {
                 "object": {
                     "$ref": "#/definitions/domain.Node"
@@ -485,6 +489,9 @@ const docTemplate = `{
         },
         "delivery.GetAllObjectRelations.requestBody": {
             "type": "object",
+            "required": [
+                "subject"
+            ],
             "properties": {
                 "collect_condition": {
                     "$ref": "#/definitions/domain.CollectCondition"
@@ -499,6 +506,10 @@ const docTemplate = `{
         },
         "delivery.GetAllPaths.requestBody": {
             "type": "object",
+            "required": [
+                "object",
+                "subject"
+            ],
             "properties": {
                 "object": {
                     "$ref": "#/definitions/domain.Node"
@@ -525,8 +536,29 @@ const docTemplate = `{
                 }
             }
         },
+        "delivery.GetAllSubjectRelations.requestBody": {
+            "type": "object",
+            "required": [
+                "object"
+            ],
+            "properties": {
+                "collect_condition": {
+                    "$ref": "#/definitions/domain.CollectCondition"
+                },
+                "object": {
+                    "$ref": "#/definitions/domain.Node"
+                },
+                "search_condition": {
+                    "$ref": "#/definitions/domain.SearchCondition"
+                }
+            }
+        },
         "delivery.GetShortestPath.requestBody": {
             "type": "object",
+            "required": [
+                "object",
+                "subject"
+            ],
             "properties": {
                 "object": {
                     "$ref": "#/definitions/domain.Node"

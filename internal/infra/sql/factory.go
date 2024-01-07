@@ -13,12 +13,13 @@ var Db *gorm.DB
 
 func InitDb() (*gorm.DB, error) {
 	connStr := fmt.Sprintf(
-		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=%s",
 		getEnv("POSTGRES_HOST", "localhost"),
 		getEnv("POSTGRES_PORT", "5432"),
 		getEnv("POSTGRES_USER", "zanzibar-dag"),
 		getEnv("POSTGRES_PASSWORD", "zanzibar-dag"),
 		getEnv("POSTGRES_DB", "zanzibar-dag"),
+		getEnv("POSTGRES_TIMEZONE", "Asia/Taipei"),
 	)
 	return gorm.Open(
 		postgres.Open(connStr), &gorm.Config{

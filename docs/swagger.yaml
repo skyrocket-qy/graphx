@@ -8,6 +8,9 @@ definitions:
         $ref: '#/definitions/domain.SearchCondition'
       subject:
         $ref: '#/definitions/domain.Node'
+    required:
+    - object
+    - subject
     type: object
   delivery.GetAllObjectRelations.requestBody:
     properties:
@@ -17,6 +20,8 @@ definitions:
         $ref: '#/definitions/domain.SearchCondition'
       subject:
         $ref: '#/definitions/domain.Node'
+    required:
+    - subject
     type: object
   delivery.GetAllPaths.requestBody:
     properties:
@@ -26,6 +31,9 @@ definitions:
         $ref: '#/definitions/domain.SearchCondition'
       subject:
         $ref: '#/definitions/domain.Node'
+    required:
+    - object
+    - subject
     type: object
   delivery.GetAllPaths.response:
     properties:
@@ -36,6 +44,17 @@ definitions:
           type: array
         type: array
     type: object
+  delivery.GetAllSubjectRelations.requestBody:
+    properties:
+      collect_condition:
+        $ref: '#/definitions/domain.CollectCondition'
+      object:
+        $ref: '#/definitions/domain.Node'
+      search_condition:
+        $ref: '#/definitions/domain.SearchCondition'
+    required:
+    - object
+    type: object
   delivery.GetShortestPath.requestBody:
     properties:
       object:
@@ -44,6 +63,9 @@ definitions:
         $ref: '#/definitions/domain.SearchCondition'
       subject:
         $ref: '#/definitions/domain.Node'
+    required:
+    - object
+    - subject
     type: object
   domain.CollectCondition:
     properties:
@@ -367,7 +389,7 @@ paths:
         name: object
         required: true
         schema:
-          $ref: '#/definitions/domain.Node'
+          $ref: '#/definitions/delivery.GetAllSubjectRelations.requestBody'
       produces:
       - application/json
       responses:

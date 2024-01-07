@@ -23,6 +23,7 @@ services:
           POSTGRES_USER: zanzibar-dag
           POSTGRES_PASSWORD: zanzibar-dag
           POSTGRES_DB: zanzibar-dag
+          POSTGRES_TIMEZONE: Asia/Taipei
 
 volumes:
   postgres_data:

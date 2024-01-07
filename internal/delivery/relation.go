@@ -324,6 +324,7 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 		Subject          domain.Node             `json:"subject" binding:"required"`
 		SearchCondition  domain.SearchCondition  `json:"search_condition"`
 		CollectCondition domain.CollectCondition `json:"collect_condition"`
+		MaxDepth         int                     `json:"max_depth"`
 	}
 	body := requestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -342,6 +343,7 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 		domain.Node(body.Subject),
 		body.SearchCondition,
 		body.CollectCondition,
+		body.MaxDepth,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
@@ -359,7 +361,7 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param object body domain.Node true "Subject information (namespace, name, relation)"
+// @Param object body delivery.GetAllSubjectRelations.requestBody true "Subject information (namespace, name, relation)"
 // @Success 200 {object} domain.DataResponse "All relations for the specified subject"
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 403
@@ -370,6 +372,7 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 		Object           domain.Node             `json:"object" binding:"required"`
 		SearchCondition  domain.SearchCondition  `json:"search_condition"`
 		CollectCondition domain.CollectCondition `json:"collect_condition"`
+		MaxDepth         int                     `json:"max_depth"`
 	}
 	body := requestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
@@ -388,6 +391,7 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 		domain.Node(body.Object),
 		body.SearchCondition,
 		body.CollectCondition,
+		body.MaxDepth,
 	)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
