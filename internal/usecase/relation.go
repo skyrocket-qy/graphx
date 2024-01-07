@@ -56,6 +56,10 @@ func (u *RelationUsecase) Delete(relation domain.Relation) error {
 	return u.RelationRepo.Delete(relation)
 }
 
+func (u *RelationUsecase) BatchOperation(operations []domain.Operation) error {
+	return u.RelationRepo.BatchOperation(operations)
+}
+
 func (u *RelationUsecase) GetAllNamespaces() ([]string, error) {
 	return u.RelationRepo.GetAllNamespaces()
 }

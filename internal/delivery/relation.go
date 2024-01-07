@@ -134,6 +134,34 @@ func (h *RelationHandler) Delete(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func (h *RelationHandler) BatchOperation(c *gin.Context) {
+	type requestBody struct {
+		Operations []domain.Operation `json:"operations"`
+	}
+	var body requestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	for _, operation := range body.Operations {
+		if err := utils.ValidateRelation(operation.Relation); err != nil {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
+	}
+	if err := h.RelationUsecase.BatchOperation(body.Operations); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
 // @Summary Get all unique namespaces
 // @Description Retrieve all unique namespaces for relations.
 // @Tags Relation

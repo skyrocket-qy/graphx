@@ -18,6 +18,7 @@ type Relation struct {
 type RelationRepository interface {
 	Create(relation domain.Relation) error
 	Delete(relation domain.Relation) error
+	BatchOperation(operations []domain.Operation) error
 	GetAll() ([]domain.Relation, error)
 	Query(query domain.Relation) ([]domain.Relation, error)
 	GetAllNamespaces() ([]string, error)

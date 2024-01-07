@@ -1,1 +1,2 @@
 dev grpch and batch method
+make sure atomic

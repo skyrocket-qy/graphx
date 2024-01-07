@@ -1,6 +1,7 @@
 package sql
 
 import (
+	"errors"
 	"strings"
 	"zanzibar-dag/domain"
 	sqldom "zanzibar-dag/domain/infra/sql"
@@ -23,6 +24,37 @@ func (r *RelationRepository) Create(relation domain.Relation) error {
 
 func (r *RelationRepository) Delete(relation domain.Relation) error {
 	return r.DB.Where("all_columns = ?", concatAttr(relation)).Delete(&sqldom.Relation{}).Error
+}
+
+func (r *RelationRepository) BatchOperation(operations []domain.Operation) error {
+	tx := r.DB.Begin()
+	if tx.Error != nil {
+		return tx.Error
+	}
+
+	for _, operation := range operations {
+		switch operation.Type {
+		case domain.CreateOperation:
+			if err := r.Create(operation.Relation); err != nil {
+				tx.Rollback()
+				return err
+			}
+		case domain.DeleteOperation:
+			if err := r.Delete(operation.Relation); err != nil {
+				tx.Rollback()
+				return err
+			}
+		default:
+			tx.Rollback()
+			return errors.New("invalid operation type")
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (r *RelationRepository) GetAll() ([]domain.Relation, error) {

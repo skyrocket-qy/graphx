@@ -10,6 +10,8 @@ type RelationUsecase interface {
 	Create(relation domain.Relation) error
 	Delete(relation domain.Relation) error
 
+	BatchOperation(operations []domain.Operation) error
+
 	GetAllNamespaces() ([]string, error)
 	Check(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) (bool, error)
 	GetShortestPath(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([]domain.Relation, error)
