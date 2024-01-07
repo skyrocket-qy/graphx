@@ -1,7 +1,7 @@
 import http from 'k6/http';
 import { check, group, sleep } from 'k6';
 import { TestRelationAPI } from './api/relation.js';
-import { TestCycle } from './scenario/cycle_test.js';
+import { TestCycle } from './scenario/cycle.js';
 import { TestRequiredAttr } from './scenario/required_attr.js';
 import { TestReservedWord } from './scenario/reserved_word.js';
 
@@ -35,8 +35,8 @@ export default function() {
     group("require_attr", () => {
       TestRequiredAttr(SERVER_URL, Headers);
     });
-    // group("reserved_word", () => {
-    //   TestReservedWord(SERVER_URL, Headers);
-    // });
+    group("reserved_word", () => {
+      TestReservedWord(SERVER_URL, Headers);
+    });
   });
 }

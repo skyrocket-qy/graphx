@@ -8,7 +8,6 @@ export function Check(serverUrl, headers, layer, base){
     const start = "0_0";
     const end = (layer).toString() + "_" + (Math.pow(base, layer)-1).toString();
 
-
     payload = {
         object: {
             namespace: namespace,
