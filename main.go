@@ -3,35 +3,16 @@ package main
 import (
 	"net/http"
 	"zanzibar-dag/config"
+	"zanzibar-dag/docs"
 	"zanzibar-dag/internal/delivery"
 	"zanzibar-dag/internal/infra/sql"
 	"zanzibar-dag/internal/usecase"
-
-	"zanzibar-dag/docs"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// @title           Swagger API
-// @version         1.0
-// @description
-// @termsOfService  http://swagger.io/terms/
-
-// @contact.name   API Support
-// @contact.url    http://www.swagger.io/support
-// @contact.email  support@swagger.io
-
-// @license.name  Apache 2.0
-// @license.url   http://www.apache.org/licenses/LICENSE-2.0.html
-
-// @BasePath  /api/v1
-
-// @securityDefinitions.basic  BasicAuth
-
-// @externalDocs.description  OpenAPI
-// @externalDocs.url          https://swagger.io/resources/open-api/
 func main() {
 	docs.SwaggerInfo.Host = "localhost:8080"
 
@@ -74,6 +55,7 @@ func main() {
 		relationRouter.POST("/clear-all-relations", relationHandler.ClearAllRelations)
 	}
 
+	// /swagger/index.html
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	server.Run(":8080")
 }
