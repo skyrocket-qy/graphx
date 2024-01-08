@@ -1,2 +1,3 @@
-dev grpch and batch method
+dev grpc and batch method
 make sure atomic
+do pagination query

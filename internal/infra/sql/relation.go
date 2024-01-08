@@ -5,6 +5,7 @@ import (
 	"strings"
 	"zanzibar-dag/domain"
 	sqldom "zanzibar-dag/domain/infra/sql"
+	"zanzibar-dag/utils"
 
 	"gorm.io/gorm"
 )
@@ -24,6 +25,24 @@ func (r *RelationRepository) Create(relation domain.Relation) error {
 
 func (r *RelationRepository) Delete(relation domain.Relation) error {
 	return r.DB.Where("all_columns = ?", concatAttr(relation)).Delete(&sqldom.Relation{}).Error
+}
+
+func (r *RelationRepository) DeleteByQueries(queries []domain.Relation) error {
+	operations := utils.NewSet[domain.Operation]()
+	for _, query := range queries {
+		relations, err := r.Query(query)
+		if err != nil {
+			return err
+		}
+		for _, relation := range relations {
+			operations.Add(domain.Operation{
+				Type:     domain.DeleteOperation,
+				Relation: relation,
+			})
+		}
+	}
+
+	return r.BatchOperation(operations.ToSlice())
 }
 
 func (r *RelationRepository) BatchOperation(operations []domain.Operation) error {

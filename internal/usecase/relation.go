@@ -56,6 +56,10 @@ func (u *RelationUsecase) Delete(relation domain.Relation) error {
 	return u.RelationRepo.Delete(relation)
 }
 
+func (u *RelationUsecase) DeleteByQueries(queries []domain.Relation) error {
+	return u.RelationRepo.DeleteByQueries(queries)
+}
+
 func (u *RelationUsecase) BatchOperation(operations []domain.Operation) error {
 	return u.RelationRepo.BatchOperation(operations)
 }

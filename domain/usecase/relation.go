@@ -9,7 +9,7 @@ type RelationUsecase interface {
 	Query(relation domain.Relation) ([]domain.Relation, error)
 	Create(relation domain.Relation) error
 	Delete(relation domain.Relation) error
-
+	DeleteByQueries(queries []domain.Relation) error
 	BatchOperation(operations []domain.Operation) error
 
 	GetAllNamespaces() ([]string, error)
