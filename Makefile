@@ -19,3 +19,8 @@ build-image:
 	
 update-dependencies:
 	go get -u ./...
+
+backup:
+	git add .
+	git commit -m "backup"
+	git push
