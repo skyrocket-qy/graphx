@@ -5,6 +5,7 @@ import (
 	"github.com/skyrocketOoO/go-utility/set"
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
+	"gorm.io/gorm"
 )
 
 type RelationUsecase struct {
@@ -29,7 +30,7 @@ func (u *RelationUsecase) Query(query domain.Relation) ([]domain.Relation, error
 	return u.RelationRepo.Query(query)
 }
 
-func (u *RelationUsecase) Create(relation domain.Relation) error {
+func (u *RelationUsecase) Create(relation domain.Relation, existOk bool) error {
 	ok, err := u.Check(
 		domain.Node{
 			Namespace: relation.ObjectNamespace,
@@ -49,7 +50,19 @@ func (u *RelationUsecase) Create(relation domain.Relation) error {
 	if ok {
 		return domain.CauseCycleError{}
 	}
-	return u.RelationRepo.Create(relation)
+
+	err = u.RelationRepo.Create(relation)
+	if err != nil {
+		if err == gorm.ErrDuplicatedKey {
+			if existOk {
+				return nil
+			} else {
+				return err
+			}
+		}
+		return err
+	}
+	return nil
 }
 
 func (u *RelationUsecase) Delete(relation domain.Relation) error {

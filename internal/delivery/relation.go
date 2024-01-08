@@ -74,20 +74,24 @@ func (h *RelationHandler) Get(c *gin.Context) {
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/ [post]
 func (h *RelationHandler) Create(c *gin.Context) {
-	relation := domain.Relation{}
-	if err := c.ShouldBindJSON(&relation); err != nil {
+	type requestBody struct {
+		Relation domain.Relation `json:"relation"`
+		ExistOk  bool            `json:"exist_ok"`
+	}
+	reqBody := requestBody{}
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := utils.ValidateRelation(relation); err != nil {
+	if err := utils.ValidateRelation(reqBody.Relation); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := h.RelationUsecase.Create(relation); err != nil {
+	if err := h.RelationUsecase.Create(reqBody.Relation, reqBody.ExistOk); err != nil {
 		if _, ok := err.(domain.CauseCycleError); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),

@@ -72,8 +72,16 @@ func (r *ZanzibarDagClient) Query(relation domain.Relation) ([]domain.Relation, 
 	return body.Data, nil
 }
 
-func (r *ZanzibarDagClient) Create(relation domain.Relation) error {
-	payload, err := json.Marshal(relation)
+func (r *ZanzibarDagClient) Create(relation domain.Relation, existOk bool) error {
+	type requestBody struct {
+		Relation domain.Relation `json:"relation"`
+		ExistOk  bool            `json:"exist_ok"`
+	}
+	reqBody := requestBody{
+		Relation: relation,
+		ExistOk:  existOk,
+	}
+	payload, err := json.Marshal(reqBody)
 	if err != nil {
 		return err
 	}
