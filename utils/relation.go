@@ -1,8 +1,8 @@
 package utils
 
 import (
-	"zanzibar-dag/domain"
-	sqldomain "zanzibar-dag/domain/infra/sql"
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
+	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
 )
 
 func RelationToString(tuple domain.Relation) string {

@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	ucdomain "zanzibar-dag/domain/usecase"
-	"zanzibar-dag/internal/infra/sql"
+	ucdomain "github.com/skyrocketOoO/zanazibar-dag/domain/usecase"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/sql"
 )
 
 type UsecaseRepository struct {

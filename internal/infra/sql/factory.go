@@ -3,7 +3,8 @@ package sql
 import (
 	"fmt"
 	"os"
-	sqldomain "zanzibar-dag/domain/infra/sql"
+
+	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

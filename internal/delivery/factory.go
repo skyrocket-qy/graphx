@@ -1,7 +1,7 @@
 package delivery
 
 import (
-	"zanzibar-dag/internal/usecase"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
 )
 
 type HandlerRepository struct {

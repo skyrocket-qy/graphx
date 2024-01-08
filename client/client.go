@@ -6,7 +6,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"zanzibar-dag/domain"
+
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
 )
 
 type ZanzibarDagClient struct {

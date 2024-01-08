@@ -3,9 +3,10 @@ package sql
 import (
 	"errors"
 	"strings"
-	"zanzibar-dag/domain"
-	sqldom "zanzibar-dag/domain/infra/sql"
-	"zanzibar-dag/utils"
+
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
+	sqldom "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
+	"github.com/skyrocketOoO/zanazibar-dag/utils"
 
 	"gorm.io/gorm"
 )

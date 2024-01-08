@@ -1,7 +1,7 @@
 package sqldom
 
 import (
-	"zanzibar-dag/domain"
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
 )
 
 type Relation struct {

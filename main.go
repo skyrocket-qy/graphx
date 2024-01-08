@@ -2,11 +2,11 @@ package main
 
 import (
 	"net/http"
-	"zanzibar-dag/config"
-	"zanzibar-dag/docs"
-	"zanzibar-dag/internal/delivery"
-	"zanzibar-dag/internal/infra/sql"
-	"zanzibar-dag/internal/usecase"
+	"github.com/skyrocketOoO/zanazibar-dag/config"
+	"github.com/skyrocketOoO/zanazibar-dag/docs"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/sql"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

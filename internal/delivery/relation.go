@@ -2,9 +2,10 @@ package delivery
 
 import (
 	"net/http"
-	"zanzibar-dag/domain"
-	usecasedomain "zanzibar-dag/domain/usecase"
-	"zanzibar-dag/utils"
+
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
+	usecasedomain "github.com/skyrocketOoO/zanazibar-dag/domain/usecase"
+	"github.com/skyrocketOoO/zanazibar-dag/utils"
 
 	"github.com/gin-gonic/gin"
 )

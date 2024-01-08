@@ -1,10 +1,10 @@
 package usecase
 
 import (
-	"zanzibar-dag/domain"
-	sqldomain "zanzibar-dag/domain/infra/sql"
-	"zanzibar-dag/utils"
-	"zanzibar-dag/utils/queue"
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
+	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
+	"github.com/skyrocketOoO/zanazibar-dag/utils"
+	"github.com/skyrocketOoO/zanazibar-dag/utils/queue"
 )
 
 type RelationUsecase struct {

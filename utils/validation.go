@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"reflect"
 	"strings"
-	"zanzibar-dag/domain"
+
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
 )
 
 func ValidateRelation(rel domain.Relation) error {
