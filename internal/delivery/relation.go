@@ -134,6 +134,26 @@ func (h *RelationHandler) Delete(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
+func (h *RelationHandler) DeleteByQueries(c *gin.Context) {
+	type requestBody struct {
+		Queries []domain.Relation `json:"queries"`
+	}
+	var body requestBody
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	if err := h.RelationUsecase.DeleteByQueries(body.Queries); err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	c.Status(http.StatusOK)
+}
+
 func (h *RelationHandler) BatchOperation(c *gin.Context) {
 	type requestBody struct {
 		Operations []domain.Operation `json:"operations"`
