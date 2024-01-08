@@ -46,6 +46,7 @@ func main() {
 		relationRouter.POST("/", relationHandler.Create)
 		relationRouter.DELETE("/", relationHandler.Delete)
 
+		relationRouter.POST("/delete-by-queries", relationHandler.DeleteByQueries)
 		relationRouter.POST("/batch-operation", relationHandler.BatchOperation)
 
 		relationRouter.POST("get-all-namespaces", relationHandler.GetAllNamespaces)
