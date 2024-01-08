@@ -1,10 +1,10 @@
 package usecase
 
 import (
+	"github.com/skyrocketOoO/go-utility/queue"
+	"github.com/skyrocketOoO/go-utility/set"
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
-	"github.com/skyrocketOoO/zanazibar-dag/utils"
-	"github.com/skyrocketOoO/zanazibar-dag/utils/queue"
 )
 
 type RelationUsecase struct {
@@ -69,7 +69,7 @@ func (u *RelationUsecase) GetAllNamespaces() ([]string, error) {
 }
 
 func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) (bool, error) {
-	visited := utils.NewSet[domain.Node]()
+	visited := set.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
 	visited.Add(subject)
 	q.Push(subject)
@@ -109,7 +109,7 @@ func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchC
 }
 
 func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([]domain.Relation, error) {
-	visited := utils.NewSet[domain.Node]()
+	visited := set.NewSet[domain.Node]()
 	type NodeItem struct {
 		Cur  domain.Node
 		Path []domain.Relation
@@ -162,7 +162,7 @@ func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Nod
 	// if err != nil {
 	// 	return nil, err
 	// }
-	// visited := utils.NewSet[domain.Node]()
+	// visited := set.NewSet[domain.Node]()
 	// type NodeItem struct {
 	// 	Cur  domain.Node
 	// 	Path []domain.Relation
@@ -257,8 +257,8 @@ func (u *RelationUsecase) GetAllPaths(subject domain.Node, object domain.Node, s
 
 func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error) {
 	depth := 0
-	relations := utils.NewSet[domain.Relation]()
-	visited := utils.NewSet[domain.Node]()
+	relations := set.NewSet[domain.Relation]()
+	visited := set.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
 	visited.Add(subject)
 	q.Push(subject)
@@ -302,8 +302,8 @@ func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondi
 
 func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error) {
 	depth := 0
-	relations := utils.NewSet[domain.Relation]()
-	visited := utils.NewSet[domain.Node]()
+	relations := set.NewSet[domain.Relation]()
+	visited := set.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
 	visited.Add(object)
 	q.Push(object)

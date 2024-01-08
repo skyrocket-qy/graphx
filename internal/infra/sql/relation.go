@@ -4,9 +4,9 @@ import (
 	"errors"
 	"strings"
 
+	"github.com/skyrocketOoO/go-utility/set"
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	sqldom "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
-	"github.com/skyrocketOoO/zanazibar-dag/utils"
 
 	"gorm.io/gorm"
 )
@@ -29,7 +29,7 @@ func (r *RelationRepository) Delete(relation domain.Relation) error {
 }
 
 func (r *RelationRepository) DeleteByQueries(queries []domain.Relation) error {
-	operations := utils.NewSet[domain.Operation]()
+	operations := set.NewSet[domain.Operation]()
 	for _, query := range queries {
 		relations, err := r.Query(query)
 		if err != nil {
