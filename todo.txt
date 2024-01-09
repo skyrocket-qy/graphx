@@ -1,2 +1,2 @@
-dev grpc and batch method
+dev grpc
 do pagination query

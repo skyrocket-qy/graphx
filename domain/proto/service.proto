@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+package your_package;
+
+service YourService {
+  rpc GetAll(Empty) returns (RelationList);
+  rpc Query(QueryRequest) returns (RelationList);
+}
+
+message Empty {}
+
+message QueryRequest {
+  string object_namespace = 1;
+  string object_name = 2;
+  string relation = 3;
+  string subject_namespace = 4;
+  string subject_name = 5;
+  string subject_relation = 6;
+}
+
+message Relation {
+  // Your existing Relation message fields...
+}
+
+message RelationList {
+  repeated Relation relations = 1;
+}
