@@ -64,6 +64,13 @@ func (r *RelationRepository) BatchOperation(operations []domain.Operation) error
 				tx.Rollback()
 				return err
 			}
+		case domain.CreateIfNotExistOperation:
+			if err := r.Create(operation.Relation); err != nil {
+				if err != gorm.ErrDuplicatedKey {
+					tx.Rollback()
+					return err
+				}
+			}
 		default:
 			tx.Rollback()
 			return errors.New("invalid operation type")
