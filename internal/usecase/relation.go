@@ -19,16 +19,13 @@ func NewRelationUsecase(relationRepo sqldomain.RelationRepository) *RelationUsec
 	}
 }
 
-func (u *RelationUsecase) GetAll() ([]domain.Relation, error) {
-	tuples, err := u.RelationRepo.GetAll()
-	if err != nil {
-		return nil, err
+func (u *RelationUsecase) Get(relation domain.Relation) ([]domain.Relation, error) {
+	if relation.ObjectNamespace == "" && relation.ObjectName == "" && relation.Relation == "" &&
+		relation.SubjectNamespace == "" && relation.SubjectName == "" && relation.SubjectRelation == "" {
+		return u.RelationRepo.GetAll()
+	} else {
+		return u.RelationRepo.Query(relation)
 	}
-	return tuples, nil
-}
-
-func (u *RelationUsecase) Query(query domain.Relation) ([]domain.Relation, error) {
-	return u.RelationRepo.Query(query)
 }
 
 func (u *RelationUsecase) Create(relation domain.Relation, existOk bool) error {

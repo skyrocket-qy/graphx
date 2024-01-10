@@ -21,7 +21,7 @@ func NewRelationHandler(relationUsecase usecasedomain.RelationUsecase) *GrpcHand
 }
 
 func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.DataResponse, error) {
-	rel := domain.Relation{
+	requestRelation := domain.Relation{
 		ObjectNamespace:  relation.ObjectNamespace,
 		ObjectName:       relation.ObjectName,
 		Relation:         relation.Relation,
@@ -29,7 +29,25 @@ func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.D
 		SubjectName:      relation.SubjectName,
 		SubjectRelation:  relation.SubjectRelation,
 	}
-	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+	relations, err := h.RelationUsecase.Get(requestRelation)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	protoRelations := make([]*proto.Relation, len(relations))
+	for i, rel := range relations {
+		protoRelations[i] = &proto.Relation{
+			ObjectNamespace:  rel.ObjectNamespace,
+			ObjectName:       rel.ObjectName,
+			Relation:         rel.Relation,
+			SubjectNamespace: rel.SubjectNamespace,
+			SubjectName:      rel.SubjectName,
+			SubjectRelation:  rel.SubjectRelation,
+		}
+	}
+	response := &proto.DataResponse{
+		Relations: protoRelations,
+	}
+	return response, nil
 }
 func (h *GrpcHandler) Create(c context.Context, relation *proto.RelationCreateRequest) (*proto.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")

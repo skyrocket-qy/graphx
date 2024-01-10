@@ -5,7 +5,6 @@ import (
 
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	usecasedomain "github.com/skyrocketOoO/zanazibar-dag/domain/usecase"
-	"github.com/skyrocketOoO/zanazibar-dag/utils"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +34,7 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/ [get]
 func (h *RelationHandler) Get(c *gin.Context) {
-	query := domain.Relation{
+	relation := domain.Relation{
 		ObjectNamespace:  c.Query("object-namespace"),
 		ObjectName:       c.Query("object-name"),
 		Relation:         c.Query("relation"),
@@ -43,21 +42,13 @@ func (h *RelationHandler) Get(c *gin.Context) {
 		SubjectName:      c.Query("subject-name"),
 		SubjectRelation:  c.Query("subject-relation"),
 	}
-	var relations []domain.Relation
-	var err error
-	if query.ObjectNamespace == "" && query.ObjectName == "" && query.Relation == "" &&
-		query.SubjectNamespace == "" && query.SubjectName == "" && query.SubjectRelation == "" {
-		relations, err = h.RelationUsecase.GetAll()
-	} else {
-		relations, err = h.RelationUsecase.Query(query)
-	}
+	relations, err := h.RelationUsecase.Get(relation)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, domain.DataResponse{
 		Data: relations,
 	})

@@ -5,8 +5,7 @@ import (
 )
 
 type RelationUsecase interface {
-	GetAll() ([]domain.Relation, error)
-	Query(relation domain.Relation) ([]domain.Relation, error)
+	Get(relation domain.Relation) ([]domain.Relation, error)
 	Create(relation domain.Relation, existOk bool) error
 	Delete(relation domain.Relation) error
 	DeleteByQueries(queries []domain.Relation) error
