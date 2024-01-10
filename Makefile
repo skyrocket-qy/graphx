@@ -24,3 +24,6 @@ backup:
 	git add .
 	git commit -m "backup"
 	git push
+
+gen-grpc:
+	protoc --go_out=. --go-grpc_out=. domain/proto/service.proto
