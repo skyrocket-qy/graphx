@@ -5,6 +5,7 @@ import (
 	"github.com/skyrocketOoO/go-utility/set"
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
+	"github.com/skyrocketOoO/zanazibar-dag/utils"
 	"gorm.io/gorm"
 )
 
@@ -31,6 +32,9 @@ func (u *RelationUsecase) Query(query domain.Relation) ([]domain.Relation, error
 }
 
 func (u *RelationUsecase) Create(relation domain.Relation, existOk bool) error {
+	if err := utils.ValidateRelation(relation); err != nil {
+		return err
+	}
 	ok, err := u.Check(
 		domain.Node{
 			Namespace: relation.ObjectNamespace,
@@ -66,6 +70,9 @@ func (u *RelationUsecase) Create(relation domain.Relation, existOk bool) error {
 }
 
 func (u *RelationUsecase) Delete(relation domain.Relation) error {
+	if err := utils.ValidateRelation(relation); err != nil {
+		return err
+	}
 	return u.RelationRepo.Delete(relation)
 }
 
@@ -74,6 +81,11 @@ func (u *RelationUsecase) DeleteByQueries(queries []domain.Relation) error {
 }
 
 func (u *RelationUsecase) BatchOperation(operations []domain.Operation) error {
+	for _, operation := range operations {
+		if err := utils.ValidateRelation(operation.Relation); err != nil {
+			return err
+		}
+	}
 	return u.RelationRepo.BatchOperation(operations)
 }
 
@@ -82,6 +94,12 @@ func (u *RelationUsecase) GetAllNamespaces() ([]string, error) {
 }
 
 func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) (bool, error) {
+	if err := utils.ValidateNode(object, false); err != nil {
+		return false, err
+	}
+	if err := utils.ValidateNode(subject, true); err != nil {
+		return false, err
+	}
 	visited := set.NewSet[domain.Node]()
 	q := queue.NewQueue[domain.Node]()
 	visited.Add(subject)
@@ -122,6 +140,12 @@ func (u *RelationUsecase) Check(subject domain.Node, object domain.Node, searchC
 }
 
 func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([]domain.Relation, error) {
+	if err := utils.ValidateNode(object, false); err != nil {
+		return nil, err
+	}
+	if err := utils.ValidateNode(subject, true); err != nil {
+		return nil, err
+	}
 	visited := set.NewSet[domain.Node]()
 	type NodeItem struct {
 		Cur  domain.Node
@@ -218,6 +242,12 @@ func (u *RelationUsecase) GetShortestPath(subject domain.Node, object domain.Nod
 }
 
 func (u *RelationUsecase) GetAllPaths(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([][]domain.Relation, error) {
+	if err := utils.ValidateNode(object, false); err != nil {
+		return nil, err
+	}
+	if err := utils.ValidateNode(subject, true); err != nil {
+		return nil, err
+	}
 	paths := [][]domain.Relation{}
 	type NodeItem struct {
 		Cur  domain.Node
@@ -269,6 +299,9 @@ func (u *RelationUsecase) GetAllPaths(subject domain.Node, object domain.Node, s
 }
 
 func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error) {
+	if err := utils.ValidateNode(subject, true); err != nil {
+		return nil, err
+	}
 	depth := 0
 	relations := set.NewSet[domain.Relation]()
 	visited := set.NewSet[domain.Node]()
@@ -314,6 +347,9 @@ func (u *RelationUsecase) GetAllObjectRelations(subject domain.Node, searchCondi
 }
 
 func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error) {
+	if err := utils.ValidateNode(object, false); err != nil {
+		return nil, err
+	}
 	depth := 0
 	relations := set.NewSet[domain.Relation]()
 	visited := set.NewSet[domain.Node]()

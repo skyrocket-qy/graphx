@@ -85,14 +85,13 @@ func (h *RelationHandler) Create(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateRelation(reqBody.Relation); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	if err := h.RelationUsecase.Create(reqBody.Relation, reqBody.ExistOk); err != nil {
 		if _, ok := err.(domain.CauseCycleError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		} else if _, ok := err.(domain.RequestBodyError); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -124,13 +123,13 @@ func (h *RelationHandler) Delete(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateRelation(relation); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	if err := h.RelationUsecase.Delete(relation); err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -170,15 +169,13 @@ func (h *RelationHandler) BatchOperation(c *gin.Context) {
 		})
 		return
 	}
-	for _, operation := range body.Operations {
-		if err := utils.ValidateRelation(operation.Relation); err != nil {
+	if err := h.RelationUsecase.BatchOperation(body.Operations); err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
 			return
 		}
-	}
-	if err := h.RelationUsecase.BatchOperation(body.Operations); err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -231,20 +228,14 @@ func (h *RelationHandler) Check(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateNode(body.Object, false); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if err := utils.ValidateNode(body.Subject, true); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	ok, err := h.RelationUsecase.Check(body.Subject, body.Object, body.SearchCondition)
 	if err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -280,20 +271,14 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateNode(body.Object, false); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if err := utils.ValidateNode(body.Subject, true); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	paths, err := h.RelationUsecase.GetShortestPath(body.Subject, body.Object, body.SearchCondition)
 	if err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -331,20 +316,14 @@ func (h *RelationHandler) GetAllPaths(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateNode(body.Object, false); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if err := utils.ValidateNode(body.Subject, true); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	paths, err := h.RelationUsecase.GetAllPaths(body.Subject, body.Object, body.SearchCondition)
 	if err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -386,12 +365,6 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateNode(body.Subject, true); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	relations, err := h.RelationUsecase.GetAllObjectRelations(
 		domain.Node(body.Subject),
 		body.SearchCondition,
@@ -399,6 +372,12 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 		body.MaxDepth,
 	)
 	if err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
@@ -434,12 +413,6 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 		})
 		return
 	}
-	if err := utils.ValidateNode(body.Object, false); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
 	relations, err := h.RelationUsecase.GetAllSubjectRelations(
 		domain.Node(body.Object),
 		body.SearchCondition,
@@ -447,6 +420,12 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 		body.MaxDepth,
 	)
 	if err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})

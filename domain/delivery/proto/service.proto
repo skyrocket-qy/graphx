@@ -1,16 +1,16 @@
 syntax = "proto3";
 
 package proto;
-option go_package = "domain/proto";
+option go_package = "domain/delivery/proto";
 
 service RelationService {
     rpc Get (Relation) returns (DataResponse);
-    rpc Create (RelationCreateRequest) returns;
-    rpc Delete (Relation) returns;
+    rpc Create (RelationCreateRequest) returns (Empty);
+    rpc Delete (Relation) returns (Empty);
     rpc DeleteByQueries (DeleteByQueriesRequest) returns (Empty);
     rpc BatchOperation (BatchOperationRequest) returns (Empty);
-    rpc GetAllNamespaces () returns (StringsResponse);
-    rpc Check (CheckRequest) returns ();
+    rpc GetAllNamespaces (Empty) returns (StringsResponse);
+    rpc Check (CheckRequest) returns (Empty);
     rpc GetShortestPath (GetShortestPathRequest) returns (DataResponse);
     rpc GetAllPaths (GetAllPathsRequest) returns (PathsResponse);
     rpc GetAllObjectRelations (GetAllObjectRelationsRequest) returns (DataResponse);
