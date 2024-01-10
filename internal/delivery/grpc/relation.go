@@ -49,15 +49,48 @@ func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.D
 	}
 	return response, nil
 }
-func (h *GrpcHandler) Create(c context.Context, relation *proto.RelationCreateRequest) (*proto.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Create not implemented")
+func (h *GrpcHandler) Create(c context.Context, req *proto.RelationCreateRequest) (*proto.Empty, error) {
+	requestRelation := domain.Relation{
+		ObjectNamespace:  req.Relation.ObjectNamespace,
+		ObjectName:       req.Relation.ObjectName,
+		Relation:         req.Relation.Relation,
+		SubjectNamespace: req.Relation.SubjectNamespace,
+		SubjectName:      req.Relation.SubjectName,
+		SubjectRelation:  req.Relation.SubjectRelation,
+	}
+	err := h.RelationUsecase.Create(requestRelation, req.ExistOk)
+	if err != nil {
+		if _, ok := err.(domain.CauseCycleError); ok {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	return &proto.Empty{}, nil
 }
+
 func (h *GrpcHandler) Delete(c context.Context, relation *proto.Relation) (*proto.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Delete not implemented")
+	requestRelation := domain.Relation{
+		ObjectNamespace:  relation.ObjectNamespace,
+		ObjectName:       relation.ObjectName,
+		Relation:         relation.Relation,
+		SubjectNamespace: relation.SubjectNamespace,
+		SubjectName:      relation.SubjectName,
+		SubjectRelation:  relation.SubjectRelation,
+	}
+	err := h.RelationUsecase.Delete(requestRelation)
+	if err != nil {
+		if _, ok := err.(domain.CauseCycleError); ok {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	return &proto.Empty{}, nil
 }
+
 func (h *GrpcHandler) DeleteByQueries(c context.Context, req *proto.DeleteByQueriesRequest) (*proto.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteByQueries not implemented")
 }
+
 func (h *GrpcHandler) BatchOperation(c context.Context, req *proto.BatchOperationRequest) (*proto.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method BatchOperation not implemented")
 }
