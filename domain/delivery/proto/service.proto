@@ -5,12 +5,12 @@ option go_package = "domain/proto";
 
 service RelationService {
     rpc Get (Relation) returns (DataResponse);
-    rpc Create (RelationCreateRequest) returns (Empty);
-    rpc Delete (Relation) returns (Empty);
+    rpc Create (RelationCreateRequest) returns;
+    rpc Delete (Relation) returns;
     rpc DeleteByQueries (DeleteByQueriesRequest) returns (Empty);
     rpc BatchOperation (BatchOperationRequest) returns (Empty);
-    rpc GetAllNamespaces (Empty) returns (StringsResponse);
-    rpc Check (CheckRequest) returns (Empty);
+    rpc GetAllNamespaces () returns (StringsResponse);
+    rpc Check (CheckRequest) returns ();
     rpc GetShortestPath (GetShortestPathRequest) returns (DataResponse);
     rpc GetAllPaths (GetAllPathsRequest) returns (PathsResponse);
     rpc GetAllObjectRelations (GetAllObjectRelationsRequest) returns (DataResponse);

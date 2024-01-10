@@ -1,5 +1,7 @@
 module github.com/skyrocketOoO/zanazibar-dag
 
+replace github.com/skyrocketOoO/zanazibar-dag => ../zanzibar-dag
+
 go 1.21.3
 
 require (

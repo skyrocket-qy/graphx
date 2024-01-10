@@ -26,4 +26,4 @@ backup:
 	git push
 
 gen-grpc:
-	protoc --go_out=. --go-grpc_out=. domain/proto/service.proto
+	protoc --go_out=. --go-grpc_out=. ./domain/delivery/proto/service.proto
