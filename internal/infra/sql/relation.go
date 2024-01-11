@@ -85,20 +85,6 @@ func (r *RelationRepository) BatchOperation(operations []domain.Operation) error
 }
 
 func (r *RelationRepository) GetAll() ([]domain.Relation, error) {
-	// var relations []sqldom.Relation
-	// var err error
-
-	// done := make(chan bool)
-	// go func() {
-	// 	defer close(done)
-	// 	err = r.DB.Find(&relations).Error
-	// }()
-	// <-done
-
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	var relations []sqldom.Relation
 	if err := r.DB.Find(&relations).Error; err != nil {
 		return nil, err

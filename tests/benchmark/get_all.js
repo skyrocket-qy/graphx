@@ -3,7 +3,7 @@ import { check } from 'k6';
 
 
 export const options = {
-    vus: 8,
+    vus: 1,
     iterations: 20,
     setupTimeout: '3000s',
 }
@@ -30,7 +30,7 @@ export function setup() {
     // check(clearRes, { 'ClearAllRelations': (r) => r.status == 200 });
 
     // // Create new relations
-    // for (let i = 0; i < 100000; i++) {
+    // for (let i = 0; i < 10000; i++) {
     //     const randomData = generateRandomData(i.toString());
     //     const createRes = http.post(`http://localhost:8080/relation`, JSON.stringify(randomData), { headers: headers });
     //     check(createRes, { 'Create request was successful': (r) => r.status === 200 });
