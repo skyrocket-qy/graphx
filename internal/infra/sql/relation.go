@@ -85,6 +85,30 @@ func (r *RelationRepository) BatchOperation(operations []domain.Operation) error
 }
 
 func (r *RelationRepository) GetAll() ([]domain.Relation, error) {
+	// var relations []sqldom.Relation
+	// var err error
+
+	// var wg sync.WaitGroup
+	// wg.Add(1)
+
+	// go func() {
+	// 	defer wg.Done()
+	// 	err = r.DB.Find(&relations).Error
+	// }()
+
+	// wg.Wait()
+
+	// if err != nil {
+	// 	return nil, err
+	// }
+
+	// newRelations := make([]domain.Relation, len(relations))
+	// for i, relation := range relations {
+	// 	newRelations[i] = convertToRelation(relation)
+	// }
+
+	// return newRelations, nil
+
 	var relations []sqldom.Relation
 	if err := r.DB.Find(&relations).Error; err != nil {
 		return nil, err
