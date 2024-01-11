@@ -37,17 +37,17 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RelationServiceClient interface {
-	Get(ctx context.Context, in *Relation, opts ...grpc.CallOption) (*DataResponse, error)
+	Get(ctx context.Context, in *Relation, opts ...grpc.CallOption) (*RelationsResponse, error)
 	Create(ctx context.Context, in *RelationCreateRequest, opts ...grpc.CallOption) (*Empty, error)
 	Delete(ctx context.Context, in *Relation, opts ...grpc.CallOption) (*Empty, error)
 	DeleteByQueries(ctx context.Context, in *DeleteByQueriesRequest, opts ...grpc.CallOption) (*Empty, error)
 	BatchOperation(ctx context.Context, in *BatchOperationRequest, opts ...grpc.CallOption) (*Empty, error)
 	GetAllNamespaces(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*StringsResponse, error)
 	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*Empty, error)
-	GetShortestPath(ctx context.Context, in *GetShortestPathRequest, opts ...grpc.CallOption) (*DataResponse, error)
+	GetShortestPath(ctx context.Context, in *GetShortestPathRequest, opts ...grpc.CallOption) (*PathResponse, error)
 	GetAllPaths(ctx context.Context, in *GetAllPathsRequest, opts ...grpc.CallOption) (*PathsResponse, error)
-	GetAllObjectRelations(ctx context.Context, in *GetAllObjectRelationsRequest, opts ...grpc.CallOption) (*DataResponse, error)
-	GetAllSubjectRelations(ctx context.Context, in *GetAllSubjectRelationsRequest, opts ...grpc.CallOption) (*DataResponse, error)
+	GetAllObjectRelations(ctx context.Context, in *GetAllObjectRelationsRequest, opts ...grpc.CallOption) (*RelationsResponse, error)
+	GetAllSubjectRelations(ctx context.Context, in *GetAllSubjectRelationsRequest, opts ...grpc.CallOption) (*RelationsResponse, error)
 	ClearAllRelations(ctx context.Context, in *Empty, opts ...grpc.CallOption) (*Empty, error)
 }
 
@@ -59,8 +59,8 @@ func NewRelationServiceClient(cc grpc.ClientConnInterface) RelationServiceClient
 	return &relationServiceClient{cc}
 }
 
-func (c *relationServiceClient) Get(ctx context.Context, in *Relation, opts ...grpc.CallOption) (*DataResponse, error) {
-	out := new(DataResponse)
+func (c *relationServiceClient) Get(ctx context.Context, in *Relation, opts ...grpc.CallOption) (*RelationsResponse, error) {
+	out := new(RelationsResponse)
 	err := c.cc.Invoke(ctx, RelationService_Get_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -122,8 +122,8 @@ func (c *relationServiceClient) Check(ctx context.Context, in *CheckRequest, opt
 	return out, nil
 }
 
-func (c *relationServiceClient) GetShortestPath(ctx context.Context, in *GetShortestPathRequest, opts ...grpc.CallOption) (*DataResponse, error) {
-	out := new(DataResponse)
+func (c *relationServiceClient) GetShortestPath(ctx context.Context, in *GetShortestPathRequest, opts ...grpc.CallOption) (*PathResponse, error) {
+	out := new(PathResponse)
 	err := c.cc.Invoke(ctx, RelationService_GetShortestPath_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -140,8 +140,8 @@ func (c *relationServiceClient) GetAllPaths(ctx context.Context, in *GetAllPaths
 	return out, nil
 }
 
-func (c *relationServiceClient) GetAllObjectRelations(ctx context.Context, in *GetAllObjectRelationsRequest, opts ...grpc.CallOption) (*DataResponse, error) {
-	out := new(DataResponse)
+func (c *relationServiceClient) GetAllObjectRelations(ctx context.Context, in *GetAllObjectRelationsRequest, opts ...grpc.CallOption) (*RelationsResponse, error) {
+	out := new(RelationsResponse)
 	err := c.cc.Invoke(ctx, RelationService_GetAllObjectRelations_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -149,8 +149,8 @@ func (c *relationServiceClient) GetAllObjectRelations(ctx context.Context, in *G
 	return out, nil
 }
 
-func (c *relationServiceClient) GetAllSubjectRelations(ctx context.Context, in *GetAllSubjectRelationsRequest, opts ...grpc.CallOption) (*DataResponse, error) {
-	out := new(DataResponse)
+func (c *relationServiceClient) GetAllSubjectRelations(ctx context.Context, in *GetAllSubjectRelationsRequest, opts ...grpc.CallOption) (*RelationsResponse, error) {
+	out := new(RelationsResponse)
 	err := c.cc.Invoke(ctx, RelationService_GetAllSubjectRelations_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
@@ -171,17 +171,17 @@ func (c *relationServiceClient) ClearAllRelations(ctx context.Context, in *Empty
 // All implementations must embed UnimplementedRelationServiceServer
 // for forward compatibility
 type RelationServiceServer interface {
-	Get(context.Context, *Relation) (*DataResponse, error)
+	Get(context.Context, *Relation) (*RelationsResponse, error)
 	Create(context.Context, *RelationCreateRequest) (*Empty, error)
 	Delete(context.Context, *Relation) (*Empty, error)
 	DeleteByQueries(context.Context, *DeleteByQueriesRequest) (*Empty, error)
 	BatchOperation(context.Context, *BatchOperationRequest) (*Empty, error)
 	GetAllNamespaces(context.Context, *Empty) (*StringsResponse, error)
 	Check(context.Context, *CheckRequest) (*Empty, error)
-	GetShortestPath(context.Context, *GetShortestPathRequest) (*DataResponse, error)
+	GetShortestPath(context.Context, *GetShortestPathRequest) (*PathResponse, error)
 	GetAllPaths(context.Context, *GetAllPathsRequest) (*PathsResponse, error)
-	GetAllObjectRelations(context.Context, *GetAllObjectRelationsRequest) (*DataResponse, error)
-	GetAllSubjectRelations(context.Context, *GetAllSubjectRelationsRequest) (*DataResponse, error)
+	GetAllObjectRelations(context.Context, *GetAllObjectRelationsRequest) (*RelationsResponse, error)
+	GetAllSubjectRelations(context.Context, *GetAllSubjectRelationsRequest) (*RelationsResponse, error)
 	ClearAllRelations(context.Context, *Empty) (*Empty, error)
 	mustEmbedUnimplementedRelationServiceServer()
 }
@@ -190,7 +190,7 @@ type RelationServiceServer interface {
 type UnimplementedRelationServiceServer struct {
 }
 
-func (UnimplementedRelationServiceServer) Get(context.Context, *Relation) (*DataResponse, error) {
+func (UnimplementedRelationServiceServer) Get(context.Context, *Relation) (*RelationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedRelationServiceServer) Create(context.Context, *RelationCreateRequest) (*Empty, error) {
@@ -211,16 +211,16 @@ func (UnimplementedRelationServiceServer) GetAllNamespaces(context.Context, *Emp
 func (UnimplementedRelationServiceServer) Check(context.Context, *CheckRequest) (*Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
-func (UnimplementedRelationServiceServer) GetShortestPath(context.Context, *GetShortestPathRequest) (*DataResponse, error) {
+func (UnimplementedRelationServiceServer) GetShortestPath(context.Context, *GetShortestPathRequest) (*PathResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShortestPath not implemented")
 }
 func (UnimplementedRelationServiceServer) GetAllPaths(context.Context, *GetAllPathsRequest) (*PathsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllPaths not implemented")
 }
-func (UnimplementedRelationServiceServer) GetAllObjectRelations(context.Context, *GetAllObjectRelationsRequest) (*DataResponse, error) {
+func (UnimplementedRelationServiceServer) GetAllObjectRelations(context.Context, *GetAllObjectRelationsRequest) (*RelationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllObjectRelations not implemented")
 }
-func (UnimplementedRelationServiceServer) GetAllSubjectRelations(context.Context, *GetAllSubjectRelationsRequest) (*DataResponse, error) {
+func (UnimplementedRelationServiceServer) GetAllSubjectRelations(context.Context, *GetAllSubjectRelationsRequest) (*RelationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAllSubjectRelations not implemented")
 }
 func (UnimplementedRelationServiceServer) ClearAllRelations(context.Context, *Empty) (*Empty, error) {

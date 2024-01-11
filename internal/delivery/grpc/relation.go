@@ -20,7 +20,7 @@ func NewRelationHandler(relationUsecase usecasedomain.RelationUsecase) *GrpcHand
 	}
 }
 
-func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.DataResponse, error) {
+func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.RelationsResponse, error) {
 	requestRelation := domain.Relation{
 		ObjectNamespace:  relation.ObjectNamespace,
 		ObjectName:       relation.ObjectName,
@@ -44,7 +44,7 @@ func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.D
 			SubjectRelation:  rel.SubjectRelation,
 		}
 	}
-	response := &proto.DataResponse{
+	response := &proto.RelationsResponse{
 		Relations: protoRelations,
 	}
 	return response, nil
@@ -175,20 +175,178 @@ func (h *GrpcHandler) Check(c context.Context, req *proto.CheckRequest) (*proto.
 	return nil, nil
 }
 
-func (h *GrpcHandler) GetShortestPath(c context.Context, req *proto.GetShortestPathRequest) (*proto.DataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetShortestPath not implemented")
+func (h *GrpcHandler) GetShortestPath(c context.Context, req *proto.GetShortestPathRequest) (*proto.PathResponse, error) {
+	subject := domain.Node{
+		Namespace: req.Subject.Namespace,
+		Name:      req.Subject.Name,
+		Relation:  req.Subject.Relation,
+	}
+	object := domain.Node{
+		Namespace: req.Object.Namespace,
+		Name:      req.Object.Name,
+		Relation:  req.Object.Relation,
+	}
+	searchCondition := domain.SearchCondition{
+		In: domain.Compare{
+			Namespaces: req.SearchCondition.In.Namespaces,
+			Names:      req.SearchCondition.In.Name,
+			Relations:  req.SearchCondition.In.Relation,
+		},
+	}
+	paths, err := h.RelationUsecase.GetShortestPath(subject, object, searchCondition)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	protoPaths := make([]*proto.Relation, len(paths))
+	for i, path := range paths {
+		protoPaths[i] = &proto.Relation{
+			ObjectNamespace:  path.ObjectNamespace,
+			ObjectName:       path.ObjectName,
+			Relation:         path.Relation,
+			SubjectNamespace: path.SubjectNamespace,
+			SubjectName:      path.SubjectName,
+			SubjectRelation:  path.SubjectRelation,
+		}
+	}
+	resp := proto.PathResponse{
+		Relations: protoPaths,
+	}
+	return &resp, nil
 }
+
 func (h *GrpcHandler) GetAllPaths(c context.Context, req *proto.GetAllPathsRequest) (*proto.PathsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllPaths not implemented")
+	subject := domain.Node{
+		Namespace: req.Subject.Namespace,
+		Name:      req.Subject.Name,
+		Relation:  req.Subject.Relation,
+	}
+	object := domain.Node{
+		Namespace: req.Object.Namespace,
+		Name:      req.Object.Name,
+		Relation:  req.Object.Relation,
+	}
+	searchCondition := domain.SearchCondition{
+		In: domain.Compare{
+			Namespaces: req.SearchCondition.In.Namespaces,
+			Names:      req.SearchCondition.In.Name,
+			Relations:  req.SearchCondition.In.Relation,
+		},
+	}
+	allPaths, err := h.RelationUsecase.GetAllPaths(subject, object, searchCondition)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	paths := make([]*proto.PathResponse, len(allPaths))
+	for i, path := range allPaths {
+		relations := make([]*proto.Relation, len(path))
+		for j, rel := range path {
+			relations[j] = &proto.Relation{
+				ObjectNamespace:  rel.ObjectNamespace,
+				ObjectName:       rel.ObjectName,
+				Relation:         rel.Relation,
+				SubjectNamespace: rel.SubjectNamespace,
+				SubjectName:      rel.SubjectName,
+				SubjectRelation:  rel.SubjectRelation,
+			}
+		}
+		paths[i] = &proto.PathResponse{
+			Relations: relations,
+		}
+	}
+	resp := proto.PathsResponse{
+		Path: paths,
+	}
+	return &resp, nil
 }
-func (h *GrpcHandler) GetAllObjectRelations(c context.Context, req *proto.GetAllObjectRelationsRequest) (*proto.DataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllObjectRelations not implemented")
+
+func (h *GrpcHandler) GetAllObjectRelations(c context.Context, req *proto.GetAllObjectRelationsRequest) (*proto.RelationsResponse, error) {
+	subject := domain.Node{
+		Namespace: req.Subject.Namespace,
+		Name:      req.Subject.Name,
+		Relation:  req.Subject.Relation,
+	}
+	searchCondition := domain.SearchCondition{
+		In: domain.Compare{
+			Namespaces: req.SearchCondition.In.Namespaces,
+			Names:      req.SearchCondition.In.Name,
+			Relations:  req.SearchCondition.In.Relation,
+		},
+	}
+	collectCondition := domain.CollectCondition{
+		In: domain.Compare{
+			Namespaces: req.CollectCondition.In.Namespaces,
+			Names:      req.CollectCondition.In.Name,
+			Relations:  req.CollectCondition.In.Relation,
+		},
+	}
+	relations, err := h.RelationUsecase.GetAllObjectRelations(subject, searchCondition, collectCondition, int(req.MaxDepth))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	protoRelations := make([]*proto.Relation, len(relations))
+	for i, rel := range relations {
+		protoRelations[i] = &proto.Relation{
+			ObjectNamespace:  rel.ObjectNamespace,
+			ObjectName:       rel.ObjectName,
+			Relation:         rel.Relation,
+			SubjectNamespace: rel.SubjectNamespace,
+			SubjectName:      rel.SubjectName,
+			SubjectRelation:  rel.SubjectRelation,
+		}
+	}
+	resp := proto.RelationsResponse{
+		Relations: protoRelations,
+	}
+	return &resp, nil
 }
-func (h *GrpcHandler) GetAllSubjectRelations(c context.Context, req *proto.GetAllSubjectRelationsRequest) (*proto.DataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllSubjectRelations not implemented")
+
+func (h *GrpcHandler) GetAllSubjectRelations(c context.Context, req *proto.GetAllSubjectRelationsRequest) (*proto.RelationsResponse, error) {
+	object := domain.Node{
+		Namespace: req.Object.Namespace,
+		Name:      req.Object.Name,
+		Relation:  req.Object.Relation,
+	}
+	searchCondition := domain.SearchCondition{
+		In: domain.Compare{
+			Namespaces: req.SearchCondition.In.Namespaces,
+			Names:      req.SearchCondition.In.Name,
+			Relations:  req.SearchCondition.In.Relation,
+		},
+	}
+	collectCondition := domain.CollectCondition{
+		In: domain.Compare{
+			Namespaces: req.CollectCondition.In.Namespaces,
+			Names:      req.CollectCondition.In.Name,
+			Relations:  req.CollectCondition.In.Relation,
+		},
+	}
+	relations, err := h.RelationUsecase.GetAllObjectRelations(object, searchCondition, collectCondition, int(req.MaxDepth))
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	protoRelations := make([]*proto.Relation, len(relations))
+	for i, rel := range relations {
+		protoRelations[i] = &proto.Relation{
+			ObjectNamespace:  rel.ObjectNamespace,
+			ObjectName:       rel.ObjectName,
+			Relation:         rel.Relation,
+			SubjectNamespace: rel.SubjectNamespace,
+			SubjectName:      rel.SubjectName,
+			SubjectRelation:  rel.SubjectRelation,
+		}
+	}
+	resp := proto.RelationsResponse{
+		Relations: protoRelations,
+	}
+	return &resp, nil
 }
+
 func (h *GrpcHandler) ClearAllRelations(c context.Context, empty *proto.Empty) (*proto.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ClearAllRelations not implemented")
+	err := h.RelationUsecase.ClearAllRelations()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	return nil, nil
 }
 
 func (*GrpcHandler) mustEmbedUnimplementedRelationServiceServer() {

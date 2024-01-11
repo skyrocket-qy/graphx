@@ -4,17 +4,17 @@ package proto;
 option go_package = "domain/delivery/proto";
 
 service RelationService {
-    rpc Get (Relation) returns (DataResponse);
+    rpc Get (Relation) returns (RelationsResponse);
     rpc Create (RelationCreateRequest) returns (Empty);
     rpc Delete (Relation) returns (Empty);
     rpc DeleteByQueries (DeleteByQueriesRequest) returns (Empty);
     rpc BatchOperation (BatchOperationRequest) returns (Empty);
     rpc GetAllNamespaces (Empty) returns (StringsResponse);
     rpc Check (CheckRequest) returns (Empty);
-    rpc GetShortestPath (GetShortestPathRequest) returns (DataResponse);
+    rpc GetShortestPath (GetShortestPathRequest) returns (PathResponse);
     rpc GetAllPaths (GetAllPathsRequest) returns (PathsResponse);
-    rpc GetAllObjectRelations (GetAllObjectRelationsRequest) returns (DataResponse);
-    rpc GetAllSubjectRelations (GetAllSubjectRelationsRequest) returns (DataResponse);
+    rpc GetAllObjectRelations (GetAllObjectRelationsRequest) returns (RelationsResponse);
+    rpc GetAllSubjectRelations (GetAllSubjectRelationsRequest) returns (RelationsResponse);
     rpc ClearAllRelations (Empty) returns (Empty);
 }
 
@@ -56,7 +56,11 @@ message ErrResponse {
   string error = 1;
 }
 
-message DataResponse {
+message RelationsResponse {
+  repeated Relation relations = 1;
+}
+
+message PathResponse {
   repeated Relation relations = 1;
 }
 
@@ -92,7 +96,7 @@ message GetShortestPathRequest {
 }
 
 message PathsResponse {
-  repeated DataResponse data = 1;
+  repeated PathResponse path = 1;
 }
 
 message GetAllPathsRequest {
