@@ -3,8 +3,8 @@ import { check } from 'k6';
 
 
 export const options = {
-    vus: 1,
-    iterations: 20,
+    vus: 10,
+    iterations: 150,
     setupTimeout: '3000s',
 }
 
