@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             v4.25.1
-// source: domain/proto/service.proto
+// source: domain/delivery/proto/service.proto
 
 package proto
 
@@ -512,5 +512,5 @@ var RelationService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "domain/proto/service.proto",
+	Metadata: "domain/delivery/proto/service.proto",
 }

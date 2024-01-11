@@ -88,18 +88,93 @@ func (h *GrpcHandler) Delete(c context.Context, relation *proto.Relation) (*prot
 }
 
 func (h *GrpcHandler) DeleteByQueries(c context.Context, req *proto.DeleteByQueriesRequest) (*proto.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method DeleteByQueries not implemented")
+	queries := make([]domain.Relation, len(req.Queries))
+	for i, q := range req.Queries {
+		queries[i] = domain.Relation{
+			ObjectNamespace:  q.ObjectNamespace,
+			ObjectName:       q.ObjectName,
+			Relation:         q.Relation,
+			SubjectNamespace: q.SubjectNamespace,
+			SubjectName:      q.SubjectName,
+			SubjectRelation:  q.SubjectRelation,
+		}
+	}
+	err := h.RelationUsecase.DeleteByQueries(queries)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &proto.Empty{}, nil
 }
 
 func (h *GrpcHandler) BatchOperation(c context.Context, req *proto.BatchOperationRequest) (*proto.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method BatchOperation not implemented")
+	operations := make([]domain.Operation, len(req.Operations))
+	for i, o := range req.Operations {
+		operations[i] = domain.Operation{
+			Type: domain.Action(o.Type),
+			Relation: domain.Relation{
+				ObjectNamespace:  o.Relation.ObjectNamespace,
+				ObjectName:       o.Relation.ObjectName,
+				Relation:         o.Relation.Relation,
+				SubjectNamespace: o.Relation.SubjectNamespace,
+				SubjectName:      o.Relation.SubjectName,
+				SubjectRelation:  o.Relation.SubjectRelation,
+			},
+		}
+	}
+	err := h.RelationUsecase.BatchOperation(operations)
+	if err != nil {
+		if _, ok := err.(domain.CauseCycleError); ok {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	return &proto.Empty{}, nil
 }
+
 func (h *GrpcHandler) GetAllNamespaces(c context.Context, empty *proto.Empty) (*proto.StringsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetAllNamespaces not implemented")
+	namespaces, err := h.RelationUsecase.GetAllNamespaces()
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	req := proto.StringsResponse{
+		Strings: namespaces,
+	}
+	return &req, nil
 }
+
 func (h *GrpcHandler) Check(c context.Context, req *proto.CheckRequest) (*proto.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
+	subject := domain.Node{
+		Namespace: req.Subject.Namespace,
+		Name:      req.Subject.Name,
+		Relation:  req.Subject.Relation,
+	}
+	object := domain.Node{
+		Namespace: req.Object.Namespace,
+		Name:      req.Object.Name,
+		Relation:  req.Object.Relation,
+	}
+	searchCondition := domain.SearchCondition{
+		In: domain.Compare{
+			Namespaces: req.SearchCondition.In.Namespaces,
+			Names:      req.SearchCondition.In.Name,
+			Relations:  req.SearchCondition.In.Relation,
+		},
+	}
+	ok, err := h.RelationUsecase.Check(subject, object, searchCondition)
+	if err != nil {
+		if _, ok := err.(domain.CauseCycleError); ok {
+			return nil, status.Error(codes.InvalidArgument, err.Error())
+		}
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+	if !ok {
+		return nil, status.Errorf(codes.PermissionDenied, "")
+	}
+	return nil, nil
 }
+
 func (h *GrpcHandler) GetShortestPath(c context.Context, req *proto.GetShortestPathRequest) (*proto.DataResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetShortestPath not implemented")
 }

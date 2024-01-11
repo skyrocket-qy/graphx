@@ -61,7 +61,7 @@ message DataResponse {
 }
 
 message StringsResponse {
-  repeated string relations = 1;
+  repeated string strings = 1;
 }
 
 message Empty {}
