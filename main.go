@@ -1,12 +1,17 @@
 package main
 
 import (
+	"log"
+	"net"
 	"net/http"
+
 	"github.com/skyrocketOoO/zanazibar-dag/config"
 	"github.com/skyrocketOoO/zanazibar-dag/docs"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/proto"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/sql"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
+	"google.golang.org/grpc"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -57,6 +62,19 @@ func main() {
 		relationRouter.POST("/get-all-subject-relations", relationHandler.GetAllSubjectRelations)
 		relationRouter.POST("/clear-all-relations", relationHandler.ClearAllRelations)
 	}
+
+	go func() {
+		grpcServer := grpc.NewServer()
+		proto.RegisterRelationServiceServer(grpcServer, proto.NewRelationHandler(usecaseRepo.RelationUsecase))
+		lis, err := net.Listen("tcp", ":50051")
+		if err != nil {
+			log.Fatalf("failed to listen: %v", err)
+		}
+
+		if err := grpcServer.Serve(lis); err != nil {
+			log.Fatalf("failed to serve: %v", err)
+		}
+	}()
 
 	// /swagger/index.html
 	server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

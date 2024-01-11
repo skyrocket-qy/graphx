@@ -1,10 +1,9 @@
-package grpc
+package proto
 
 import (
 	"context"
 
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
-	"github.com/skyrocketOoO/zanazibar-dag/domain/delivery/proto"
 	usecasedomain "github.com/skyrocketOoO/zanazibar-dag/domain/usecase"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +19,7 @@ func NewRelationHandler(relationUsecase usecasedomain.RelationUsecase) *GrpcHand
 	}
 }
 
-func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.RelationsResponse, error) {
+func (h *GrpcHandler) Get(c context.Context, relation *Relation) (*RelationsResponse, error) {
 	requestRelation := domain.Relation{
 		ObjectNamespace:  relation.ObjectNamespace,
 		ObjectName:       relation.ObjectName,
@@ -33,9 +32,9 @@ func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.R
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	protoRelations := make([]*proto.Relation, len(relations))
+	protoRelations := make([]*Relation, len(relations))
 	for i, rel := range relations {
-		protoRelations[i] = &proto.Relation{
+		protoRelations[i] = &Relation{
 			ObjectNamespace:  rel.ObjectNamespace,
 			ObjectName:       rel.ObjectName,
 			Relation:         rel.Relation,
@@ -44,12 +43,12 @@ func (h *GrpcHandler) Get(c context.Context, relation *proto.Relation) (*proto.R
 			SubjectRelation:  rel.SubjectRelation,
 		}
 	}
-	response := &proto.RelationsResponse{
+	response := &RelationsResponse{
 		Relations: protoRelations,
 	}
 	return response, nil
 }
-func (h *GrpcHandler) Create(c context.Context, req *proto.RelationCreateRequest) (*proto.Empty, error) {
+func (h *GrpcHandler) Create(c context.Context, req *RelationCreateRequest) (*Empty, error) {
 	requestRelation := domain.Relation{
 		ObjectNamespace:  req.Relation.ObjectNamespace,
 		ObjectName:       req.Relation.ObjectName,
@@ -65,10 +64,10 @@ func (h *GrpcHandler) Create(c context.Context, req *proto.RelationCreateRequest
 		}
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	return &proto.Empty{}, nil
+	return &Empty{}, nil
 }
 
-func (h *GrpcHandler) Delete(c context.Context, relation *proto.Relation) (*proto.Empty, error) {
+func (h *GrpcHandler) Delete(c context.Context, relation *Relation) (*Empty, error) {
 	requestRelation := domain.Relation{
 		ObjectNamespace:  relation.ObjectNamespace,
 		ObjectName:       relation.ObjectName,
@@ -84,10 +83,10 @@ func (h *GrpcHandler) Delete(c context.Context, relation *proto.Relation) (*prot
 		}
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	return &proto.Empty{}, nil
+	return &Empty{}, nil
 }
 
-func (h *GrpcHandler) DeleteByQueries(c context.Context, req *proto.DeleteByQueriesRequest) (*proto.Empty, error) {
+func (h *GrpcHandler) DeleteByQueries(c context.Context, req *DeleteByQueriesRequest) (*Empty, error) {
 	queries := make([]domain.Relation, len(req.Queries))
 	for i, q := range req.Queries {
 		queries[i] = domain.Relation{
@@ -104,10 +103,10 @@ func (h *GrpcHandler) DeleteByQueries(c context.Context, req *proto.DeleteByQuer
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &proto.Empty{}, nil
+	return &Empty{}, nil
 }
 
-func (h *GrpcHandler) BatchOperation(c context.Context, req *proto.BatchOperationRequest) (*proto.Empty, error) {
+func (h *GrpcHandler) BatchOperation(c context.Context, req *BatchOperationRequest) (*Empty, error) {
 	operations := make([]domain.Operation, len(req.Operations))
 	for i, o := range req.Operations {
 		operations[i] = domain.Operation{
@@ -130,21 +129,21 @@ func (h *GrpcHandler) BatchOperation(c context.Context, req *proto.BatchOperatio
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
 
-	return &proto.Empty{}, nil
+	return &Empty{}, nil
 }
 
-func (h *GrpcHandler) GetAllNamespaces(c context.Context, empty *proto.Empty) (*proto.StringsResponse, error) {
+func (h *GrpcHandler) GetAllNamespaces(c context.Context, empty *Empty) (*StringsResponse, error) {
 	namespaces, err := h.RelationUsecase.GetAllNamespaces()
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	req := proto.StringsResponse{
+	req := StringsResponse{
 		Strings: namespaces,
 	}
 	return &req, nil
 }
 
-func (h *GrpcHandler) Check(c context.Context, req *proto.CheckRequest) (*proto.Empty, error) {
+func (h *GrpcHandler) Check(c context.Context, req *CheckRequest) (*Empty, error) {
 	subject := domain.Node{
 		Namespace: req.Subject.Namespace,
 		Name:      req.Subject.Name,
@@ -175,7 +174,7 @@ func (h *GrpcHandler) Check(c context.Context, req *proto.CheckRequest) (*proto.
 	return nil, nil
 }
 
-func (h *GrpcHandler) GetShortestPath(c context.Context, req *proto.GetShortestPathRequest) (*proto.PathResponse, error) {
+func (h *GrpcHandler) GetShortestPath(c context.Context, req *GetShortestPathRequest) (*PathResponse, error) {
 	subject := domain.Node{
 		Namespace: req.Subject.Namespace,
 		Name:      req.Subject.Name,
@@ -197,9 +196,9 @@ func (h *GrpcHandler) GetShortestPath(c context.Context, req *proto.GetShortestP
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	protoPaths := make([]*proto.Relation, len(paths))
+	protoPaths := make([]*Relation, len(paths))
 	for i, path := range paths {
-		protoPaths[i] = &proto.Relation{
+		protoPaths[i] = &Relation{
 			ObjectNamespace:  path.ObjectNamespace,
 			ObjectName:       path.ObjectName,
 			Relation:         path.Relation,
@@ -208,13 +207,13 @@ func (h *GrpcHandler) GetShortestPath(c context.Context, req *proto.GetShortestP
 			SubjectRelation:  path.SubjectRelation,
 		}
 	}
-	resp := proto.PathResponse{
+	resp := PathResponse{
 		Relations: protoPaths,
 	}
 	return &resp, nil
 }
 
-func (h *GrpcHandler) GetAllPaths(c context.Context, req *proto.GetAllPathsRequest) (*proto.PathsResponse, error) {
+func (h *GrpcHandler) GetAllPaths(c context.Context, req *GetAllPathsRequest) (*PathsResponse, error) {
 	subject := domain.Node{
 		Namespace: req.Subject.Namespace,
 		Name:      req.Subject.Name,
@@ -236,11 +235,11 @@ func (h *GrpcHandler) GetAllPaths(c context.Context, req *proto.GetAllPathsReque
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	paths := make([]*proto.PathResponse, len(allPaths))
+	paths := make([]*PathResponse, len(allPaths))
 	for i, path := range allPaths {
-		relations := make([]*proto.Relation, len(path))
+		relations := make([]*Relation, len(path))
 		for j, rel := range path {
-			relations[j] = &proto.Relation{
+			relations[j] = &Relation{
 				ObjectNamespace:  rel.ObjectNamespace,
 				ObjectName:       rel.ObjectName,
 				Relation:         rel.Relation,
@@ -249,17 +248,17 @@ func (h *GrpcHandler) GetAllPaths(c context.Context, req *proto.GetAllPathsReque
 				SubjectRelation:  rel.SubjectRelation,
 			}
 		}
-		paths[i] = &proto.PathResponse{
+		paths[i] = &PathResponse{
 			Relations: relations,
 		}
 	}
-	resp := proto.PathsResponse{
+	resp := PathsResponse{
 		Path: paths,
 	}
 	return &resp, nil
 }
 
-func (h *GrpcHandler) GetAllObjectRelations(c context.Context, req *proto.GetAllObjectRelationsRequest) (*proto.RelationsResponse, error) {
+func (h *GrpcHandler) GetAllObjectRelations(c context.Context, req *GetAllObjectRelationsRequest) (*RelationsResponse, error) {
 	subject := domain.Node{
 		Namespace: req.Subject.Namespace,
 		Name:      req.Subject.Name,
@@ -283,9 +282,9 @@ func (h *GrpcHandler) GetAllObjectRelations(c context.Context, req *proto.GetAll
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	protoRelations := make([]*proto.Relation, len(relations))
+	protoRelations := make([]*Relation, len(relations))
 	for i, rel := range relations {
-		protoRelations[i] = &proto.Relation{
+		protoRelations[i] = &Relation{
 			ObjectNamespace:  rel.ObjectNamespace,
 			ObjectName:       rel.ObjectName,
 			Relation:         rel.Relation,
@@ -294,13 +293,13 @@ func (h *GrpcHandler) GetAllObjectRelations(c context.Context, req *proto.GetAll
 			SubjectRelation:  rel.SubjectRelation,
 		}
 	}
-	resp := proto.RelationsResponse{
+	resp := RelationsResponse{
 		Relations: protoRelations,
 	}
 	return &resp, nil
 }
 
-func (h *GrpcHandler) GetAllSubjectRelations(c context.Context, req *proto.GetAllSubjectRelationsRequest) (*proto.RelationsResponse, error) {
+func (h *GrpcHandler) GetAllSubjectRelations(c context.Context, req *GetAllSubjectRelationsRequest) (*RelationsResponse, error) {
 	object := domain.Node{
 		Namespace: req.Object.Namespace,
 		Name:      req.Object.Name,
@@ -324,9 +323,9 @@ func (h *GrpcHandler) GetAllSubjectRelations(c context.Context, req *proto.GetAl
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
-	protoRelations := make([]*proto.Relation, len(relations))
+	protoRelations := make([]*Relation, len(relations))
 	for i, rel := range relations {
-		protoRelations[i] = &proto.Relation{
+		protoRelations[i] = &Relation{
 			ObjectNamespace:  rel.ObjectNamespace,
 			ObjectName:       rel.ObjectName,
 			Relation:         rel.Relation,
@@ -335,13 +334,13 @@ func (h *GrpcHandler) GetAllSubjectRelations(c context.Context, req *proto.GetAl
 			SubjectRelation:  rel.SubjectRelation,
 		}
 	}
-	resp := proto.RelationsResponse{
+	resp := RelationsResponse{
 		Relations: protoRelations,
 	}
 	return &resp, nil
 }
 
-func (h *GrpcHandler) ClearAllRelations(c context.Context, empty *proto.Empty) (*proto.Empty, error) {
+func (h *GrpcHandler) ClearAllRelations(c context.Context, empty *Empty) (*Empty, error) {
 	err := h.RelationUsecase.ClearAllRelations()
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
