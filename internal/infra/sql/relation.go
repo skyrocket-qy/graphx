@@ -88,26 +88,16 @@ func (r *RelationRepository) GetAll() ([]domain.Relation, error) {
 	// var relations []sqldom.Relation
 	// var err error
 
-	// var wg sync.WaitGroup
-	// wg.Add(1)
-
+	// done := make(chan bool)
 	// go func() {
-	// 	defer wg.Done()
+	// 	defer close(done)
 	// 	err = r.DB.Find(&relations).Error
 	// }()
-
-	// wg.Wait()
+	// <-done
 
 	// if err != nil {
 	// 	return nil, err
 	// }
-
-	// newRelations := make([]domain.Relation, len(relations))
-	// for i, relation := range relations {
-	// 	newRelations[i] = convertToRelation(relation)
-	// }
-
-	// return newRelations, nil
 
 	var relations []sqldom.Relation
 	if err := r.DB.Find(&relations).Error; err != nil {

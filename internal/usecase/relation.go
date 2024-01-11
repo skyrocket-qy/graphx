@@ -1,6 +1,10 @@
 package usecase
 
 import (
+	"fmt"
+	"os"
+	"time"
+
 	"github.com/skyrocketOoO/go-utility/queue"
 	"github.com/skyrocketOoO/go-utility/set"
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
@@ -20,9 +24,26 @@ func NewRelationUsecase(relationRepo sqldomain.RelationRepository) *RelationUsec
 }
 
 func (u *RelationUsecase) Get(relation domain.Relation) ([]domain.Relation, error) {
+	startTime := time.Now()
 	if relation.ObjectNamespace == "" && relation.ObjectName == "" && relation.Relation == "" &&
 		relation.SubjectNamespace == "" && relation.SubjectName == "" && relation.SubjectRelation == "" {
-		return u.RelationRepo.GetAll()
+		relations, err := u.RelationRepo.GetAll()
+		if err != nil {
+			return nil, err
+		}
+		endTime := time.Now()
+		duration := endTime.Sub(startTime)
+		file, err := os.OpenFile("durations.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+		if err != nil {
+			fmt.Println("Error opening file:", err)
+			return relations, err
+		}
+		_, err = fmt.Fprintf(file, "%s %v\n", startTime.String(), duration)
+		if err != nil {
+			fmt.Println("Error writing to file:", err)
+		}
+		defer file.Close()
+		return relations, nil
 	} else {
 		return u.RelationRepo.Query(relation)
 	}
