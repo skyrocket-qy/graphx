@@ -27,3 +27,12 @@ backup:
 
 gen-grpc:
 	protoc --go_out=. --go-grpc_out=. ./domain/delivery/proto/service.proto
+
+grpc-doc:
+	docker run --rm \
+	-v $(pwd)/grpc-doc:/out \
+	-v $(pwd)/internal/delivery/proto:/protos \
+	pseudomuto/protoc-gen-doc
+
+rest-doc:
+	swag init -g internal/delivery/rest/*

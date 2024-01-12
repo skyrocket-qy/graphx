@@ -1,2 +1,1 @@
-- dev grpc api doc
 - do pagination query
