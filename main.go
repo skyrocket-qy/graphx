@@ -78,6 +78,11 @@ func main() {
 		}
 		//swagger/index.html
 		server.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
+		server.GET("/proto/doc", func(c *gin.Context) {
+			c.File("grpc-doc/index.html")
+		})
+
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			log.Fatalf("listen: %s\n", err)
 		}
