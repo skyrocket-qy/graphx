@@ -5,7 +5,8 @@ import (
 )
 
 type Relation struct {
-	AllColumns       string `gorm:"primaryKey"`
+	ID               uint   `gorm:"primarykey"`
+	AllColumns       string `gorm:"index"`
 	ObjectNamespace  string `gorm:"index:idx_object"`
 	ObjectName       string `gorm:"index:idx_object"`
 	Relation         string `gorm:"index:idx_object"`
@@ -23,4 +24,5 @@ type RelationRepository interface {
 	Query(query domain.Relation) ([]domain.Relation, error)
 	GetAllNamespaces() ([]string, error)
 	DeleteAll() error
+	GetAllWithPage(startID uint, pageSize int) (relations []domain.Relation, lastID uint, err error)
 }
