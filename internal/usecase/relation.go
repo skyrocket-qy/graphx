@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"fmt"
-	"os"
+	"sync"
 	"time"
 
 	"github.com/skyrocketOoO/go-utility/queue"
@@ -13,37 +13,91 @@ import (
 	"gorm.io/gorm"
 )
 
+type PageState struct {
+	LastRelationID uint
+	// if query after expired time without remove, keep query
+	ExpiredTime time.Time
+}
+
 type RelationUsecase struct {
-	RelationRepo sqldomain.RelationRepository
+	RelationRepo   sqldomain.RelationRepository
+	PageStates     map[string]*PageState
+	PageStatesLock sync.RWMutex
 }
 
 func NewRelationUsecase(relationRepo sqldomain.RelationRepository) *RelationUsecase {
-	return &RelationUsecase{
+	relationUsecase := RelationUsecase{
 		RelationRepo: relationRepo,
 	}
+
+	go func(u *RelationUsecase) {
+		for {
+			time.Sleep(time.Second * 10)
+
+			shouldDelete := []string{}
+			u.PageStatesLock.RLock()
+			for key, pageState := range u.PageStates {
+				if pageState.ExpiredTime.Before(time.Now()) {
+					shouldDelete = append(shouldDelete, key)
+				}
+			}
+			u.PageStatesLock.RUnlock()
+			u.PageStatesLock.Lock()
+			for _, key := range shouldDelete {
+				delete(u.PageStates, key)
+			}
+			u.PageStatesLock.Unlock()
+		}
+	}(&relationUsecase)
+
+	return &relationUsecase
+}
+
+func (u *RelationUsecase) GetAllWithPage(pageToken string, pageSize int) ([]domain.Relation, string, error) {
+	var lastID uint
+	if pageToken != "" {
+		u.PageStatesLock.RLock()
+		pageState, ok := u.PageStates[pageToken]
+		u.PageStatesLock.RUnlock()
+		if !ok {
+			return nil, "", fmt.Errorf("previouse page state not found")
+		}
+		lastID = pageState.LastRelationID
+
+		u.PageStatesLock.Lock()
+		delete(u.PageStates, pageToken)
+		u.PageStatesLock.Unlock()
+	}
+	relations, lastID, err := u.RelationRepo.GetAllWithPage(lastID, pageSize)
+	if err != nil {
+		return nil, "", err
+	}
+	pageState := PageState{
+		LastRelationID: lastID,
+		ExpiredTime:    time.Now().Add(time.Minute * 5),
+	}
+	token, err := utils.GenerateRandomToken()
+	if err != nil {
+		return nil, "", err
+	}
+	u.PageStatesLock.Lock()
+	for _, ok := u.PageStates[token]; ok; {
+		token, err = utils.GenerateRandomToken()
+		if err != nil {
+			return nil, "", err
+		}
+	}
+	u.PageStates[token] = &pageState
+	u.PageStatesLock.Unlock()
+
+	return relations, token, nil
 }
 
 func (u *RelationUsecase) Get(relation domain.Relation) ([]domain.Relation, error) {
-	startTime := time.Now()
 	if relation.ObjectNamespace == "" && relation.ObjectName == "" && relation.Relation == "" &&
 		relation.SubjectNamespace == "" && relation.SubjectName == "" && relation.SubjectRelation == "" {
 		relations, err := u.RelationRepo.GetAll()
-		if err != nil {
-			return nil, err
-		}
-		endTime := time.Now()
-		duration := endTime.Sub(startTime)
-		file, err := os.OpenFile("durations.txt", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
-		if err != nil {
-			fmt.Println("Error opening file:", err)
-			return relations, err
-		}
-		_, err = fmt.Fprintf(file, "%s %v\n", startTime.String(), duration)
-		if err != nil {
-			fmt.Println("Error writing to file:", err)
-		}
-		defer file.Close()
-		return relations, nil
+		return relations, err
 	} else {
 		return u.RelationRepo.Query(relation)
 	}

@@ -170,3 +170,15 @@ func convertToRelation(relation sqldom.Relation) domain.Relation {
 		SubjectRelation:  relation.SubjectRelation,
 	}
 }
+
+func (r *RelationRepository) GetAllWithPage(startID uint, pageSize int) ([]domain.Relation, uint, error) {
+	var relations []sqldom.Relation
+	r.DB.Where("id > ?", startID).Order("id").Limit(pageSize).Find(&relations)
+
+	newRelations := make([]domain.Relation, len(relations))
+	for i, relation := range relations {
+		newRelations[i] = convertToRelation(relation)
+	}
+
+	return newRelations, relations[len(relations)-1].ID, nil
+}

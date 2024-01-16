@@ -5,6 +5,7 @@ import (
 )
 
 type RelationUsecase interface {
+	GetAllWithPage(pageToken string, pageSize int) ([]domain.Relation, string, error)
 	Get(relation domain.Relation) ([]domain.Relation, error)
 	Create(relation domain.Relation, existOk bool) error
 	Delete(relation domain.Relation) error

@@ -19,6 +19,36 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 	}
 }
 
+func (h *RelationHandler) GetAllWithPage(c *gin.Context) {
+	type requestBody struct {
+		Token    string `json:"token"`
+		PageSize int    `json:"pageSize"`
+	}
+	reqBody := requestBody{}
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	relations, nextToken, err := h.RelationUsecase.GetAllWithPage(reqBody.Token, reqBody.PageSize)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	type responseBody struct {
+		Relations []domain.Relation
+		NextToken string
+	}
+	resp := responseBody{
+		Relations: relations,
+		NextToken: nextToken,
+	}
+	c.JSON(http.StatusOK, resp)
+}
+
 // @Summary Query relations based on parameters
 // @Description Query relations based on specified parameters.
 // @Tags Relation
