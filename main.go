@@ -65,6 +65,7 @@ func main() {
 			relationRouter.POST("/", relationHandler.Create)
 			relationRouter.DELETE("/", relationHandler.Delete)
 
+			relationRouter.POST("/get-all-with-page", relationHandler.GetAllWithPage)
 			relationRouter.POST("/delete-by-queries", relationHandler.DeleteByQueries)
 			relationRouter.POST("/batch-operation", relationHandler.BatchOperation)
 
