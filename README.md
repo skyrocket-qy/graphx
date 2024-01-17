@@ -22,15 +22,15 @@ type Relation struct {
 
 1. Run postgres on docker(without docker, see ./docker-compose.yaml to get config)
 
-```bash
-docker compose up -d postgres
-```
+    ```bash
+    docker compose up -d postgres
+    ```
 
 2. Run the main server
 
-```bash
-go run .
-```
+    ```bash
+    go run .
+    ```
 
 ## Example
 
