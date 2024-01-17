@@ -1,6 +1,6 @@
 # zanazibar-dag
 
-A permission architecture based on Zanzibar and DAG, which can be used to build lots of permission system
+Zanzibar-dag is a DAG(directed acyclic graph) based with Google's Zanzibar format, which can be the infrastructure below permission app.
 
 ## How to use
 
