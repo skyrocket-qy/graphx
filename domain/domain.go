@@ -19,8 +19,8 @@ type ErrResponse struct {
 	Error string `json:"error"`
 }
 
-type DataResponse struct {
-	Data []Relation `json:"data"`
+type RelationsResponse struct {
+	Relations []Relation `json:"data"`
 }
 
 type StringsResponse struct {

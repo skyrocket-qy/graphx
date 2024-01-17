@@ -31,7 +31,9 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 // @Param subject-namespace query string false "Subject Namespace"
 // @Param subject-name query string false "Subject Name"
 // @Param subject-relation query string false "Subject Relation"
-// @Success 200 {object} domain.DataResponse
+// @Param page-token query string false "Page token"
+// @Param page-size query string false "Page size"
+// @Success 200 {object} delivery.Get.respBody
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/ [get]
 func (h *RelationHandler) Get(c *gin.Context) {
@@ -76,7 +78,7 @@ func (h *RelationHandler) Get(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param relation body domain.Relation true "Relation object to be created"
+// @Param relation body delivery.Create.requestBody true "Relation object to be created"
 // @Success 200
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 500 {object} domain.ErrResponse
@@ -118,20 +120,23 @@ func (h *RelationHandler) Create(c *gin.Context) {
 // @Tags Relation
 // @Accept json
 // @Produce json
-// @Param relation body domain.Relation true "Relation object to be deleted"
+// @Param relation body delivery.Delete.requestBody true "Relation object to be deleted"
 // @Success 200
 // @Failure 400 {object} domain.ErrResponse
 // @Failure 500 {object} domain.ErrResponse
 // @Router /relation/ [delete]
 func (h *RelationHandler) Delete(c *gin.Context) {
-	relation := domain.Relation{}
-	if err := c.ShouldBindJSON(&relation); err != nil {
+	type requestBody struct {
+		Relation domain.Relation `json:"relation"`
+	}
+	reqBody := requestBody{}
+	if err := c.ShouldBindJSON(&reqBody); err != nil {
 		c.JSON(http.StatusBadRequest, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	if err := h.RelationUsecase.Delete(relation); err != nil {
+	if err := h.RelationUsecase.Delete(reqBody.Relation); err != nil {
 		if _, ok := err.(domain.RequestBodyError); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
@@ -295,8 +300,8 @@ func (h *RelationHandler) GetShortestPath(c *gin.Context) {
 	if len(paths) == 0 {
 		c.Status(http.StatusForbidden)
 	}
-	c.JSON(http.StatusOK, domain.DataResponse{
-		Data: paths,
+	c.JSON(http.StatusOK, domain.RelationsResponse{
+		Relations: paths,
 	})
 }
 
@@ -391,8 +396,8 @@ func (h *RelationHandler) GetAllObjectRelations(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, domain.DataResponse{
-		Data: relations,
+	c.JSON(http.StatusOK, domain.RelationsResponse{
+		Relations: relations,
 	})
 }
 
@@ -439,8 +444,8 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, domain.DataResponse{
-		Data: relations,
+	c.JSON(http.StatusOK, domain.RelationsResponse{
+		Relations: relations,
 	})
 }
 
