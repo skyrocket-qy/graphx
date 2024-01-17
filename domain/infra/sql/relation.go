@@ -20,9 +20,13 @@ type RelationRepository interface {
 	Delete(relation domain.Relation) error
 	DeleteByQueries(queries []domain.Relation) error
 	BatchOperation(operations []domain.Operation) error
-	GetAll() ([]domain.Relation, error)
+	GetAll(options ...PageOptions) (relations []domain.Relation, lastID uint, err error)
 	Query(query domain.Relation) ([]domain.Relation, error)
 	GetAllNamespaces() ([]string, error)
 	DeleteAll() error
-	GetAllWithPage(startID uint, pageSize int) (relations []domain.Relation, lastID uint, err error)
+}
+
+type PageOptions struct {
+	LastID   uint
+	PageSize int
 }

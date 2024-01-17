@@ -5,8 +5,7 @@ import (
 )
 
 type RelationUsecase interface {
-	GetAllWithPage(pageToken string, pageSize int) ([]domain.Relation, string, error)
-	Get(relation domain.Relation) ([]domain.Relation, error)
+	Get(relation domain.Relation, options ...PageOptions) (relations []domain.Relation, token string, err error)
 	Create(relation domain.Relation, existOk bool) error
 	Delete(relation domain.Relation) error
 	DeleteByQueries(queries []domain.Relation) error
@@ -20,4 +19,9 @@ type RelationUsecase interface {
 	GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error)
 
 	ClearAllRelations() error
+}
+
+type PageOptions struct {
+	PageToken string
+	PageSize  int
 }

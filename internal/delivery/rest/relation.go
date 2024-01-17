@@ -2,6 +2,7 @@ package rest
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	usecasedomain "github.com/skyrocketOoO/zanazibar-dag/domain/usecase"
@@ -17,36 +18,6 @@ func NewRelationHandler(permissionUsecase usecasedomain.RelationUsecase) *Relati
 	return &RelationHandler{
 		RelationUsecase: permissionUsecase,
 	}
-}
-
-func (h *RelationHandler) GetAllWithPage(c *gin.Context) {
-	type requestBody struct {
-		Token    string `json:"token"`
-		PageSize int    `json:"pageSize"`
-	}
-	reqBody := requestBody{}
-	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	relations, nextToken, err := h.RelationUsecase.GetAllWithPage(reqBody.Token, reqBody.PageSize)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	type responseBody struct {
-		Relations []domain.Relation
-		NextToken string
-	}
-	resp := responseBody{
-		Relations: relations,
-		NextToken: nextToken,
-	}
-	c.JSON(http.StatusOK, resp)
 }
 
 // @Summary Query relations based on parameters
@@ -72,15 +43,31 @@ func (h *RelationHandler) Get(c *gin.Context) {
 		SubjectName:      c.Query("subject-name"),
 		SubjectRelation:  c.Query("subject-relation"),
 	}
-	relations, err := h.RelationUsecase.Get(relation)
+	pageToken := c.Query("page-token")
+	pageSize, err := strconv.Atoi(c.Query("page-size"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	relations, token, err := h.RelationUsecase.Get(relation, usecasedomain.PageOptions{
+		PageToken: pageToken,
+		PageSize:  pageSize,
+	})
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK, domain.DataResponse{
-		Data: relations,
+	type respBody struct {
+		Relations []domain.Relation `json:"relations"`
+		PageToken string            `json:"page_token"`
+	}
+	c.JSON(http.StatusOK, respBody{
+		Relations: relations,
+		PageToken: token,
 	})
 }
 

@@ -84,17 +84,24 @@ func (r *RelationRepository) BatchOperation(operations []domain.Operation) error
 	return nil
 }
 
-func (r *RelationRepository) GetAll() ([]domain.Relation, error) {
+func (r *RelationRepository) GetAll(options ...sqldom.PageOptions) ([]domain.Relation, uint, error) {
 	var relations []sqldom.Relation
-	if err := r.DB.Find(&relations).Error; err != nil {
-		return nil, err
+	var err error
+	if len(options) > 0 {
+		options := options[0]
+		err = r.DB.Where("id > ?", options.LastID).Order("id").Limit(options.PageSize).Find(&relations).Error
+	} else {
+		err = r.DB.Find(&relations).Error
+	}
+	if err != nil {
+		return nil, 0, err
 	}
 
 	newRelations := make([]domain.Relation, len(relations))
 	for i, relation := range relations {
 		newRelations[i] = convertToRelation(relation)
 	}
-	return newRelations, nil
+	return newRelations, relations[len(relations)-1].ID, nil
 }
 
 func (r *RelationRepository) Query(query domain.Relation) ([]domain.Relation, error) {
@@ -169,16 +176,4 @@ func convertToRelation(relation sqldom.Relation) domain.Relation {
 		SubjectName:      relation.SubjectName,
 		SubjectRelation:  relation.SubjectRelation,
 	}
-}
-
-func (r *RelationRepository) GetAllWithPage(startID uint, pageSize int) ([]domain.Relation, uint, error) {
-	var relations []sqldom.Relation
-	r.DB.Where("id > ?", startID).Order("id").Limit(pageSize).Find(&relations)
-
-	newRelations := make([]domain.Relation, len(relations))
-	for i, relation := range relations {
-		newRelations[i] = convertToRelation(relation)
-	}
-
-	return newRelations, relations[len(relations)-1].ID, nil
 }

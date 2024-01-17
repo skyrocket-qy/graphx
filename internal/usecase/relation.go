@@ -9,6 +9,7 @@ import (
 	"github.com/skyrocketOoO/go-utility/set"
 	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	sqldomain "github.com/skyrocketOoO/zanazibar-dag/domain/infra/sql"
+	usecasedom "github.com/skyrocketOoO/zanazibar-dag/domain/usecase"
 	"github.com/skyrocketOoO/zanazibar-dag/utils"
 	"gorm.io/gorm"
 )
@@ -53,53 +54,55 @@ func NewRelationUsecase(relationRepo sqldomain.RelationRepository) *RelationUsec
 	return &relationUsecase
 }
 
-func (u *RelationUsecase) GetAllWithPage(pageToken string, pageSize int) ([]domain.Relation, string, error) {
-	var lastID uint
-	if pageToken != "" {
-		u.PageStatesLock.RLock()
-		pageState, ok := u.PageStates[pageToken]
-		u.PageStatesLock.RUnlock()
-		if !ok {
-			return nil, "", fmt.Errorf("previouse page state not found")
-		}
-		lastID = pageState.LastRelationID
+func (u *RelationUsecase) Get(relation domain.Relation, options ...usecasedom.PageOptions) ([]domain.Relation, string, error) {
+	if relation.ObjectNamespace == "" && relation.ObjectName == "" && relation.Relation == "" &&
+		relation.SubjectNamespace == "" && relation.SubjectName == "" && relation.SubjectRelation == "" {
+		var lastID uint
+		var pageSize int
+		if len(options) > 0 {
+			options := options[0]
+			pageSize = options.PageSize
+			u.PageStatesLock.RLock()
+			pageState, ok := u.PageStates[options.PageToken]
+			u.PageStatesLock.RUnlock()
+			if !ok {
+				return nil, "", fmt.Errorf("previouse page state not found")
+			}
+			lastID = pageState.LastRelationID
 
-		u.PageStatesLock.Lock()
-		delete(u.PageStates, pageToken)
-		u.PageStatesLock.Unlock()
-	}
-	relations, lastID, err := u.RelationRepo.GetAllWithPage(lastID, pageSize)
-	if err != nil {
-		return nil, "", err
-	}
-	pageState := PageState{
-		LastRelationID: lastID,
-		ExpiredTime:    time.Now().Add(time.Minute * 5),
-	}
-	token, err := utils.GenerateRandomToken()
-	if err != nil {
-		return nil, "", err
-	}
-	u.PageStatesLock.Lock()
-	for _, ok := u.PageStates[token]; ok; {
-		token, err = utils.GenerateRandomToken()
+			u.PageStatesLock.Lock()
+			delete(u.PageStates, options.PageToken)
+			u.PageStatesLock.Unlock()
+		}
+		relations, lastID, err := u.RelationRepo.GetAll(sqldomain.PageOptions{
+			LastID:   lastID,
+			PageSize: pageSize,
+		})
 		if err != nil {
 			return nil, "", err
 		}
-	}
-	u.PageStates[token] = &pageState
-	u.PageStatesLock.Unlock()
+		pageState := PageState{
+			LastRelationID: lastID,
+			ExpiredTime:    time.Now().Add(time.Minute * 5),
+		}
+		token, err := utils.GenerateRandomToken()
+		if err != nil {
+			return nil, "", err
+		}
+		u.PageStatesLock.Lock()
+		for _, ok := u.PageStates[token]; ok; {
+			token, err = utils.GenerateRandomToken()
+			if err != nil {
+				return nil, "", err
+			}
+		}
+		u.PageStates[token] = &pageState
+		u.PageStatesLock.Unlock()
 
-	return relations, token, nil
-}
-
-func (u *RelationUsecase) Get(relation domain.Relation) ([]domain.Relation, error) {
-	if relation.ObjectNamespace == "" && relation.ObjectName == "" && relation.Relation == "" &&
-		relation.SubjectNamespace == "" && relation.SubjectName == "" && relation.SubjectRelation == "" {
-		relations, err := u.RelationRepo.GetAll()
-		return relations, err
+		return relations, token, nil
 	} else {
-		return u.RelationRepo.Query(relation)
+		relations, err := u.RelationRepo.Query(relation)
+		return relations, "", err
 	}
 }
 

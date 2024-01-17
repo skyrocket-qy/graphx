@@ -28,7 +28,7 @@ func (h *GrpcHandler) Get(c context.Context, relation *Relation) (*RelationsResp
 		SubjectName:      relation.SubjectName,
 		SubjectRelation:  relation.SubjectRelation,
 	}
-	relations, err := h.RelationUsecase.Get(requestRelation)
+	relations, _, err := h.RelationUsecase.Get(requestRelation)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, err.Error())
 	}
