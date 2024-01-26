@@ -2,6 +2,21 @@
 
 Zanzibar-dag is a DAG(directed acyclic graph) based with Google's Zanzibar format, which can be the infrastructure below permission app.
 
+## Features
+
+- [x] Get all edges
+- [x] Create edge
+- [x] Delete edge
+- [x] Delete edges by conditions
+- [x] Batch create or delete operations
+- [x] Get all namespaces
+- [x] Check relation
+- [x] Get shortest path
+- [x] Get all paths
+- [x] Get all object relations
+- [x] Get all subject relations
+- [x] Get tree
+
 ## Relation
 
 The `Relation` struct represents a relationship like edge in DAG between objects and subjects. It is defined as follows:
