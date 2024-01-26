@@ -469,6 +469,60 @@ func (u *RelationUsecase) GetAllSubjectRelations(object domain.Node, searchCondi
 	return relations.ToSlice(), nil
 }
 
+func (u *RelationUsecase) GetTree(subject domain.Node, maxDepth int) (*domain.TreeNode, error) {
+	if err := utils.ValidateNode(subject, true); err != nil {
+		return &domain.TreeNode{}, err
+	}
+	depth := 0
+	head := &domain.TreeNode{
+		Namespace: subject.Namespace,
+		Name:      subject.Name,
+		Relation:  subject.Relation,
+		Children:  []domain.TreeNode{},
+	}
+	q := queue.NewQueue[*domain.TreeNode]()
+	visited := set.NewSet[**domain.TreeNode]()
+	q.Push(head)
+	for !q.IsEmpty() {
+		depth++
+		if depth > maxDepth {
+			break
+		}
+		qLen := q.Len()
+		for i := 0; i < qLen; i++ {
+			parent, err := q.Pop()
+			if err != nil {
+				return head, err
+			}
+			if visited.Exist(&parent) {
+				continue
+			}
+			visited.Add(&parent)
+			query := domain.Relation{
+				SubjectNamespace: parent.Namespace,
+				SubjectName:      parent.Name,
+				SubjectRelation:  parent.Relation,
+			}
+			relations, err := u.RelationRepo.Query(query)
+			if err != nil {
+				return head, err
+			}
+			for _, r := range relations {
+				treeNode := domain.TreeNode{
+					Namespace: r.ObjectNamespace,
+					Name:      r.ObjectName,
+					Relation:  r.Relation,
+					Children:  []domain.TreeNode{},
+				}
+				parent.Children = append(parent.Children, treeNode)
+				q.Push(&treeNode)
+			}
+		}
+	}
+
+	return head, nil
+}
+
 func (u *RelationUsecase) ClearAllRelations() error {
 	return u.RelationRepo.DeleteAll()
 }

@@ -17,6 +17,7 @@ type RelationUsecase interface {
 	GetAllPaths(subject domain.Node, object domain.Node, searchCondition domain.SearchCondition) ([][]domain.Relation, error)
 	GetAllObjectRelations(subject domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error)
 	GetAllSubjectRelations(object domain.Node, searchCondition domain.SearchCondition, collectCondition domain.CollectCondition, maxDepth int) ([]domain.Relation, error)
+	GetTree(subject domain.Node, maxDepth int) (*domain.TreeNode, error)
 
 	ClearAllRelations() error
 }

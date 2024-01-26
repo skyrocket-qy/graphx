@@ -449,6 +449,42 @@ func (h *RelationHandler) GetAllSubjectRelations(c *gin.Context) {
 	})
 }
 
+func (h *RelationHandler) GetTree(c *gin.Context) {
+	type requestBody struct {
+		Subject  domain.Node `json:"subject" binding:"required"`
+		MaxDepth int         `json:"max_depth"`
+	}
+	body := requestBody{}
+	if err := c.ShouldBindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	tree, err := h.RelationUsecase.GetTree(
+		body.Subject,
+		body.MaxDepth,
+	)
+	if err != nil {
+		if _, ok := err.(domain.RequestBodyError); ok {
+			c.JSON(http.StatusBadRequest, domain.ErrResponse{
+				Error: err.Error(),
+			})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+			Error: err.Error(),
+		})
+		return
+	}
+	type response struct {
+		Tree domain.TreeNode `json:"tree"`
+	}
+	c.JSON(http.StatusOK, response{
+		Tree: *tree,
+	})
+}
+
 // @Summary Clear all relations
 // @Description Clear all relations in the system
 // @Tags Relation

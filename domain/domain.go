@@ -15,6 +15,13 @@ type Node struct {
 	Relation  string `json:"relation"`
 }
 
+type TreeNode struct {
+	Namespace string      `json:"namespace"`
+	Name      string      `json:"name"`
+	Relation  string      `json:"relation"`
+	Children  []TreeNode `json:"children"`
+}
+
 type ErrResponse struct {
 	Error string `json:"error"`
 }
