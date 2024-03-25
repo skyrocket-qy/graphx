@@ -78,7 +78,7 @@ func main() {
 			relationRouter.POST("/clear-all-relations", relationHandler.ClearAllRelations)
 		}
 
-		vd := rest.NewVisualDelivery()
+		vd := rest.NewVisualDelivery(*usecase.NewVisualUsecase())
 		server.GET("/visual", vd.SeeTree)
 
 		//swagger/index.html
