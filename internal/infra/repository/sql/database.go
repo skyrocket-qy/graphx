@@ -14,6 +14,9 @@ import (
 var Db *gorm.DB
 
 func InitDB(database string) (*gorm.DB, error) {
+	var db *gorm.DB
+	var err error
+
 	switch database {
 	case "pg":
 		log.Info().Msg("Connecting to Postgres")
@@ -27,14 +30,24 @@ func InitDB(database string) (*gorm.DB, error) {
 			viper.GetString("postgres.sslmode"),
 			viper.GetString("postgres.timezone"),
 		)
-		return gorm.Open(
+		db, err = gorm.Open(
 			postgres.Open(connStr), &gorm.Config{
 				Logger: nil,
 			},
 		)
 	case "sqlite":
 		log.Info().Msg("Connecting to Sqlite")
-		return gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{})
+		db, err = gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{})
+	default:
+		return nil, errors.New("database not supported")
 	}
-	return nil, errors.New("database not supported")
+	if err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	if err = db.AutoMigrate(&Edge{}); err != nil {
+		return nil, errors.New(err.Error())
+	}
+
+	return db, nil
 }

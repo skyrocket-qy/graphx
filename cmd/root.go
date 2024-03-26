@@ -4,15 +4,16 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"go-server-template/api"
-	"go-server-template/config"
-	"go-server-template/docs"
-	"go-server-template/internal/delivery/rest"
-	"go-server-template/internal/delivery/rest/middleware"
-	"go-server-template/internal/repository/sql"
-	"go-server-template/internal/usecase"
 	"os"
 	"time"
+
+	"github.com/skyrocketOoO/zanazibar-dag/api"
+	"github.com/skyrocketOoO/zanazibar-dag/config"
+	"github.com/skyrocketOoO/zanazibar-dag/docs"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest/middleware"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/sql"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
 
 	errors "github.com/rotisserie/eris"
 
@@ -49,7 +50,7 @@ func workFunc(cmd *cobra.Command, args []string) {
 		db.Close()
 	}()
 
-	sqlRepo, err := sql.NewOrmRepository(sqlDb)
+	sqlRepo, err := sql.NewSqlRepository(sqlDb)
 	if err != nil {
 		log.Fatal().Msg(err.Error())
 	}

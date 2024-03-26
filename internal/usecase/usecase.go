@@ -2,14 +2,15 @@ package usecase
 
 import (
 	"context"
-	"go-server-template/domain"
+
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
 )
 
 type Usecase struct {
-	repo domain.OrmRepository
+	repo domain.DatabaseRepository
 }
 
-func NewUsecase(ormRepo domain.OrmRepository) *Usecase {
+func NewUsecase(ormRepo domain.DatabaseRepository) *Usecase {
 	return &Usecase{
 		repo: ormRepo,
 	}

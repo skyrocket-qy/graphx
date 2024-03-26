@@ -1,7 +1,7 @@
 package middleware_test
 
 import (
-	"go-server-template/internal/delivery/rest/middleware"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest/middleware"
 	"net/http"
 	"net/http/httptest"
 	"testing"

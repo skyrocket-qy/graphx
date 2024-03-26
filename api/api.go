@@ -1,7 +1,7 @@
 package api
 
 import (
-	"go-server-template/internal/delivery/rest"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"

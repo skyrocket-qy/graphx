@@ -1,8 +1,9 @@
 package rest
 
 import (
-	"go-server-template/domain"
 	"net/http"
+
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
 
 	"github.com/gin-gonic/gin"
 )
