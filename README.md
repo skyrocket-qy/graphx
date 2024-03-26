@@ -65,3 +65,4 @@ type Relation struct {
 - Relation -> Rel
 - Object -> Obj
 - Subject -> Sbj
+- Condition -> Cond

@@ -2,7 +2,7 @@ package domain
 
 import "context"
 
-type DatabaseRepository interface {
+type SqlRepository interface {
 	Ping(c context.Context) error
 	Create(edge Edge) error
 	Delete(edge Edge) error

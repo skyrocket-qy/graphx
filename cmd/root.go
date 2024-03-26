@@ -56,11 +56,11 @@ func workFunc(cmd *cobra.Command, args []string) {
 	}
 
 	usecase := usecase.NewUsecase(sqlRepo)
-	restDelivery := rest.NewRestDelivery(usecase)
+	delivery := rest.NewDelivery(usecase)
 
 	router := gin.Default()
 	router.Use(middleware.CORS())
-	api.Binding(router, restDelivery)
+	api.Binding(router, delivery)
 
 	port, _ := cmd.Flags().GetString("port")
 	router.Run(":" + port)
