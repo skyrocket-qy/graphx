@@ -37,7 +37,7 @@ func workFunc(cmd *cobra.Command, args []string) {
 
 	docs.SwaggerInfo.Title = "Swagger API"
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "petstore.swagger.io"
+	docs.SwaggerInfo.Host = "localhost:8080"
 	docs.SwaggerInfo.BasePath = "/v2"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 

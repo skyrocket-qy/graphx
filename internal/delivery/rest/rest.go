@@ -227,7 +227,7 @@ func (h *Delivery) BatchOperation(c *gin.Context) {
 // @Success 200 {obj} domain.StringsResponse
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/get-all-namespaces [post]
-func (h *Delivery) GetAllNamespaces(c *gin.Context) {
+func (h *Delivery) GetAllNs(c *gin.Context) {
 	namespaces, err := h.usecase.GetAllNs()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
@@ -387,7 +387,7 @@ func (h *Delivery) GetAllPaths(c *gin.Context) {
 // @Failure 403
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/get-all-obj-edges [post]
-func (h *Delivery) GetAllObjEdges(c *gin.Context) {
+func (h *Delivery) GetAllObjRels(c *gin.Context) {
 	type requestBody struct {
 		Sbj         domain.Vertex      `json:"sbj" binding:"required"`
 		SearchCond  domain.SearchCond  `json:"search_cond"`
@@ -435,7 +435,7 @@ func (h *Delivery) GetAllObjEdges(c *gin.Context) {
 // @Failure 403
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/get-all-sbj-edges [post]
-func (h *Delivery) GetAllSbjEdges(c *gin.Context) {
+func (h *Delivery) GetAllSbjRels(c *gin.Context) {
 	type requestBody struct {
 		Obj         domain.Vertex      `json:"obj" binding:"required"`
 		SearchCond  domain.SearchCond  `json:"search_cond"`
