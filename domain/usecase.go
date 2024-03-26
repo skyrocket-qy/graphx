@@ -19,5 +19,5 @@ type Usecase interface {
 	GetAllSbjRels(object Vertex, searchCond SearchCond, collectCond CollectCond, maxDepth int) ([]Edge, error)
 	GetTree(subject Vertex, maxDepth int) (*TreeNode, error)
 
-	// ClearAllEdges() error
+	ClearAllEdges() error
 }

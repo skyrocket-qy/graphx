@@ -504,6 +504,6 @@ func (u *Usecase) GetTree(sbj domain.Vertex, maxDepth int) (
 	return head, nil
 }
 
-func (u *Usecase) ClearAllRels() error {
+func (u *Usecase) ClearAllEdges() error {
 	return u.sqlRepo.DeleteAll()
 }
