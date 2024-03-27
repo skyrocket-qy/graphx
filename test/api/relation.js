@@ -6,7 +6,7 @@ export function TestRelationAPI(serverUrl, headers){
     const relationUrl = `${serverUrl}/relation`
     let res, payload;
 
-    res = http.get(`${relationUrl}?relation=read`, null, {headers:headers});
+    res = http.get(`${relationUrl}?`, null, {headers:headers});
     check(res, { 'Get': (r) => r.status == 200 });
 
     payload = {

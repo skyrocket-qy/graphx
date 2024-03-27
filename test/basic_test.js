@@ -24,9 +24,9 @@ export default function() {
   res = http.del(`${SERVER_URL}/relation/all`, null, {headers:Headers});
   check(res, { 'ClearAllRelations': (r) => r.status == 200 });
 
-  // group("api", () => {
-  //     TestAPI(SERVER_URL, Headers);
-  // });
+  group("api", () => {
+      TestAPI(SERVER_URL, Headers);
+  });
 
   // group("scenario", () => {
   //   group("cycle", () => {
