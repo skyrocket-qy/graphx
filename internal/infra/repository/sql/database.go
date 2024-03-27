@@ -24,7 +24,7 @@ func InitDB(database string) (*gorm.DB, func(), error) {
 			viper.GetString("postgres.port"),
 			viper.GetString("postgres.user"),
 			viper.GetString("postgres.password"),
-			viper.GetString("postgres.db"),
+			viper.GetString("db"),
 			viper.GetString("postgres.sslmode"),
 			viper.GetString("postgres.timezone"),
 		)

@@ -18,7 +18,7 @@ func (e *DatabaseEnum) String() string {
 // Set must have pointer receiver so it doesn't change the value of a copy
 func (e *DatabaseEnum) Set(v string) error {
 	switch v {
-	case string(databaseEnumPg), string(databaseEnumSqlite):
+	case string(databaseEnumPg), string(databaseEnumSqlite), string(databaseEnumMongo):
 		*e = DatabaseEnum(v)
 		return nil
 	default:
