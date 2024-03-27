@@ -68,18 +68,8 @@ func (h *Delivery) Get(c *gin.Context) {
 		SbjName: c.Query("sbj-name"),
 		SbjRel:  c.Query("sbj-rel"),
 	}
-	// pageToken := c.Query("page-token")
-	// pageSize, err := strconv.Atoi(c.Query("page-size"))
-	// if err != nil {
-	// 	c.JSON(http.StatusBadRequest, domain.ErrResponse{
-	// 		Error: err.Error(),
-	// 	})
-	// 	return
-	// }
-	edges, token, err := h.usecase.Get(edge, domain.PageOptions{
-		// PageToken: pageToken,
-		// PageSize: pageSize,
-	})
+	queryMode := c.Query("query-mode") == "true"
+	edges, err := h.usecase.Get(c.Request.Context(), edge, queryMode)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
@@ -87,12 +77,10 @@ func (h *Delivery) Get(c *gin.Context) {
 		return
 	}
 	type respBody struct {
-		Edges     []domain.Edge `json:"edges"`
-		PageToken string        `json:"page_token"`
+		Edges []domain.Edge `json:"edges"`
 	}
 	c.JSON(http.StatusOK, respBody{
-		Edges:     edges,
-		PageToken: token,
+		Edges: edges,
 	})
 }
 
@@ -108,8 +96,7 @@ func (h *Delivery) Get(c *gin.Context) {
 // @Router /edge/ [post]
 func (h *Delivery) Create(c *gin.Context) {
 	type requestBody struct {
-		Edge    domain.Edge `json:"edge"`
-		ExistOk bool        `json:"exist_ok"`
+		Edge domain.Edge `json:"edge"`
 	}
 	reqBody := requestBody{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
@@ -118,13 +105,13 @@ func (h *Delivery) Create(c *gin.Context) {
 		})
 		return
 	}
-	if err := h.usecase.Create(reqBody.Edge, reqBody.ExistOk); err != nil {
-		if _, ok := err.(domain.CauseCycleError); ok {
+	if err := h.usecase.Create(c.Request.Context(), reqBody.Edge); err != nil {
+		if _, ok := err.(domain.ErrGraphCycle); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
 			return
-		} else if _, ok := err.(domain.RequestBodyError); ok {
+		} else if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -150,7 +137,8 @@ func (h *Delivery) Create(c *gin.Context) {
 // @Router /edge/ [delete]
 func (h *Delivery) Delete(c *gin.Context) {
 	type requestBody struct {
-		Edge domain.Edge `json:"edge"`
+		Edge      domain.Edge `json:"edge"`
+		QueryMode bool        `json:"query-mode"`
 	}
 	reqBody := requestBody{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
@@ -159,8 +147,10 @@ func (h *Delivery) Delete(c *gin.Context) {
 		})
 		return
 	}
-	if err := h.usecase.Delete(reqBody.Edge); err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
+
+	if err := h.usecase.Delete(c.Request.Context(), reqBody.Edge,
+		reqBody.QueryMode); err != nil {
+		if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -174,70 +164,23 @@ func (h *Delivery) Delete(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-func (h *Delivery) DeleteByQueries(c *gin.Context) {
-	type requestBody struct {
-		Queries []domain.Edge `json:"queries"`
-	}
-	var body requestBody
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if err := h.usecase.DeleteByQueries(body.Queries); err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	c.Status(http.StatusOK)
-}
-
-func (h *Delivery) BatchOperation(c *gin.Context) {
-	type requestBody struct {
-		Operations []domain.Operation `json:"operations"`
-	}
-	var body requestBody
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if err := h.usecase.BatchOperation(body.Operations); err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	c.Status(http.StatusOK)
-}
-
-// @Summary Get all unique namespaces
-// @Description Retrieve all unique namespaces for edges.
+// @Summary Clear all edges
+// @Description Clear all edges in the system
 // @Tags Edge
+// @Accept json
 // @Produce json
-// @Success 200 {obj} domain.StringsResponse
+// @Success 200
 // @Failure 500 {obj} domain.ErrResponse
-// @Router /edge/get-all-namespaces [post]
-func (h *Delivery) GetAllNs(c *gin.Context) {
-	namespaces, err := h.usecase.GetAllNs()
+// @Router /edge/clear-all-edges [post]
+func (h *Delivery) ClearAllEdges(c *gin.Context) {
+	err := h.usecase.ClearAll(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
 			Error: err.Error(),
 		})
 		return
 	}
-	c.JSON(http.StatusOK, domain.StringsResponse{
-		Data: namespaces,
-	})
+	c.Status(http.StatusOK)
 }
 
 // @Summary Check if a edge link exists
@@ -251,7 +194,7 @@ func (h *Delivery) GetAllNs(c *gin.Context) {
 // @Failure 403
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/check [post]
-func (h *Delivery) Check(c *gin.Context) {
+func (h *Delivery) CheckAuth(c *gin.Context) {
 	type requestBody struct {
 		Sbj        domain.Vertex     `json:"sbj" binding:"required"`
 		Obj        domain.Vertex     `json:"obj" binding:"required"`
@@ -264,9 +207,10 @@ func (h *Delivery) Check(c *gin.Context) {
 		})
 		return
 	}
-	ok, err := h.usecase.Check(body.Sbj, body.Obj, body.SearchCond)
+	ok, err := h.usecase.CheckAuth(c.Request.Context(), body.Sbj, body.Obj,
+		body.SearchCond)
 	if err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
+		if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -279,101 +223,9 @@ func (h *Delivery) Check(c *gin.Context) {
 	}
 	if !ok {
 		c.Status(http.StatusForbidden)
+		return
 	}
 	c.Status(http.StatusOK)
-}
-
-// @Summary Get the shortest path between two entities in a edge graph
-// @Description Get the shortest path between two entities in a edge graph
-// @Tags Edge
-// @Accept json
-// @Produce json
-// @Param edge body delivery.GetShortestPath.requestBody true "comment"
-// @Success 200 {obj} domain.DataResponse "Shortest path between entities"
-// @Failure 400 {obj} domain.ErrResponse
-// @Failure 403
-// @Failure 500 {obj} domain.ErrResponse
-// @Router /edge/get-shortest-path [post]
-func (h *Delivery) GetShortestPath(c *gin.Context) {
-	type requestBody struct {
-		Sbj        domain.Vertex     `json:"sbj" binding:"required"`
-		Obj        domain.Vertex     `json:"obj" binding:"required"`
-		SearchCond domain.SearchCond `json:"search_cond"`
-	}
-	body := requestBody{}
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	paths, err := h.usecase.GetShortestPath(body.Sbj, body.Obj, body.SearchCond)
-	if err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if len(paths) == 0 {
-		c.Status(http.StatusForbidden)
-	}
-	c.JSON(http.StatusOK, domain.EdgesResponse{
-		Edges: paths,
-	})
-}
-
-// @Summary Get all paths between two entities in a edge graph
-// @Description Get all paths between two entities in a edge graph
-// @Tags Edge
-// @Accept json
-// @Produce json
-// @Param edge body delivery.GetAllPaths.requestBody true "Edge obj specifying the entities"
-// @Success 200 {obj} delivery.GetAllPaths.response "All paths between entities"
-// @Failure 400 {obj} domain.ErrResponse
-// @Failure 403
-// @Failure 500 {obj} domain.ErrResponse
-// @Router /edge/get-all-paths [post]
-func (h *Delivery) GetAllPaths(c *gin.Context) {
-	type requestBody struct {
-		Sbj        domain.Vertex     `json:"sbj" binding:"required"`
-		Obj        domain.Vertex     `json:"obj" binding:"required"`
-		SearchCond domain.SearchCond `json:"search_cond"`
-	}
-	body := requestBody{}
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	paths, err := h.usecase.GetAllPaths(body.Sbj, body.Obj, body.SearchCond)
-	if err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
-			})
-			return
-		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	if len(paths) == 0 {
-		c.Status(http.StatusForbidden)
-	}
-	type response struct {
-		Data [][]domain.Edge `json:"data"`
-	}
-	c.JSON(http.StatusOK, response{
-		Data: paths,
-	})
 }
 
 // @Summary Get all edges for a given obj
@@ -387,7 +239,7 @@ func (h *Delivery) GetAllPaths(c *gin.Context) {
 // @Failure 403
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/get-all-obj-edges [post]
-func (h *Delivery) GetAllObjRels(c *gin.Context) {
+func (h *Delivery) GetObjAuths(c *gin.Context) {
 	type requestBody struct {
 		Sbj         domain.Vertex      `json:"sbj" binding:"required"`
 		SearchCond  domain.SearchCond  `json:"search_cond"`
@@ -401,14 +253,15 @@ func (h *Delivery) GetAllObjRels(c *gin.Context) {
 		})
 		return
 	}
-	edges, err := h.usecase.GetAllObjRels(
+	vertices, err := h.usecase.GetObjAuths(
+		c.Request.Context(),
 		domain.Vertex(body.Sbj),
 		body.SearchCond,
 		body.CollectCond,
 		body.MaxDepth,
 	)
 	if err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
+		if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -419,8 +272,11 @@ func (h *Delivery) GetAllObjRels(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, domain.EdgesResponse{
-		Edges: edges,
+	type Response struct {
+		Vertices []domain.Vertex `json:"vertices"`
+	}
+	c.JSON(http.StatusOK, Response{
+		Vertices: vertices,
 	})
 }
 
@@ -435,7 +291,7 @@ func (h *Delivery) GetAllObjRels(c *gin.Context) {
 // @Failure 403
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/get-all-sbj-edges [post]
-func (h *Delivery) GetAllSbjRels(c *gin.Context) {
+func (h *Delivery) GetSbjsWhoHasAuth(c *gin.Context) {
 	type requestBody struct {
 		Obj         domain.Vertex      `json:"obj" binding:"required"`
 		SearchCond  domain.SearchCond  `json:"search_cond"`
@@ -449,14 +305,15 @@ func (h *Delivery) GetAllSbjRels(c *gin.Context) {
 		})
 		return
 	}
-	edges, err := h.usecase.GetAllSbjRels(
+	vertices, err := h.usecase.GetSbjsWhoHasAuth(
+		c.Request.Context(),
 		domain.Vertex(body.Obj),
 		body.SearchCond,
 		body.CollectCond,
 		body.MaxDepth,
 	)
 	if err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
+		if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -467,8 +324,11 @@ func (h *Delivery) GetAllSbjRels(c *gin.Context) {
 		})
 		return
 	}
-	c.JSON(http.StatusOK, domain.EdgesResponse{
-		Edges: edges,
+	type Response struct {
+		Vertices []domain.Vertex `json:"vertices"`
+	}
+	c.JSON(http.StatusOK, Response{
+		Vertices: vertices,
 	})
 }
 
@@ -485,11 +345,12 @@ func (h *Delivery) GetTree(c *gin.Context) {
 		return
 	}
 	tree, err := h.usecase.GetTree(
+		c.Request.Context(),
 		body.Sbj,
 		body.MaxDepth,
 	)
 	if err != nil {
-		if _, ok := err.(domain.RequestBodyError); ok {
+		if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
@@ -508,21 +369,8 @@ func (h *Delivery) GetTree(c *gin.Context) {
 	})
 }
 
-// @Summary Clear all edges
-// @Description Clear all edges in the system
-// @Tags Edge
-// @Accept json
-// @Produce json
-// @Success 200
-// @Failure 500 {obj} domain.ErrResponse
-// @Router /edge/clear-all-edges [post]
-func (h *Delivery) ClearAllEdges(c *gin.Context) {
-	err := h.usecase.ClearAllEdges()
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
-		return
-	}
-	c.Status(http.StatusOK)
+func (h *Delivery) SeeTree(c *gin.Context) {
+	c.JSON(http.StatusBadRequest, domain.ErrResponse{
+		Error: "Not Implemented",
+	})
 }

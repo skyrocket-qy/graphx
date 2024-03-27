@@ -18,16 +18,12 @@ func Binding(r *gin.Engine, d *rest.Delivery) {
 		relRouter.GET("/", d.Get)
 		relRouter.POST("/", d.Create)
 		relRouter.DELETE("/", d.Delete)
+		relRouter.DELETE("/all", d.ClearAllEdges)
 
-		relRouter.DELETE("/by-queries", d.DeleteByQueries)
-		relRouter.POST("/batch-operation", d.BatchOperation)
-
-		relRouter.GET("/all-namespaces", d.GetAllNs)
-		relRouter.GET("/check", d.Check)
-		relRouter.GET("/shortest-path", d.GetShortestPath)
-		relRouter.GET("/all-paths", d.GetAllPaths)
-		relRouter.GET("/all-object-relations", d.GetAllObjRels)
-		relRouter.GET("/all-subject-relations", d.GetAllSbjRels)
-		relRouter.DELETE("/all-edges", d.ClearAllEdges)
+		relRouter.POST("/checkauth", d.CheckAuth)
+		relRouter.POST("/obj-auths", d.GetObjAuths)
+		relRouter.POST("/sbj-who-has-auth", d.GetSbjsWhoHasAuth)
+		relRouter.POST("/get-tree", d.GetTree)
+		relRouter.POST("/see-tree", d.SeeTree)
 	}
 }

@@ -20,7 +20,7 @@ type Usecase interface {
 	GetSbjsWhoHasAuth(c context.Context, obj Vertex, searchCond SearchCond,
 		collectCond CollectCond, maxDepth int) (
 		vertices []Vertex, err error)
-	GetTree(subject Vertex, maxDepth int) (*TreeNode, error)
+	GetTree(c context.Context, subject Vertex, maxDepth int) (*TreeNode, error)
 	SeeTree(c context.Context, sbj Vertex, maxDepth int) (imageAddress string,
 		err error)
 }

@@ -103,12 +103,12 @@ func (u *Usecase) GetSbjsWhoHasAuth(c context.Context, obj domain.Vertex,
 		collectCond, maxDepth)
 }
 
-func (u *Usecase) GetTree(subject domain.Vertex, maxDepth int) (
+func (u *Usecase) GetTree(c context.Context, subject domain.Vertex, maxDepth int) (
 	*domain.TreeNode, error) {
 	return nil, domain.ErrNotImplemented{}
 }
 
-func (u *Usecase) SeeTree(subject domain.Vertex, maxDepth int) (
-	*domain.TreeNode, error) {
-	return nil, domain.ErrNotImplemented{}
+func (u *Usecase) SeeTree(c context.Context, subject domain.Vertex, maxDepth int) (
+	string, error) {
+	return "", domain.ErrNotImplemented{}
 }
