@@ -4,12 +4,8 @@ import "context"
 
 type SqlRepository interface {
 	Ping(c context.Context) error
-	Create(edge Edge) error
-	Delete(edge Edge) error
-	DeleteByQueries(queries []Edge) error
-	BatchOperation(operations []Operation) error
-	GetAll(options ...PageOptions) (edges []Edge, lastID uint, err error)
-	Query(query Edge) ([]Edge, error)
-	GetAllNs() ([]string, error)
-	DeleteAll() error
+	Get(c context.Context, edge Edge, queryMode bool) (edges []Edge, err error)
+	Create(c context.Context, edge Edge) error
+	Delete(c context.Context, edge Edge, queryMode bool) error
+	ClearAll(c context.Context) error
 }

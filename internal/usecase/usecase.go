@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"sync"
-	"time"
 
 	"github.com/skyrocketOoO/go-utility/queue"
 	"github.com/skyrocketOoO/go-utility/set"
@@ -13,15 +12,17 @@ import (
 )
 
 type Usecase struct {
-	sqlRepo        domain.SqlRepository
-	PageStates     map[string]*PageState
+	sqlRepo    domain.SqlRepository
+	graphInfra domain.GraphInfra
+	// PageStates     map[string]*PageState
 	PageStatesLock sync.RWMutex
 }
 
-func NewUsecase(sqlRepo domain.SqlRepository) *Usecase {
+func NewUsecase(sqlRepo domain.SqlRepository,
+	graphInfra domain.GraphInfra) *Usecase {
 	usecase := &Usecase{
-		sqlRepo:        sqlRepo,
-		PageStates:     map[string]*PageState{},
+		sqlRepo: sqlRepo,
+		// PageStates:     map[string]*PageState{},
 		PageStatesLock: sync.RWMutex{},
 	}
 
@@ -48,11 +49,11 @@ func NewUsecase(sqlRepo domain.SqlRepository) *Usecase {
 	return usecase
 }
 
-type PageState struct {
-	LastRelID uint
-	// if query after expired time without remove, keep query
-	ExpiredTime time.Time
-}
+// type PageState struct {
+// 	LastRelID uint
+// 	// if query after expired time without remove, keep query
+// 	ExpiredTime time.Time
+// }
 
 func (u *Usecase) Healthy(c context.Context) error {
 	// do something check like db connection is established

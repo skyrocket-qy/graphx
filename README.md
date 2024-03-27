@@ -66,3 +66,4 @@ type Relation struct {
 - Object -> Obj
 - Subject -> Sbj
 - Condition -> Cond
+- Authority -> Auth

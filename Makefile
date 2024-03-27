@@ -1,5 +1,6 @@
 run-postgres:
-	docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password postgres:latest
+	docker run -d --name postgres -p 5432:5432 -e POSTGRES_PASSWORD=password \
+	postgres:latest
 
 build-img:
 	docker build -t go-server-template .

@@ -12,6 +12,7 @@ import (
 	"github.com/skyrocketOoO/zanazibar-dag/docs"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest/middleware"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/graph"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/sql"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
 
@@ -28,7 +29,8 @@ var flagDatabaseEnum DatabaseEnum
 
 func workFunc(cmd *cobra.Command, args []string) {
 	zerolog.TimeFieldFormat = time.RFC3339
-	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr}) // human-friendly logging without efficiency
+	// human-friendly logging without efficiency
+	log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 	log.Info().Msg("Logger initialized")
 
 	if err := config.ReadConfig(); err != nil {
@@ -55,7 +57,8 @@ func workFunc(cmd *cobra.Command, args []string) {
 		log.Fatal().Msg(err.Error())
 	}
 
-	usecase := usecase.NewUsecase(sqlRepo)
+	graphInfra := graph.NewGraphInfra(sqlRepo)
+	usecase := usecase.NewUsecase(sqlRepo, graphInfra)
 	delivery := rest.NewDelivery(usecase)
 
 	router := gin.Default()
@@ -74,7 +77,7 @@ var rootCmd = &cobra.Command{
 	Run:   workFunc,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
+// Adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	err := rootCmd.Execute()
@@ -88,5 +91,6 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.Flags().StringP("port", "p", "8080", "port")
-	rootCmd.Flags().Var(&flagDatabaseEnum, "database", `database enum. allowed: "pg", "sqlite"`)
+	rootCmd.Flags().Var(&flagDatabaseEnum, "database",
+		`database enum. allowed: "pg", "sqlite"`)
 }
