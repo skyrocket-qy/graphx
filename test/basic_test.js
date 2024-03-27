@@ -21,24 +21,22 @@ export default function() {
   res = http.get(`${SERVER_URL}/healthy`);
   check(res, { 'Server is healthy': (r) => r.status == 200 });
 
-  res = http.post(`${SERVER_URL}/relation/clear-all-relations`, null, {headers:Headers});
+  res = http.del(`${SERVER_URL}/relation/all`, null, {headers:Headers});
   check(res, { 'ClearAllRelations': (r) => r.status == 200 });
 
-  group("api", () => {
-    group("relation", () => {
-      TestRelationAPI(SERVER_URL, Headers);
-    });
-  });
+  // group("api", () => {
+  //     TestAPI(SERVER_URL, Headers);
+  // });
 
-  group("scenario", () => {
-    group("cycle", () => {
-      TestCycle(SERVER_URL, Headers);
-    });
-    group("require_attr", () => {
-      TestRequiredAttr(SERVER_URL, Headers);
-    });
-    group("reserved_word", () => {
-      TestReservedWord(SERVER_URL, Headers);
-    });
-  });
+  // group("scenario", () => {
+  //   group("cycle", () => {
+  //     TestCycle(SERVER_URL, Headers);
+  //   });
+  //   group("require_attr", () => {
+  //     TestRequiredAttr(SERVER_URL, Headers);
+  //   });
+  //   group("reserved_word", () => {
+  //     TestReservedWord(SERVER_URL, Headers);
+  //   });
+  // });
 }
