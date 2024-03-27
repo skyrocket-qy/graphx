@@ -12,17 +12,17 @@ func ValidateRel(rel domain.Edge) error {
 	fmt.Printf("%+v\n", rel)
 	if rel.ObjNs == "" || rel.ObjName == "" || rel.ObjRel == "" ||
 		rel.SbjNs == "" || rel.SbjName == "" {
-		return domain.RequestBodyError{}
+		return domain.ErrRequestBody{}
 	}
 	return ValidateReservedWord(rel)
 }
 
 func ValidateVertex(vertex domain.Vertex, isSubject bool) error {
 	if vertex.Ns == "" || vertex.Name == "" {
-		return domain.RequestBodyError{}
+		return domain.ErrRequestBody{}
 	}
 	if !isSubject && vertex.Rel == "" {
-		return domain.RequestBodyError{}
+		return domain.ErrRequestBody{}
 	}
 	return ValidateReservedWord(vertex)
 }
@@ -33,7 +33,7 @@ func ValidateReservedWord(st interface{}) error {
 		field := value.Field(i)
 		str := field.Interface().(string)
 		if strings.Contains(str, "%") {
-			return domain.RequestBodyError{}
+			return domain.ErrRequestBody{}
 		}
 
 	}

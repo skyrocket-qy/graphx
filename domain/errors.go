@@ -1,14 +1,14 @@
 package domain
 
-type CauseCycleError struct{}
+type ErrGraphCycle struct{}
 
-func (e CauseCycleError) Error() string {
+func (e ErrGraphCycle) Error() string {
 	return "cycle detected"
 }
 
-type RequestBodyError struct{}
+type ErrRequestBody struct{}
 
-func (e RequestBodyError) Error() string {
+func (e ErrRequestBody) Error() string {
 	return "body attribute error"
 }
 

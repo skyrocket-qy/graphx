@@ -5,7 +5,6 @@ import "context"
 type Usecase interface {
 	Healthy(ctx context.Context) error
 
-	// tuple
 	Get(c context.Context, edge Edge, queryMode bool) (edges []Edge, err error)
 	Create(c context.Context, edge Edge) error
 	Delete(c context.Context, edge Edge, queryMode bool) error
@@ -21,5 +20,7 @@ type Usecase interface {
 	GetSbjsWhoHasAuth(c context.Context, obj Vertex, searchCond SearchCond,
 		collectCond CollectCond, maxDepth int) (
 		vertices []Vertex, err error)
-	// GetTree(subject Vertex, maxDepth int) (*TreeNode, error)
+	GetTree(subject Vertex, maxDepth int) (*TreeNode, error)
+	SeeTree(c context.Context, sbj Vertex, maxDepth int) (imageAddress string,
+		err error)
 }
