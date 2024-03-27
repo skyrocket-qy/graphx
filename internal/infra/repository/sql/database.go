@@ -13,7 +13,7 @@ import (
 
 var Db *gorm.DB
 
-func InitDB(database string) (*gorm.DB, error) {
+func InitDB(database string) (*gorm.DB, func(), error) {
 	var db *gorm.DB
 	var err error
 
@@ -39,15 +39,19 @@ func InitDB(database string) (*gorm.DB, error) {
 		log.Info().Msg("Connecting to Sqlite")
 		db, err = gorm.Open(sqlite.Open("sqlite.db"), &gorm.Config{})
 	default:
-		return nil, errors.New("database not supported")
+		return nil, nil, errors.New("database not supported")
 	}
 	if err != nil {
-		return nil, errors.New(err.Error())
+		return nil, nil, errors.New(err.Error())
 	}
 
 	if err = db.AutoMigrate(&Edge{}); err != nil {
-		return nil, errors.New(err.Error())
+		return nil, nil, errors.New(err.Error())
 	}
 
-	return db, nil
+	var Disconnect = func() {
+		db, _ := db.DB()
+		db.Close()
+	}
+	return db, Disconnect, nil
 }

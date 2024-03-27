@@ -3,6 +3,8 @@ postgres:
   port: 5432
   user: postgres
   password: password
-  db: postgres
+  db: graph-authority-management
   sslmode: disable
   timezone: Asia/Taipei
+
+db: graph-authority-management

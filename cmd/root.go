@@ -43,14 +43,11 @@ func workFunc(cmd *cobra.Command, args []string) {
 	docs.SwaggerInfo.BasePath = "/v2"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	sqlDb, err := sql.InitDB(string(flagDatabaseEnum))
+	sqlDb, disconnectDb, err := sql.InitDB(string(flagDatabaseEnum))
 	if err != nil {
 		log.Fatal().Msg(errors.ToString(err, true))
 	}
-	defer func() {
-		db, _ := sqlDb.DB()
-		db.Close()
-	}()
+	defer disconnectDb()
 
 	sqlRepo, err := sql.NewSqlRepository(sqlDb)
 	if err != nil {
