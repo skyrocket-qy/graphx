@@ -10,10 +10,10 @@ import (
 )
 
 type GraphInfra struct {
-	sqlRepo domain.SqlRepository
+	sqlRepo domain.DbRepository
 }
 
-func NewGraphInfra(sqlRepo domain.SqlRepository) *GraphInfra {
+func NewGraphInfra(sqlRepo domain.DbRepository) *GraphInfra {
 	return &GraphInfra{
 		sqlRepo: sqlRepo,
 	}

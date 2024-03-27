@@ -10,9 +10,11 @@ import (
 	"github.com/skyrocketOoO/zanazibar-dag/api"
 	"github.com/skyrocketOoO/zanazibar-dag/config"
 	"github.com/skyrocketOoO/zanazibar-dag/docs"
+	"github.com/skyrocketOoO/zanazibar-dag/domain"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest/middleware"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/graph"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/mongo"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/sql"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
 
@@ -25,7 +27,7 @@ import (
 )
 
 // Here is the enum flag variable declaration
-var flagDatabaseEnum DatabaseEnum
+var flagDatabase DatabaseEnum
 
 func workFunc(cmd *cobra.Command, args []string) {
 	zerolog.TimeFieldFormat = time.RFC3339
@@ -43,19 +45,34 @@ func workFunc(cmd *cobra.Command, args []string) {
 	docs.SwaggerInfo.BasePath = "/v2"
 	docs.SwaggerInfo.Schemes = []string{"http"}
 
-	sqlDb, disconnectDb, err := sql.InitDB(string(flagDatabaseEnum))
-	if err != nil {
-		log.Fatal().Msg(errors.ToString(err, true))
+	var dbRepo domain.DbRepository
+	switch string(flagDatabase) {
+	case "sqlite", "pg":
+		sqlDb, disconnectDb, err := sql.InitDB(string(flagDatabase))
+		if err != nil {
+			log.Fatal().Msg(errors.ToString(err, true))
+		}
+		defer disconnectDb()
+		dbRepo, err = sql.NewSqlRepository(sqlDb)
+		if err != nil {
+			log.Fatal().Msg(err.Error())
+		}
+	case "mongo":
+		mongoClient, disconnectDb, err := mongo.InitDb()
+		if err != nil {
+			log.Fatal().Msg(errors.ToString(err, true))
+		}
+		defer disconnectDb()
+		dbRepo, err = mongo.NewMongoRepository(mongoClient)
+		if err != nil {
+			log.Fatal().Msg(err.Error())
+		}
+	default:
+		log.Fatal().Msg("database not supported")
 	}
-	defer disconnectDb()
 
-	sqlRepo, err := sql.NewSqlRepository(sqlDb)
-	if err != nil {
-		log.Fatal().Msg(err.Error())
-	}
-
-	graphInfra := graph.NewGraphInfra(sqlRepo)
-	usecase := usecase.NewUsecase(sqlRepo, graphInfra)
+	graphInfra := graph.NewGraphInfra(dbRepo)
+	usecase := usecase.NewUsecase(dbRepo, graphInfra)
 	delivery := rest.NewDelivery(usecase)
 
 	router := gin.Default()
@@ -88,6 +105,6 @@ func init() {
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
 	rootCmd.Flags().StringP("port", "p", "8080", "port")
-	rootCmd.Flags().Var(&flagDatabaseEnum, "database",
-		`database enum. allowed: "pg", "sqlite"`)
+	rootCmd.Flags().Var(&flagDatabase, "database",
+		`database enum. allowed: "pg", "sqlite", "mongo"`)
 }

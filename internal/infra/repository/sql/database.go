@@ -11,8 +11,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var Db *gorm.DB
-
 func InitDB(database string) (*gorm.DB, func(), error) {
 	var db *gorm.DB
 	var err error

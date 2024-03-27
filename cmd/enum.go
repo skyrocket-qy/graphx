@@ -7,6 +7,7 @@ type DatabaseEnum string
 const (
 	databaseEnumPg     DatabaseEnum = "pg"
 	databaseEnumSqlite DatabaseEnum = "sqlite"
+	databaseEnumMongo  DatabaseEnum = "mongo"
 )
 
 // String is used both by fmt.Print and by Cobra in help text
@@ -21,7 +22,7 @@ func (e *DatabaseEnum) Set(v string) error {
 		*e = DatabaseEnum(v)
 		return nil
 	default:
-		return errors.New(`must be one of "pg", "sqlite"`)
+		return errors.New(`must be one of "pg", "sqlite", "mongo"`)
 	}
 }
 

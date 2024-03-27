@@ -2,7 +2,7 @@ package domain
 
 import "context"
 
-type SqlRepository interface {
+type DbRepository interface {
 	Ping(c context.Context) error
 	Get(c context.Context, edge Edge, queryMode bool) (edges []Edge, err error)
 	Create(c context.Context, edge Edge) error

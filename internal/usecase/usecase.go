@@ -9,12 +9,12 @@ import (
 )
 
 type Usecase struct {
-	sqlRepo        domain.SqlRepository
+	sqlRepo        domain.DbRepository
 	graphInfra     domain.GraphInfra
 	PageStatesLock sync.RWMutex
 }
 
-func NewUsecase(sqlRepo domain.SqlRepository,
+func NewUsecase(sqlRepo domain.DbRepository,
 	graphInfra domain.GraphInfra) *Usecase {
 	usecase := &Usecase{
 		sqlRepo:        sqlRepo,
