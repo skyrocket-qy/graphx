@@ -6,6 +6,7 @@ go 1.22.1
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/redis/go-redis/v9 v9.5.1
 	github.com/rotisserie/eris v0.5.4
 	github.com/rs/zerolog v1.32.0
 	github.com/skyrocketOoO/go-utility v0.0.0-20240131142515-6086e61f7ca5
@@ -15,6 +16,7 @@ require (
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0
 	github.com/swaggo/swag v1.16.3
+	github.com/vesoft-inc/nebula-go/v3 v3.7.1-0.20240328083434-d9a0cb84448d
 	go.mongodb.org/mongo-driver v1.14.0
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/driver/sqlite v1.5.5
@@ -65,7 +67,6 @@ require (
 	github.com/montanaflynn/stats v0.0.0-20171201202039-1bf9dbcd8cbe // indirect
 	github.com/pelletier/go-toml/v2 v2.2.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	github.com/redis/go-redis/v9 v9.5.1 // indirect
 	github.com/sagikazarmark/locafero v0.4.0 // indirect
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
@@ -76,7 +77,6 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	github.com/vesoft-inc/fbthrift v0.0.0-20230214024353-fa2f34755b28 // indirect
-	github.com/vesoft-inc/nebula-go/v3 v3.7.1-0.20240328083434-d9a0cb84448d // indirect
 	github.com/xdg-go/pbkdf2 v1.0.0 // indirect
 	github.com/xdg-go/scram v1.1.2 // indirect
 	github.com/xdg-go/stringprep v1.0.4 // indirect
