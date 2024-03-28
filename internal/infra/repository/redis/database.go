@@ -1,0 +1,30 @@
+package redis
+
+import (
+	"context"
+	"time"
+
+	"github.com/redis/go-redis/v9"
+	errors "github.com/rotisserie/eris"
+)
+
+func InitDb() (*redis.Client, func(), error) {
+	rdsCli := redis.NewClient(&redis.Options{
+		Addr:     "localhost:63791",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	_, err := rdsCli.Ping(ctx).Result()
+	if err != nil {
+		return nil, nil, errors.Wrap(err, "ping redis failed")
+	}
+
+	var Disconnect = func() {
+		rdsCli.Close()
+	}
+
+	return rdsCli, Disconnect, nil
+}

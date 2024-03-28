@@ -15,6 +15,7 @@ import (
 	"github.com/skyrocketOoO/zanazibar-dag/internal/delivery/rest/middleware"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/graph"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/mongo"
+	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/redis"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/infra/repository/sql"
 	"github.com/skyrocketOoO/zanazibar-dag/internal/usecase"
 
@@ -67,6 +68,16 @@ func workFunc(cmd *cobra.Command, args []string) {
 		if err != nil {
 			log.Fatal().Msg(err.Error())
 		}
+	case "redis":
+		rdsCli, disconnectDb, err := redis.InitDb()
+		if err != nil {
+			log.Fatal().Msg(err.Error())
+		}
+		defer disconnectDb()
+		dbRepo, err = redis.NewRedisRepository(rdsCli)
+		if err != nil {
+			log.Fatal().Msg(err.Error())
+		}
 	default:
 		log.Fatal().Msg("database not supported")
 	}
@@ -106,5 +117,5 @@ func init() {
 	// will be global for your application.
 	rootCmd.Flags().StringP("port", "p", "8080", "port")
 	rootCmd.Flags().Var(&flagDatabase, "database",
-		`database enum. allowed: "pg", "sqlite", "mongo"`)
+		`database enum. allowed: "pg", "sqlite", "mongo", "redis"`)
 }
