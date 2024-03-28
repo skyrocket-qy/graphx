@@ -18,6 +18,7 @@ func NewUsecase(sqlRepo domain.DbRepository,
 	graphInfra domain.GraphInfra) *Usecase {
 	usecase := &Usecase{
 		sqlRepo:        sqlRepo,
+		graphInfra:     graphInfra,
 		PageStatesLock: sync.RWMutex{},
 	}
 
@@ -45,14 +46,14 @@ func (u *Usecase) Create(c context.Context, edge domain.Edge) error {
 	ok, err := u.graphInfra.Check(
 		c,
 		domain.Vertex{
-			Ns:   edge.ObjNs,
-			Name: edge.ObjName,
-			Rel:  edge.ObjRel,
-		},
-		domain.Vertex{
 			Ns:   edge.SbjNs,
 			Name: edge.SbjName,
 			Rel:  edge.SbjRel,
+		},
+		domain.Vertex{
+			Ns:   edge.ObjNs,
+			Name: edge.ObjName,
+			Rel:  edge.ObjRel,
 		},
 		domain.SearchCond{},
 	)

@@ -73,6 +73,11 @@ func (r *MongoRepository) Get(c context.Context, edge domain.Edge,
 			}
 			edges = append(edges, edge)
 		}
+		if len(edges) == 0 {
+			return nil, domain.ErrRecordNotFound{}
+		} else if len(edges) > 1 {
+			return nil, domain.ErrDuplicateRecord{}
+		}
 		return edges, nil
 	}
 }

@@ -17,3 +17,15 @@ type ErrNotImplemented struct{}
 func (e ErrNotImplemented) Error() string {
 	return "not implemented"
 }
+
+type ErrRecordNotFound struct{}
+
+func (e ErrRecordNotFound) Error() string {
+	return "record not found"
+}
+
+type ErrDuplicateRecord struct{}
+
+func (e ErrDuplicateRecord) Error() string {
+	return "duplicate record"
+}

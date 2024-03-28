@@ -61,19 +61,23 @@ func (d *Delivery) Healthy(c *gin.Context) {
 // @Router /edge/ [get]
 func (h *Delivery) Get(c *gin.Context) {
 	edge := domain.Edge{
-		ObjNs:   c.Query("obj-ns"),
-		ObjName: c.Query("obj-name"),
-		ObjRel:  c.Query("obj-rel"),
-		SbjNs:   c.Query("sbj-ns"),
-		SbjName: c.Query("sbj-name"),
-		SbjRel:  c.Query("sbj-rel"),
+		ObjNs:   c.Query("obj_ns"),
+		ObjName: c.Query("obj_name"),
+		ObjRel:  c.Query("obj_rel"),
+		SbjNs:   c.Query("sbj_ns"),
+		SbjName: c.Query("sbj_name"),
+		SbjRel:  c.Query("sbj_rel"),
 	}
-	queryMode := c.Query("query-mode") == "true"
+	queryMode := c.Query("query_mode") == "true"
 	edges, err := h.usecase.Get(c.Request.Context(), edge, queryMode)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
+		if _, ok := err.(domain.ErrRecordNotFound); ok {
+			c.JSON(http.StatusNotFound, domain.Response{Message: err.Error()})
+		} else {
+			c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+				Error: err.Error(),
+			})
+		}
 		return
 	}
 	type respBody struct {
@@ -110,16 +114,15 @@ func (h *Delivery) Create(c *gin.Context) {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
-			return
 		} else if _, ok := err.(domain.ErrRequestBody); ok {
 			c.JSON(http.StatusBadRequest, domain.ErrResponse{
 				Error: err.Error(),
 			})
-			return
+		} else {
+			c.JSON(http.StatusInternalServerError, domain.ErrResponse{
+				Error: err.Error(),
+			})
 		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
-		})
 		return
 	}
 	c.Status(http.StatusOK)
@@ -138,7 +141,7 @@ func (h *Delivery) Create(c *gin.Context) {
 func (h *Delivery) Delete(c *gin.Context) {
 	type requestBody struct {
 		Edge      domain.Edge `json:"edge"`
-		QueryMode bool        `json:"query-mode"`
+		QueryMode bool        `json:"query_mode"`
 	}
 	reqBody := requestBody{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
@@ -172,7 +175,7 @@ func (h *Delivery) Delete(c *gin.Context) {
 // @Success 200
 // @Failure 500 {obj} domain.ErrResponse
 // @Router /edge/clear-all-edges [post]
-func (h *Delivery) ClearAllEdges(c *gin.Context) {
+func (h *Delivery) ClearAll(c *gin.Context) {
 	err := h.usecase.ClearAll(c.Request.Context())
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
