@@ -23,12 +23,18 @@ func (r *RedisRepository) Ping(c context.Context) error {
 
 func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 	queryMode bool) ([]domain.Edge, error) {
+	return nil, domain.ErrNotImplemented{}
 }
 
-func (r *RedisRepository) Create(c context.Context, edge domain.Edge) error {}
+func (r *RedisRepository) Create(c context.Context, edge domain.Edge) error {
+	return domain.ErrNotImplemented{}
+}
 
 func (r *RedisRepository) Delete(c context.Context, edge domain.Edge,
 	queryMode bool) error {
+	return domain.ErrNotImplemented{}
 }
 
-func (r *RedisRepository) ClearAll(c context.Context) error {}
+func (r *RedisRepository) ClearAll(c context.Context) error {
+	return domain.ErrNotImplemented{}
+}

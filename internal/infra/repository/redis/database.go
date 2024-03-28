@@ -17,8 +17,7 @@ func InitDb() (*redis.Client, func(), error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	_, err := rdsCli.Ping(ctx).Result()
-	if err != nil {
+	if err := rdsCli.Ping(ctx).Err(); err != nil {
 		return nil, nil, errors.Wrap(err, "ping redis failed")
 	}
 
