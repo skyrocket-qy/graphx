@@ -1,0 +1,179 @@
+Log file created at: 2024/03/28 10:10:51
+Running on machine: f86ef91b4f1d
+Running duration (h:mm:ss): 0:00:00
+Log line format: [IWEF]yyyymmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I20240328 10:10:51.430836     1 GraphDaemon.cpp:122] Starting Graph HTTP Service
+I20240328 10:10:51.437009     6 WebService.cpp:124] Web service started on HTTP[19669]
+I20240328 10:10:51.437038     1 GraphDaemon.cpp:136] Number of networking IO threads: 4
+I20240328 10:10:51.437042     1 GraphDaemon.cpp:145] Number of worker threads: 4
+I20240328 10:10:51.439257     1 MetaClient.cpp:80] Create meta client to "metad2":9559
+I20240328 10:10:51.439734     1 MetaClient.cpp:81] root path: /usr/local/nebula, data path size: 0
+I20240328 10:10:51.453377    30 ThriftClientManager-inl.h:67] resolve "metad2":9559 as "172.24.0.4":9559
+I20240328 10:10:52.462513    30 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:52.475145    31 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:52.479575    32 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:52.483211    33 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:52.491616     1 MetaClient.cpp:3269] Load leader ok
+I20240328 10:10:52.498258     1 MetaClient.cpp:162] Register time task for heartbeat!
+I20240328 10:10:52.498955     1 GraphSessionManager.cpp:337] Total of 0 sessions are loaded
+I20240328 10:10:52.540758     1 MemoryUtils.cpp:171] MemoryTracker set static ratio: 0.8
+I20240328 10:10:52.546706     1 Snowflake.cpp:17] WorkerId init success: 1
+I20240328 10:10:52.547472    37 GraphServer.cpp:63] Starting nebula-graphd on graphd:9669
+I20240328 10:10:52.780454    20 GraphService.cpp:77] Authenticating user root from 172.24.0.11:36754
+I20240328 10:12:16.572307    20 GraphService.cpp:77] Authenticating user root from 172.24.0.11:53686
+E20240328 10:13:07.408178    21 QueryInstance.cpp:151] SyntaxError: syntax error near `edges', query: CREATE SPACE edges;
+E20240328 10:13:29.460000    18 QueryInstance.cpp:151] SyntaxError: syntax error near `(edges_;', query: CREATE SPACE (edges_;
+E20240328 10:13:33.376395    18 QueryInstance.cpp:151] SyntaxError: syntax error near `(edges);', query: CREATE SPACE (edges);
+E20240328 10:13:39.951001    18 QueryInstance.cpp:151] SyntaxError: syntax error near `edges', query: CREATE SPACE edges();
+E20240328 10:15:41.794418    19 QueryInstance.cpp:151] SyntaxError: syntax error near `edges', query: CREATE SPACE edges(CREATE SPACE my_space ();
+E20240328 10:15:41.797943    19 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:41.799968    21 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:41.801002    19 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:41.802214    21 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:43.335117    19 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:43.337441    19 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:43.342106    19 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:43.344431    18 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:43.345475    19 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:44.112318    19 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:44.118469    21 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:44.124552    19 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:44.126581    19 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:44.127218    19 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:44.589833    20 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:44.590317    18 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:44.590545    18 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:44.590749    19 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:44.591276    21 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:44.974453    21 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:44.975922    21 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:44.978119    21 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:44.978852    21 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:44.980432    21 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:45.478507    19 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:45.480648    21 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:45.485872    18 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:45.486402    21 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:45.487100    19 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:46.950635    21 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:46.955742    21 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:46.957026    19 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:46.960830    19 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:15:46.963862    21 QueryInstance.cpp:151] SyntaxError: syntax error near `);', query: );
+E20240328 10:15:54.123961    21 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:15:54.127137    21 QueryInstance.cpp:151] SyntaxError: syntax error near `partition_num', query:     partition_num = 10,
+E20240328 10:15:54.128517    21 QueryInstance.cpp:151] SyntaxError: syntax error near `replica_factor', query:     replica_factor = 3,
+E20240328 10:15:54.130057    19 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query:     vid_type = INT64
+E20240328 10:16:09.343730    21 QueryInstance.cpp:151] SyntaxError: syntax error near `(', query: CREATE SPACE my_space (
+E20240328 10:16:13.472538    21 QueryInstance.cpp:151] SemanticError: space vid_type must be specified explicitly, query: CREATE SPACE my_space
+I20240328 10:16:43.524896    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 0 space
+I20240328 10:16:43.525059    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 0 space
+I20240328 10:16:43.525069    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 0 space
+I20240328 10:16:43.525072    34 MetaClient.cpp:3269] Load leader ok
+E20240328 10:16:54.128242    21 QueryInstance.cpp:151] SyntaxError: syntax error near `SPACE', query: SHOW SPACE;
+I20240328 10:17:03.557386    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:17:03.557545    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:17:03.557564    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:17:03.557567    34 MetaClient.cpp:3269] Load leader ok
+I20240328 10:17:26.884832    18 GraphService.cpp:77] Authenticating user root from 172.24.0.1:36694
+I20240328 10:17:26.897943    18 SwitchSpaceExecutor.cpp:45] Graph switched to `my_space', space id: 1
+E20240328 10:17:26.902088    19 QueryInstance.cpp:151] SemanticError: Vid should be a INT64, query: GO FROM 'Bob' OVER like YIELD
+	  $^.person.name AS name,
+	  $^.person.age AS age,
+	  like.likeness AS likeness
+I20240328 10:17:52.686641    18 GraphService.cpp:77] Authenticating user root from 172.24.0.1:46356
+I20240328 10:17:52.700289    20 SwitchSpaceExecutor.cpp:45] Graph switched to `my_space', space id: 1
+E20240328 10:17:52.703066    18 QueryInstance.cpp:151] SemanticError: Vid should be a INT64, query: GO FROM 'Bob' OVER like YIELD
+	  $^.person.name AS name,
+	  $^.person.age AS age,
+	  like.likeness AS likeness
+I20240328 10:20:10.291790    19 GraphService.cpp:77] Authenticating user root from 172.24.0.1:43210
+I20240328 10:20:10.334208    20 SwitchSpaceExecutor.cpp:45] Graph switched to `basic_example_space', space id: 2
+W20240328 10:20:10.350021    18 SpaceExecutor.cpp:116] Get space ID failed when prepare text index: basic_example_space
+I20240328 10:20:13.702530    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:20:13.702662    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:20:13.702672    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:20:13.702677    34 MetaClient.cpp:3269] Load leader ok
+I20240328 10:32:04.613162    19 GraphService.cpp:77] Authenticating user root from 172.24.0.1:37566
+E20240328 10:32:04.629501    21 QueryInstance.cpp:151] EdgeNotFound: EdgeName `e1`, query: CREATE SPACE IF NOT EXISTS basic_example_space(vid_type=FIXED_STRING(20)); USE basic_example_space;INSERT EDGE e1 () VALUES "10"->"11":();CREATE EDGE IF NOT EXISTS like(likeness double)
+I20240328 10:32:21.320729    19 GraphService.cpp:77] Authenticating user root from 172.24.0.1:42248
+E20240328 10:32:21.324204    20 QueryInstance.cpp:151] EdgeNotFound: EdgeName `e1`, query: CREATE SPACE IF NOT EXISTS basic_example_space(vid_type=FIXED_STRING(20)); USE basic_example_space;INSERT EDGE e1 () VALUES "10"->"11":();
+I20240328 10:32:54.370195    21 GraphService.cpp:77] Authenticating user root from 172.24.0.1:51150
+E20240328 10:32:54.374843    20 QueryInstance.cpp:151] EdgeNotFound: EdgeName `e1`, query: CREATE SPACE IF NOT EXISTS basic_example_space(vid_type=FIXED_STRING(20)); USE basic_example_space;CREATE EDGE IF NOT EXISTS e1();INSERT EDGE e1 () VALUES "10"->"11":();
+I20240328 10:33:04.067665    19 GraphService.cpp:77] Authenticating user root from 172.24.0.1:56500
+E20240328 10:33:04.072645    19 QueryInstance.cpp:151] SyntaxError: syntax error near `INSERT', query: CREATE SPACE IF NOT EXISTS basic_example_space(vid_type=FIXED_STRING(20)); USE basic_example_space;CREATE EDGE IF NOT EXISTS e1()INSERT EDGE e1 () VALUES "10"->"11":();
+I20240328 10:33:12.721967    19 GraphService.cpp:77] Authenticating user root from 172.24.0.1:42630
+E20240328 10:33:12.725643    20 QueryInstance.cpp:151] EdgeNotFound: EdgeName `e1`, query: CREATE SPACE IF NOT EXISTS basic_example_space(vid_type=FIXED_STRING(20)); USE basic_example_space;CREATE EDGE IF NOT EXISTS e1();INSERT EDGE e1 () VALUES "10"->"11":();
+I20240328 10:33:28.604594    21 GraphService.cpp:77] Authenticating user root from 172.24.0.1:51762
+I20240328 10:33:28.627153    18 SwitchSpaceExecutor.cpp:45] Graph switched to `basic_example_space', space id: 3
+W20240328 10:33:28.633263    19 SpaceExecutor.cpp:116] Get space ID failed when prepare text index: basic_example_space
+I20240328 10:33:34.467346    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:33:34.467514    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:33:34.467523    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:33:34.467547    34 MetaClient.cpp:3269] Load leader ok
+I20240328 10:34:21.075668    19 GraphService.cpp:77] Authenticating user root from 172.24.0.1:38848
+I20240328 10:34:21.083230    21 SwitchSpaceExecutor.cpp:45] Graph switched to `basic_example_space', space id: 4
+E20240328 10:34:21.086963    21 QueryInstance.cpp:151] EdgeNotFound: EdgeName `e1`, query: INSERT EDGE e1 () VALUES "10"->"11":();
+I20240328 10:34:24.524423    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:34:24.524744    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:34:24.524953    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:34:24.525137    34 MetaClient.cpp:3269] Load leader ok
+I20240328 10:34:44.632584    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:34:44.632804    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:34:44.633126    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:34:44.633327    34 MetaClient.cpp:3269] Load leader ok
+I20240328 10:35:01.325488    19 SwitchSpaceExecutor.cpp:45] Graph switched to `my_space', space id: 1
+I20240328 10:38:24.856463    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:38:24.856612    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:38:24.856648    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:38:24.856652    34 MetaClient.cpp:3269] Load leader ok
+E20240328 10:38:34.636684    19 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:38:34.637169    19 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT EDGE e1 () VALUES "10"->"11":();
+E20240328 10:39:26.267364    19 QueryInstance.cpp:151] SemanticError: Insert vertex is forbidden, please specify the tag, query: INSERT VERTEX VALUES "10":();
+E20240328 10:42:18.270947    19 QueryInstance.cpp:151] SyntaxError: syntax error near `VERTEX', query: CREATE VERTEX VALUES "10":();
+E20240328 10:42:25.691666    19 QueryInstance.cpp:151] SemanticError: Insert vertex is forbidden, please specify the tag, query: INSERT VERTEX VALUES "10":();
+E20240328 10:44:45.016278    18 QueryInstance.cpp:151] SyntaxError: syntax error near `:"Alice"', query: INSERT VERTEX person VALUES 10:(name:"Alice");
+E20240328 10:45:22.731353    18 QueryInstance.cpp:151] SyntaxError: syntax error near `:"Alice"', query: INSERT VERTEX person VALUES "10":(name:"Alice");
+E20240328 10:45:28.669284    20 MutateValidator.cpp:61] No schema found for person : TagNotFound: TagName `person`
+E20240328 10:45:28.669461    20 QueryInstance.cpp:151] SemanticError: No schema found for `person', query: INSERT VERTEX person VALUES "10":();
+I20240328 10:47:05.324560    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:47:05.324841    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:47:05.324942    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:47:05.325009    34 MetaClient.cpp:3269] Load leader ok
+E20240328 10:47:08.272081    18 QueryInstance.cpp:151] SyntaxError: syntax error near `:"Alice"', query: INSERT VERTEX person VALUES "10":(name:"Alice");
+E20240328 10:47:19.625007    19 QueryInstance.cpp:151] SyntaxError: syntax error near `:"Alice"', query: INSERT VERTEX person VALUES "10":("name":"Alice");
+E20240328 10:47:28.187873    21 QueryInstance.cpp:151] SyntaxError: syntax error near `:'Alice'', query: INSERT VERTEX person VALUES "10":("name":'Alice');
+I20240328 10:48:55.459502    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:48:55.459719    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:48:55.459753    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:48:55.459758    34 MetaClient.cpp:3269] Load leader ok
+E20240328 10:48:56.434999    20 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:48:56.435344    20 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t1() VALUES "10":();
+E20240328 10:49:11.784963    21 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:49:11.785132    21 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t1 VALUES "10":();
+E20240328 10:49:16.650120    20 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:49:16.650177    20 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t1() VALUES "10":();
+E20240328 10:49:50.858120    21 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:49:50.858314    21 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t1 VALUES "10":();
+E20240328 10:50:13.276024    19 MutateValidator.cpp:61] No schema found for t2 : TagNotFound: TagName `t2`
+E20240328 10:50:13.276194    19 QueryInstance.cpp:151] SemanticError: No schema found for `t2', query: INSERT VERTEX t2 (name, age) VALUES "13":("n3", 12), "14":("n4", 8); 
+I20240328 10:50:15.533835    34 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:50:15.533996    34 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:50:15.534029    34 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:50:15.534032    34 MetaClient.cpp:3269] Load leader ok
+E20240328 10:50:31.434576    20 QueryInstance.cpp:151] SyntaxError: syntax error near `" VALUES', query: INSERT VERTEX "t1()" VALUES "10":();
+E20240328 10:50:42.504212    20 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:50:42.504355    20 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t1() VALUES '10':();
+E20240328 10:50:47.565007    20 QueryInstance.cpp:151] SyntaxError: syntax error near `:();', query: INSERT VERTEX t1() VALUES :();
+E20240328 10:50:52.490962    19 QueryInstance.cpp:151] SyntaxError: syntax error near `;', query: INSERT VERTEX t1() VALUES 10;
+E20240328 10:50:59.193729    18 QueryInstance.cpp:151] SyntaxError: syntax error near `;', query: INSERT VERTEX t1() VALUES "10";
+E20240328 10:51:06.266566    18 QueryInstance.cpp:151] SyntaxError: syntax error near `;', query: INSERT VERTEX t1() VALUES "10";
+E20240328 10:51:13.975440    18 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:51:13.975543    18 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t1() VALUES "10":();
+E20240328 10:51:48.041724    19 QueryInstance.cpp:151] SemanticError: Column count doesn't match value count., query: INSERT VERTEX t2() VALUES "10":("aa", 12);
+E20240328 10:52:07.529928    20 SchemaUtil.cpp:130] "10" is the wrong vertex id type: string
+E20240328 10:52:07.530037    20 QueryInstance.cpp:151] Wrong vertex id type: "10", query: INSERT VERTEX t2(name, age) VALUES "10":("aa", 12);
+E20240328 10:52:24.152643    18 SchemaUtil.cpp:130] "11" is the wrong vertex id type: string
+E20240328 10:52:24.152745    18 QueryInstance.cpp:151] Wrong vertex id type: "11", query: INSERT VERTEX t2 (name, age) VALUES "11":("n1", 12);
+E20240328 10:53:00.029803    18 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query: ALTER SPACE my_space vid_type FIXED_STRING(10);
+E20240328 10:53:37.659350    18 QueryInstance.cpp:151] SyntaxError: syntax error near `vid_type', query: ALTER SPACE my_space vid_type FIXED_STRING(10);

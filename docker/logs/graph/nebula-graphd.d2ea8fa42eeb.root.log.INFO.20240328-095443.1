@@ -1,0 +1,36 @@
+Log file created at: 2024/03/28 09:54:43
+Running on machine: d2ea8fa42eeb
+Running duration (h:mm:ss): 0:00:00
+Log line format: [IWEF]yyyymmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I20240328 09:54:43.090075     1 GraphDaemon.cpp:122] Starting Graph HTTP Service
+I20240328 09:54:43.105348     7 WebService.cpp:124] Web service started on HTTP[19669]
+I20240328 09:54:43.105592     1 GraphDaemon.cpp:136] Number of networking IO threads: 4
+I20240328 09:54:43.105722     1 GraphDaemon.cpp:145] Number of worker threads: 4
+I20240328 09:54:43.117023     1 MetaClient.cpp:80] Create meta client to "metad0":9559
+I20240328 09:54:43.117153     1 MetaClient.cpp:81] root path: /usr/local/nebula, data path size: 0
+I20240328 09:54:43.134986    31 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.23.0.2":9559
+I20240328 09:54:43.165549    32 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.23.0.2":9559
+I20240328 09:54:43.169689    33 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.23.0.2":9559
+I20240328 09:54:43.173494    34 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.23.0.2":9559
+I20240328 09:54:43.186163     1 MetaClient.cpp:3269] Load leader ok
+I20240328 09:54:43.189733     1 MetaClient.cpp:162] Register time task for heartbeat!
+I20240328 09:54:43.190573     1 GraphSessionManager.cpp:337] Total of 0 sessions are loaded
+I20240328 09:54:43.246825     1 MemoryUtils.cpp:171] MemoryTracker set static ratio: 0.8
+I20240328 09:54:43.248366     1 Snowflake.cpp:17] WorkerId init success: 0
+I20240328 09:54:43.248919    38 GraphServer.cpp:63] Starting nebula-graphd on graphd:9669
+I20240328 09:57:41.595490    21 GraphService.cpp:77] Authenticating user user from 172.23.0.1:54934
+E20240328 09:57:41.600281    21 GraphSessionManager.cpp:130] Create session failed:User not existed!
+E20240328 09:57:41.600924    21 GraphService.cpp:113] Create session for userName: user, ip: 172.23.0.1 failed: Create session failed: User not existed!
+I20240328 09:58:52.701606    20 GraphService.cpp:77] Authenticating user user from 172.23.0.1:50528
+E20240328 09:58:52.702867    20 GraphSessionManager.cpp:130] Create session failed:User not existed!
+E20240328 09:58:52.702962    20 GraphService.cpp:113] Create session for userName: user, ip: 172.23.0.1 failed: Create session failed: User not existed!
+I20240328 10:01:59.455507    21 GraphService.cpp:77] Authenticating user root from 172.23.0.1:50870
+E20240328 10:01:59.470975    22 UseValidator.cpp:28] Unknown space: space_name : SpaceNotFound: SpaceName `space_name`
+E20240328 10:01:59.471208    22 QueryInstance.cpp:151] SpaceNotFound: SpaceName `space_name`, query: USE space_name
+I20240328 10:08:50.809813    21 GraphService.cpp:77] Authenticating user root from 172.23.0.1:46498
+E20240328 10:08:50.817090    22 UseValidator.cpp:28] Unknown space: space_name : SpaceNotFound: SpaceName `space_name`
+E20240328 10:08:50.817754    22 QueryInstance.cpp:151] SpaceNotFound: SpaceName `space_name`, query: USE space_name
+I20240328 10:10:16.206400     1 GraphDaemon.cpp:176] Signal 15(Terminated) received, stopping this server
+I20240328 10:10:16.228332    38 GraphServer.cpp:74] nebula-graphd on graphd:9669 has been stopped
+I20240328 10:10:16.228924     1 GraphDaemon.cpp:161] The graph Daemon stopped
+I20240328 10:10:16.228998     1 GraphServer.cpp:109] The graph server has been stopped

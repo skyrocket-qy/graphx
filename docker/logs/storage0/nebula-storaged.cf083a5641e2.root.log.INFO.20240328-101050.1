@@ -1,0 +1,192 @@
+Log file created at: 2024/03/28 10:10:50
+Running on machine: cf083a5641e2
+Running duration (h:mm:ss): 0:00:00
+Log line format: [IWEF]yyyymmdd hh:mm:ss.uuuuuu threadid file:line] msg
+I20240328 10:10:50.425655     1 StorageDaemon.cpp:132] localhost = "storaged0":9779
+I20240328 10:10:50.429104     1 StorageDaemon.cpp:147] data path= /data/storage
+I20240328 10:10:50.436635     1 MetaClient.cpp:80] Create meta client to "metad0":9559
+I20240328 10:10:50.436672     1 MetaClient.cpp:81] root path: /usr/local/nebula, data path size: 1
+W20240328 10:10:50.436700     1 FileBasedClusterIdMan.cpp:43] Open file failed, error No such file or directory
+I20240328 10:10:50.476389    48 ThriftClientManager-inl.h:67] resolve "metad2":9559 as "172.24.0.4":9559
+I20240328 10:10:51.482699    48 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.502207    48 MetaClient.cpp:2672] Persist the cluster Id from metad 7244924658572692314
+I20240328 10:10:53.502245    48 FileBasedClusterIdMan.cpp:21] Remove the existed file cluster.id
+I20240328 10:10:53.502297    48 FileBasedClusterIdMan.cpp:34] Persist clusterId 7244924658572692314 succeeded!
+I20240328 10:10:53.505914    54 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.520220    55 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.521996    56 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.524503    57 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.527719    58 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.535733    59 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.537884    60 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.538581     1 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 0 space
+I20240328 10:10:53.538609     1 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 0 space
+I20240328 10:10:53.538614     1 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 0 space
+I20240328 10:10:53.538619     1 MetaClient.cpp:3269] Load leader ok
+I20240328 10:10:53.539518    61 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.581187    62 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:10:53.583750     1 MetaClient.cpp:162] Register time task for heartbeat!
+I20240328 10:10:53.583792     1 StorageServer.cpp:250] Init schema manager
+I20240328 10:10:53.583799     1 StorageServer.cpp:253] Init index manager
+I20240328 10:10:53.583803     1 StorageServer.cpp:256] Init kvstore
+I20240328 10:10:53.583819     1 NebulaStore.cpp:48] Start the raft service...
+I20240328 10:10:53.584537     1 NebulaSnapshotManager.cpp:25] Send snapshot is rate limited to 10485760 for each part by default
+I20240328 10:10:53.621630     1 RaftexService.cpp:46] Start raft service on 9780
+I20240328 10:10:53.621781     1 NebulaStore.cpp:82] Scan the local path, and init the spaces_
+E20240328 10:10:53.621846     1 FileUtils.cpp:377] Failed to read the directory "/data/storage/nebula" (2): No such file or directory
+I20240328 10:10:53.625753     1 NebulaStore.cpp:292] Init data from partManager for "storaged0":9779
+I20240328 10:10:53.625774     1 NebulaStore.cpp:75] Register handler...
+I20240328 10:10:53.625780     1 StorageServer.cpp:259] Init LogMonitor
+I20240328 10:10:53.626036     1 StorageServer.cpp:126] Starting Storage HTTP Service
+I20240328 10:10:53.626564     1 StorageServer.cpp:130] Http Thread Pool started
+I20240328 10:10:53.631932    80 WebService.cpp:124] Web service started on HTTP[19779]
+I20240328 10:10:53.634251     1 RocksEngineConfig.cpp:371] Emplace rocksdb option max_bytes_for_level_base=268435456
+I20240328 10:10:53.634269     1 RocksEngineConfig.cpp:371] Emplace rocksdb option max_write_buffer_number=4
+I20240328 10:10:53.634274     1 RocksEngineConfig.cpp:371] Emplace rocksdb option write_buffer_size=67108864
+I20240328 10:10:53.638069     1 RocksEngineConfig.cpp:371] Emplace rocksdb option block_size=8192
+I20240328 10:10:53.763782     1 RocksEngine.cpp:107] open rocksdb on /data/storage/nebula/0/data
+I20240328 10:10:53.764467     1 AdminTaskManager.cpp:22] max concurrent subtasks: 10
+I20240328 10:10:53.764619     1 AdminTaskManager.cpp:40] exit AdminTaskManager::init()
+I20240328 10:10:53.765579   104 AdminTaskManager.cpp:224] waiting for incoming task
+I20240328 10:10:53.864164     1 MemoryUtils.cpp:171] MemoryTracker set static ratio: 0.8
+I20240328 10:11:04.446135    63 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:11:14.457851    64 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:11:24.471407    65 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:11:34.483148    72 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:11:44.494566    73 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:11:54.503691    74 ThriftClientManager-inl.h:67] resolve "metad0":9559 as "172.24.0.2":9559
+I20240328 10:16:44.812152    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 0 space
+I20240328 10:16:44.812419    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 0 space
+I20240328 10:16:44.812429    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 0 space
+I20240328 10:16:44.812434    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:16:44.812585    66 NebulaStore.cpp:417] Create data space 1
+I20240328 10:16:44.814006   225 RocksEngineConfig.cpp:371] Emplace rocksdb option max_bytes_for_level_base=268435456
+I20240328 10:16:44.814036   225 RocksEngineConfig.cpp:371] Emplace rocksdb option max_write_buffer_number=4
+I20240328 10:16:44.814041   225 RocksEngineConfig.cpp:371] Emplace rocksdb option write_buffer_size=67108864
+I20240328 10:16:44.814375   225 RocksEngineConfig.cpp:371] Emplace rocksdb option block_size=8192
+I20240328 10:16:44.864308   225 RocksEngine.cpp:107] open rocksdb on /data/storage/nebula/1/data
+I20240328 10:16:44.865391    66 NebulaStore.cpp:480] Space 1, part 2 has been added, asLearner 0
+I20240328 10:16:44.866190    66 NebulaStore.cpp:480] Space 1, part 1 has been added, asLearner 0
+I20240328 10:16:44.867110    66 NebulaStore.cpp:480] Space 1, part 3 has been added, asLearner 0
+I20240328 10:16:44.868589    66 NebulaStore.cpp:480] Space 1, part 5 has been added, asLearner 0
+I20240328 10:16:44.869712    66 NebulaStore.cpp:480] Space 1, part 4 has been added, asLearner 0
+I20240328 10:16:44.870918    66 NebulaStore.cpp:480] Space 1, part 9 has been added, asLearner 0
+I20240328 10:16:44.871659    66 NebulaStore.cpp:480] Space 1, part 10 has been added, asLearner 0
+I20240328 10:16:44.872469    66 NebulaStore.cpp:480] Space 1, part 8 has been added, asLearner 0
+I20240328 10:16:44.873426    66 NebulaStore.cpp:480] Space 1, part 7 has been added, asLearner 0
+I20240328 10:16:44.874282    66 NebulaStore.cpp:480] Space 1, part 6 has been added, asLearner 0
+I20240328 10:16:45.015664    64 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:16:45.017699    64 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:16:45.107250    65 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:16:45.107920    65 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:16:45.109516    72 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:16:45.110185    72 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:16:45.111492    73 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:16:45.111536    74 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:16:45.112268    73 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:16:45.112342    74 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:16:54.891662    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:16:54.891844    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:16:54.891855    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:16:54.891860    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:16:55.195749    48 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:16:55.196319    48 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:04.917392    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:17:04.917560    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:17:04.917572    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:17:04.917577    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:17:05.393057    54 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:05.393935    54 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:15.728307    56 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:15.728567    57 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:15.729187    57 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:15.729225    56 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:25.823483    60 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:25.824219    59 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:25.824473    60 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:25.826402    59 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:35.853951    62 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:35.853960    63 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:17:35.855046    62 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:17:35.855090    63 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:18:06.781162    55 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:18:06.782883    55 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:18:17.321401    58 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:18:17.322351    58 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:18:27.373339    61 ThriftClientManager-inl.h:67] resolve "storaged2":9780 as "172.24.0.5":9780
+I20240328 10:18:27.374652    61 ThriftClientManager-inl.h:67] resolve "storaged1":9780 as "172.24.0.6":9780
+I20240328 10:20:15.056349    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:20:15.056492    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:20:15.056504    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:20:15.056509    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:33:35.854315    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:33:35.856050    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:33:35.856158    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:33:35.856164    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:34:25.918489    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 1 space
+I20240328 10:34:25.918548    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 1 space
+I20240328 10:34:25.918565    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 1 space
+I20240328 10:34:25.918570    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:34:25.918740    66 NebulaStore.cpp:417] Create data space 4
+I20240328 10:34:25.920333   494 RocksEngineConfig.cpp:371] Emplace rocksdb option max_bytes_for_level_base=268435456
+I20240328 10:34:25.920369   494 RocksEngineConfig.cpp:371] Emplace rocksdb option max_write_buffer_number=4
+I20240328 10:34:25.920374   494 RocksEngineConfig.cpp:371] Emplace rocksdb option write_buffer_size=67108864
+I20240328 10:34:25.920707   494 RocksEngineConfig.cpp:371] Emplace rocksdb option block_size=8192
+I20240328 10:34:25.962860   494 RocksEngine.cpp:107] open rocksdb on /data/storage/nebula/4/data
+I20240328 10:34:25.963913    66 NebulaStore.cpp:480] Space 4, part 47 has been added, asLearner 0
+I20240328 10:34:25.964300    66 NebulaStore.cpp:480] Space 4, part 44 has been added, asLearner 0
+I20240328 10:34:25.964970    66 NebulaStore.cpp:480] Space 4, part 41 has been added, asLearner 0
+I20240328 10:34:25.965443    66 NebulaStore.cpp:480] Space 4, part 38 has been added, asLearner 0
+I20240328 10:34:25.965804    66 NebulaStore.cpp:480] Space 4, part 35 has been added, asLearner 0
+I20240328 10:34:25.966179    66 NebulaStore.cpp:480] Space 4, part 32 has been added, asLearner 0
+I20240328 10:34:25.966627    66 NebulaStore.cpp:480] Space 4, part 29 has been added, asLearner 0
+I20240328 10:34:25.966917    66 NebulaStore.cpp:480] Space 4, part 26 has been added, asLearner 0
+I20240328 10:34:25.967291    66 NebulaStore.cpp:480] Space 4, part 11 has been added, asLearner 0
+I20240328 10:34:25.967582    66 NebulaStore.cpp:480] Space 4, part 8 has been added, asLearner 0
+I20240328 10:34:25.968055    66 NebulaStore.cpp:480] Space 4, part 74 has been added, asLearner 0
+I20240328 10:34:25.968415    66 NebulaStore.cpp:480] Space 4, part 5 has been added, asLearner 0
+I20240328 10:34:25.968747    66 NebulaStore.cpp:480] Space 4, part 71 has been added, asLearner 0
+I20240328 10:34:25.969125    66 NebulaStore.cpp:480] Space 4, part 2 has been added, asLearner 0
+I20240328 10:34:25.969655    66 NebulaStore.cpp:480] Space 4, part 68 has been added, asLearner 0
+I20240328 10:34:25.970053    66 NebulaStore.cpp:480] Space 4, part 53 has been added, asLearner 0
+I20240328 10:34:25.971168    66 NebulaStore.cpp:480] Space 4, part 65 has been added, asLearner 0
+I20240328 10:34:25.971645    66 NebulaStore.cpp:480] Space 4, part 98 has been added, asLearner 0
+I20240328 10:34:25.972074    66 NebulaStore.cpp:480] Space 4, part 89 has been added, asLearner 0
+I20240328 10:34:25.972566    66 NebulaStore.cpp:480] Space 4, part 20 has been added, asLearner 0
+I20240328 10:34:25.972929    66 NebulaStore.cpp:480] Space 4, part 56 has been added, asLearner 0
+I20240328 10:34:25.973318    66 NebulaStore.cpp:480] Space 4, part 92 has been added, asLearner 0
+I20240328 10:34:25.973618    66 NebulaStore.cpp:480] Space 4, part 23 has been added, asLearner 0
+I20240328 10:34:25.973771    66 NebulaStore.cpp:480] Space 4, part 59 has been added, asLearner 0
+I20240328 10:34:25.974002    66 NebulaStore.cpp:480] Space 4, part 62 has been added, asLearner 0
+I20240328 10:34:25.974246    66 NebulaStore.cpp:480] Space 4, part 95 has been added, asLearner 0
+I20240328 10:34:25.974489    66 NebulaStore.cpp:480] Space 4, part 86 has been added, asLearner 0
+I20240328 10:34:25.974642    66 NebulaStore.cpp:480] Space 4, part 17 has been added, asLearner 0
+I20240328 10:34:25.974792    66 NebulaStore.cpp:480] Space 4, part 83 has been added, asLearner 0
+I20240328 10:34:25.974944    66 NebulaStore.cpp:480] Space 4, part 14 has been added, asLearner 0
+I20240328 10:34:25.975098    66 NebulaStore.cpp:480] Space 4, part 80 has been added, asLearner 0
+I20240328 10:34:25.975306    66 NebulaStore.cpp:480] Space 4, part 77 has been added, asLearner 0
+I20240328 10:34:25.975484    66 NebulaStore.cpp:480] Space 4, part 50 has been added, asLearner 0
+I20240328 10:34:36.003226    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:34:36.003361    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:34:36.003393    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:34:36.003432    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:34:46.025538    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:34:46.025651    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:34:46.025677    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:34:46.025682    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:38:26.242081    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:38:26.242242    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:38:26.242271    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:38:26.242276    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:47:06.773623    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:47:06.773907    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:47:06.773962    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:47:06.773970    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:48:56.895251    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:48:56.895426    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:48:56.895478    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:48:56.895485    66 MetaClient.cpp:3269] Load leader ok
+I20240328 10:50:16.991799    66 MetaClient.cpp:3263] Load leader of "storaged0":9779 in 2 space
+I20240328 10:50:16.991967    66 MetaClient.cpp:3263] Load leader of "storaged1":9779 in 2 space
+I20240328 10:50:16.991992    66 MetaClient.cpp:3263] Load leader of "storaged2":9779 in 2 space
+I20240328 10:50:16.991997    66 MetaClient.cpp:3269] Load leader ok
