@@ -20,7 +20,8 @@ func InitDb() (*mongo.Client, func(), error) {
 		return nil, nil, err
 	}
 
-	ctx, _ = context.WithTimeout(context.Background(), 2*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "Unable to connect to MongoDB")
