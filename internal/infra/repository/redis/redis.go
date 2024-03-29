@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"path/filepath"
 	"strings"
 
 	"github.com/redis/go-redis/v9"
@@ -130,19 +131,50 @@ func (r *RedisRepository) Create(c context.Context, edge domain.Edge) error {
 
 func (r *RedisRepository) Delete(c context.Context, edge domain.Edge,
 	queryMode bool) error {
-	from, to := edgeToKeyValue(edge)
 	if queryMode {
-		result := r.client.Keys(c, from)
+		fromP := vertexToPattern(domain.Vertex{
+			Ns:   edge.SbjNs,
+			Name: edge.SbjName,
+			Rel:  edge.SbjRel,
+		})
+		toP := vertexToPattern(domain.Vertex{
+			Ns:   edge.ObjNs,
+			Name: edge.ObjName,
+			Rel:  edge.ObjRel,
+		})
+		result := r.client.Keys(c, fromP)
 		if err := result.Err(); err != nil {
-			return nil, err
+			return err
 		}
 		keys := []string{}
 		if err := result.ScanSlice(&keys); err != nil {
-			return nil, err
+			return err
+		}
+		for _, key := range keys {
+			res := r.client.SMembers(c, key)
+			if err := res.Err(); err != nil {
+				return err
+			}
+			values := []string{}
+			if err := res.ScanSlice(&values); err != nil {
+				return err
+			}
+			for _, val := range values {
+				match, err := filepath.Match(toP, val)
+				if err != nil {
+					return err
+				}
+				if match {
+					r.client.SRem(c, key, val)
+					r.client.SRem(c, "reverse%"+val, key)
+				}
+			}
 		}
 	} else {
+		from, to := edgeToKeyValue(edge)
 		return r.client.SRem(c, from, to).Err()
 	}
+	return nil
 }
 
 func (r *RedisRepository) ClearAll(c context.Context) error {
@@ -184,5 +216,10 @@ func vertexToPattern(vertex domain.Vertex) string {
 		res += vertex.Name
 	}
 	res += "%"
-
+	if vertex.Rel == "" {
+		res += "*"
+	} else {
+		res += vertex.Rel
+	}
+	return res
 }
