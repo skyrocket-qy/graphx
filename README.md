@@ -67,3 +67,9 @@ type Relation struct {
 - Subject -> Sbj
 - Condition -> Cond
 - Authority -> Auth
+
+## Something...
+### Why only store edges?
+Store only edges can reduce the storage space usage, our app only concern about
+who has access to the other instead of the vertex's infomation. So we can focus
+on access management to reduce the other requirement

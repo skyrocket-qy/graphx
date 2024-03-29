@@ -10,7 +10,7 @@ import (
 
 func InitDb() (*redis.Client, func(), error) {
 	rdsCli := redis.NewClient(&redis.Options{
-		Addr:     "localhost:63791",
+		Addr:     "localhost:6379",
 		Password: "", // no password set
 		DB:       0,  // use default DB
 	})
