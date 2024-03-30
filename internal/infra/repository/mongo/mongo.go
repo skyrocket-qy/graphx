@@ -26,7 +26,7 @@ func (r *MongoRepository) Ping(c context.Context) error {
 
 func (r *MongoRepository) Get(c context.Context, edge domain.Edge,
 	queryMode bool) ([]domain.Edge, error) {
-	var edges []domain.Edge
+	edges := []domain.Edge{}
 	if queryMode {
 		if edge == (domain.Edge{}) {
 			col := r.client.Database(viper.GetString("db")).Collection("edges")
@@ -98,6 +98,9 @@ func (r *MongoRepository) Delete(c context.Context, edge domain.Edge,
 		_, err := col.DeleteMany(c, edgeToBSONDWithoutZeroVal(edge))
 		return err
 	} else {
+		if _, err := r.Get(c, edge, false); err != nil {
+			return err
+		}
 		_, err := col.DeleteOne(c, edge)
 		return err
 	}

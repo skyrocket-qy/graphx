@@ -6,9 +6,9 @@ func (e ErrGraphCycle) Error() string {
 	return "cycle detected"
 }
 
-type ErrRequestBody struct{}
+type ErrBodyAttribute struct{}
 
-func (e ErrRequestBody) Error() string {
+func (e ErrBodyAttribute) Error() string {
 	return "body attribute error"
 }
 

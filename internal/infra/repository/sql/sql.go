@@ -45,7 +45,6 @@ func (r *SqlRepository) Get(c context.Context, edge domain.Edge,
 				return nil, errors.New(err.Error())
 			}
 		}
-
 		edges := make([]domain.Edge, len(sqlEdges))
 		for i, sqlEdge := range sqlEdges {
 			edges[i] = convertToRel(sqlEdge)
@@ -77,6 +76,9 @@ func (r *SqlRepository) Delete(c context.Context, edge domain.Edge,
 			return errors.New(err.Error())
 		}
 	} else {
+		if _, err := r.Get(c, edge, false); err != nil {
+			return err
+		}
 		if err := r.db.Where("all_columns = ?", concatAttr(edge)).
 			Delete(&Edge{}).Error; err != nil {
 			return errors.New(err.Error())

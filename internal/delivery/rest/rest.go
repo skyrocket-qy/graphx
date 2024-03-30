@@ -24,7 +24,7 @@ func NewDelivery(usecase domain.Usecase) *Delivery {
 // @Success 200 {obj} domain.Response
 // @Router /ping [get]
 func (d *Delivery) Ping(c *gin.Context) {
-	c.JSON(http.StatusOK, domain.Response{Message: "pong"})
+	c.JSON(http.StatusOK, domain.Response{Msg: "pong"})
 }
 
 // @Summary Check the server healthy
@@ -36,11 +36,11 @@ func (d *Delivery) Ping(c *gin.Context) {
 func (d *Delivery) Healthy(c *gin.Context) {
 	// do something check
 	if err := d.usecase.Healthy(c.Request.Context()); err != nil {
-		c.JSON(http.StatusServiceUnavailable, domain.Response{Message: err.Error()})
+		c.JSON(http.StatusServiceUnavailable, domain.Response{Msg: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, domain.Response{Message: "healthy"})
+	c.JSON(http.StatusOK, domain.Response{Msg: "healthy"})
 }
 
 // @Summary Query edges based on parameters
@@ -71,11 +71,11 @@ func (h *Delivery) Get(c *gin.Context) {
 	queryMode := c.Query("query_mode") == "true"
 	edges, err := h.usecase.Get(c.Request.Context(), edge, queryMode)
 	if err != nil {
-		if _, ok := err.(domain.ErrRecordNotFound); ok {
-			c.JSON(http.StatusNotFound, domain.Response{Message: err.Error()})
+		if err.Error() == (domain.ErrRecordNotFound{}).Error() {
+			c.JSON(http.StatusNotFound, domain.Response{Msg: err.Error()})
 		} else {
-			c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-				Error: err.Error(),
+			c.JSON(http.StatusInternalServerError, domain.Response{
+				Msg: err.Error(),
 			})
 		}
 		return
@@ -104,23 +104,23 @@ func (h *Delivery) Create(c *gin.Context) {
 	}
 	reqBody := requestBody{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
 	if err := h.usecase.Create(c.Request.Context(), reqBody.Edge); err != nil {
 		if _, ok := err.(domain.ErrGraphCycle); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
-		} else if _, ok := err.(domain.ErrRequestBody); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+		} else if _, ok := err.(domain.ErrBodyAttribute); ok {
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
 		} else {
-			c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-				Error: err.Error(),
+			c.JSON(http.StatusInternalServerError, domain.Response{
+				Msg: err.Error(),
 			})
 		}
 		return
@@ -145,22 +145,26 @@ func (h *Delivery) Delete(c *gin.Context) {
 	}
 	reqBody := requestBody{}
 	if err := c.ShouldBindJSON(&reqBody); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
 
 	if err := h.usecase.Delete(c.Request.Context(), reqBody.Edge,
 		reqBody.QueryMode); err != nil {
-		if _, ok := err.(domain.ErrRequestBody); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+		if err.Error() == (domain.ErrRecordNotFound{}).Error() {
+			c.JSON(http.StatusNotFound, domain.Response{Msg: err.Error()})
+			return
+		}
+		if _, ok := err.(domain.ErrBodyAttribute); ok {
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -178,8 +182,8 @@ func (h *Delivery) Delete(c *gin.Context) {
 func (h *Delivery) ClearAll(c *gin.Context) {
 	err := h.usecase.ClearAll(c.Request.Context())
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -205,22 +209,22 @@ func (h *Delivery) CheckAuth(c *gin.Context) {
 	}
 	body := requestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
 	ok, err := h.usecase.CheckAuth(c.Request.Context(), body.Sbj, body.Obj,
 		body.SearchCond)
 	if err != nil {
-		if _, ok := err.(domain.ErrRequestBody); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+		if _, ok := err.(domain.ErrBodyAttribute); ok {
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -251,8 +255,8 @@ func (h *Delivery) GetObjAuths(c *gin.Context) {
 	}
 	body := requestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -264,14 +268,14 @@ func (h *Delivery) GetObjAuths(c *gin.Context) {
 		body.MaxDepth,
 	)
 	if err != nil {
-		if _, ok := err.(domain.ErrRequestBody); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+		if _, ok := err.(domain.ErrBodyAttribute); ok {
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -303,11 +307,12 @@ func (h *Delivery) GetSbjsWhoHasAuth(c *gin.Context) {
 	}
 	body := requestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
+
 	vertices, err := h.usecase.GetSbjsWhoHasAuth(
 		c.Request.Context(),
 		domain.Vertex(body.Obj),
@@ -316,14 +321,14 @@ func (h *Delivery) GetSbjsWhoHasAuth(c *gin.Context) {
 		body.MaxDepth,
 	)
 	if err != nil {
-		if _, ok := err.(domain.ErrRequestBody); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+		if _, ok := err.(domain.ErrBodyAttribute); ok {
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -342,8 +347,8 @@ func (h *Delivery) GetTree(c *gin.Context) {
 	}
 	body := requestBody{}
 	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusBadRequest, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -353,14 +358,14 @@ func (h *Delivery) GetTree(c *gin.Context) {
 		body.MaxDepth,
 	)
 	if err != nil {
-		if _, ok := err.(domain.ErrRequestBody); ok {
-			c.JSON(http.StatusBadRequest, domain.ErrResponse{
-				Error: err.Error(),
+		if _, ok := err.(domain.ErrBodyAttribute); ok {
+			c.JSON(http.StatusBadRequest, domain.Response{
+				Msg: err.Error(),
 			})
 			return
 		}
-		c.JSON(http.StatusInternalServerError, domain.ErrResponse{
-			Error: err.Error(),
+		c.JSON(http.StatusInternalServerError, domain.Response{
+			Msg: err.Error(),
 		})
 		return
 	}
@@ -373,7 +378,7 @@ func (h *Delivery) GetTree(c *gin.Context) {
 }
 
 func (h *Delivery) SeeTree(c *gin.Context) {
-	c.JSON(http.StatusBadRequest, domain.ErrResponse{
-		Error: "Not Implemented",
+	c.JSON(http.StatusBadRequest, domain.Response{
+		Msg: "Not Implemented",
 	})
 }

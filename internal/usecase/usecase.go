@@ -69,8 +69,10 @@ func (u *Usecase) Create(c context.Context, edge domain.Edge) error {
 
 func (u *Usecase) Delete(c context.Context, edge domain.Edge,
 	queryMode bool) error {
-	if err := utils.ValidateRel(edge); err != nil {
-		return err
+	if !queryMode {
+		if err := utils.ValidateRel(edge); err != nil {
+			return err
+		}
 	}
 	return u.sqlRepo.Delete(c, edge, queryMode)
 }
