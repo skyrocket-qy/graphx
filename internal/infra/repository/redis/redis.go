@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -26,7 +25,6 @@ func (r *RedisRepository) Ping(c context.Context) error {
 
 func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 	queryMode bool) ([]domain.Edge, error) {
-	from, to := edgeToKeyValue(edge)
 	if queryMode {
 		if edge == (domain.Edge{}) {
 			keys, err := r.getKeysFromPattern(c, "!reverse%*")
@@ -58,42 +56,40 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 			}
 			return edges, nil
 		} else {
+			from, to := edgeToKeyValue(edge)
 			if to != "%%" {
 				to = vertexToPattern(domain.Vertex{
 					Ns:   edge.ObjNs,
 					Name: edge.ObjName,
 					Rel:  edge.ObjRel,
 				})
-				to = "reverse%" + to
-				result := r.client.Keys(c, to)
-				if err := result.Err(); err != nil {
-					return nil, err
-				}
-				keys := []string{}
-				if err := result.ScanSlice(&keys); err != nil {
-					return nil, err
-				}
-				memberStrings := []string{}
-				stringSliceCmd := r.client.SMembers(c, to)
-				if stringSliceCmd.Err() != nil {
-					return nil, stringSliceCmd.Err()
-				}
-				if err := stringSliceCmd.ScanSlice(&memberStrings); err != nil {
+				keys, err := r.getKeysFromPattern(c, "reverse%"+to)
+				if err != nil {
 					return nil, err
 				}
 				edges := []domain.Edge{}
-				for _, member := range memberStrings {
-					strSplit := strings.Split(member, "%")
-					edges = append(edges, domain.Edge{
-						SbjNs:   strSplit[0],
-						SbjName: strSplit[1],
-						SbjRel:  strSplit[2],
-						ObjNs:   edge.SbjNs,
-						ObjName: edge.SbjName,
-						ObjRel:  edge.SbjRel,
-					})
+				for _, key := range keys {
+					res := r.client.SMembers(c, key)
+					if err := res.Err(); err != nil {
+						return nil, err
+					}
+					var tos []string
+					if err := res.ScanSlice(&tos); err != nil {
+						return nil, err
+					}
+					fromSplit := strings.Split(key, "%")
+					for _, to := range tos {
+						toSplit := strings.Split(to, "%")
+						edges = append(edges, domain.Edge{
+							ObjNs:   toSplit[0],
+							ObjName: toSplit[1],
+							ObjRel:  toSplit[2],
+							SbjNs:   fromSplit[0],
+							SbjName: fromSplit[1],
+							SbjRel:  fromSplit[2],
+						})
+					}
 				}
-				fmt.Println(edges)
 				return edges, nil
 			} else {
 				memberStrings := []string{}
@@ -120,6 +116,7 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 			}
 		}
 	} else {
+		from, to := edgeToKeyValue(edge)
 		rdsBoolCmd := r.client.SIsMember(c, from, to)
 		if rdsBoolCmd.Err() != nil {
 			return nil, rdsBoolCmd.Err()
