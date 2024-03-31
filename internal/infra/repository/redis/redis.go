@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -31,6 +32,7 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 			if err != nil {
 				return nil, err
 			}
+			fmt.Println(keys)
 			edges := []domain.Edge{}
 			for _, key := range keys {
 				res := r.client.SMembers(c, key)
@@ -54,6 +56,7 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 					})
 				}
 			}
+			fmt.Println(edges)
 			return edges, nil
 		} else {
 			from, to := edgeToKeyValue(edge)
@@ -63,7 +66,7 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 					Name: edge.ObjName,
 					Rel:  edge.ObjRel,
 				})
-				keys, err := r.getKeysFromPattern(c, "reverse%"+to)
+				keys, err := r.getKeysFromPattern(c, "[^%]"+to)
 				if err != nil {
 					return nil, err
 				}
@@ -134,7 +137,7 @@ func (r *RedisRepository) Create(c context.Context, edge domain.Edge) error {
 	if err := r.client.SAdd(c, from, to).Err(); err != nil {
 		return err
 	}
-	return r.client.SAdd(c, "reverse%"+to, from).Err()
+	return r.client.SAdd(c, addReverse(to), from).Err()
 }
 
 func (r *RedisRepository) Delete(c context.Context, edge domain.Edge,
@@ -240,4 +243,8 @@ func (r *RedisRepository) getKeysFromPattern(c context.Context,
 		return nil, err
 	}
 	return keys, nil
+}
+
+func addReverse(in string) string {
+	return "%reverse%" + in
 }
