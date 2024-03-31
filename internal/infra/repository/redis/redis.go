@@ -2,6 +2,7 @@ package redis
 
 import (
 	"context"
+	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -28,12 +29,8 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 	from, to := edgeToKeyValue(edge)
 	if queryMode {
 		if edge == (domain.Edge{}) {
-			result := r.client.Keys(c, "!reverse%*")
-			if err := result.Err(); err != nil {
-				return nil, err
-			}
-			keys := []string{}
-			if err := result.ScanSlice(&keys); err != nil {
+			keys, err := r.getKeysFromPattern(c, "!reverse%*")
+			if err != nil {
 				return nil, err
 			}
 			edges := []domain.Edge{}
@@ -62,7 +59,20 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 			return edges, nil
 		} else {
 			if to != "%%" {
+				to = vertexToPattern(domain.Vertex{
+					Ns:   edge.ObjNs,
+					Name: edge.ObjName,
+					Rel:  edge.ObjRel,
+				})
 				to = "reverse%" + to
+				result := r.client.Keys(c, to)
+				if err := result.Err(); err != nil {
+					return nil, err
+				}
+				keys := []string{}
+				if err := result.ScanSlice(&keys); err != nil {
+					return nil, err
+				}
 				memberStrings := []string{}
 				stringSliceCmd := r.client.SMembers(c, to)
 				if stringSliceCmd.Err() != nil {
@@ -83,6 +93,7 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 						ObjRel:  edge.SbjRel,
 					})
 				}
+				fmt.Println(edges)
 				return edges, nil
 			} else {
 				memberStrings := []string{}
@@ -142,12 +153,8 @@ func (r *RedisRepository) Delete(c context.Context, edge domain.Edge,
 			Name: edge.ObjName,
 			Rel:  edge.ObjRel,
 		})
-		result := r.client.Keys(c, fromP)
-		if err := result.Err(); err != nil {
-			return err
-		}
-		keys := []string{}
-		if err := result.ScanSlice(&keys); err != nil {
+		keys, err := r.getKeysFromPattern(c, fromP)
+		if err != nil {
 			return err
 		}
 		for _, key := range keys {
@@ -222,4 +229,18 @@ func vertexToPattern(vertex domain.Vertex) string {
 		res += vertex.Rel
 	}
 	return res
+}
+
+func (r *RedisRepository) getKeysFromPattern(c context.Context,
+	pattern string) ([]string, error) {
+
+	result := r.client.Keys(c, pattern)
+	if err := result.Err(); err != nil {
+		return nil, err
+	}
+	keys := []string{}
+	if err := result.ScanSlice(&keys); err != nil {
+		return nil, err
+	}
+	return keys, nil
 }
