@@ -50,6 +50,7 @@ export default function() {
     group("getSbjsWhoHasAuth", () => {
       TestGetSbjAuthAPI(RELATION_URL, Headers);
     })
+    // TestClearAllAPI(RELATION_URL, Headers);
   });
 
   // group("scenario", () => {

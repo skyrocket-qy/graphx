@@ -35,6 +35,5 @@ export function TestClearAllAPI(relationUrl, headers){
 
     resp = http.get(relationUrl + "?query_mode=true", null, {headers:headers});
     const data = JSON.parse(resp.body)
-    console.log(data)
     check(data, { 'check length': (d) => d["edges"].length == 0 });
 }

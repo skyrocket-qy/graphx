@@ -2,7 +2,6 @@ package redis
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 	"strings"
 
@@ -32,7 +31,6 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 			if err != nil {
 				return nil, err
 			}
-			fmt.Println(keys)
 			edges := []domain.Edge{}
 			for _, key := range keys {
 				res := r.client.SMembers(c, key)
@@ -56,7 +54,6 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 					})
 				}
 			}
-			fmt.Println(edges)
 			return edges, nil
 		} else {
 			from, to := edgeToKeyValue(edge)
@@ -66,12 +63,10 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 					Name: edge.ObjName,
 					Rel:  edge.ObjRel,
 				})
-				fmt.Println(to)
-				keys, err := r.getKeysFromPattern(c, to)
+				keys, err := r.getKeysFromPattern(c, "$"+to)
 				if err != nil {
 					return nil, err
 				}
-				fmt.Println(keys)
 				edges := []domain.Edge{}
 				for _, key := range keys {
 					res := r.client.SMembers(c, key)
@@ -180,6 +175,9 @@ func (r *RedisRepository) Delete(c context.Context, edge domain.Edge,
 			}
 		}
 	} else {
+		if _, err := r.Get(c, edge, false); err != nil {
+			return err
+		}
 		from, to := edgeToKeyValue(edge)
 		return r.client.SRem(c, from, to).Err()
 	}
