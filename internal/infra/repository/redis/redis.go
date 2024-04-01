@@ -28,7 +28,7 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 	queryMode bool) ([]domain.Edge, error) {
 	if queryMode {
 		if edge == (domain.Edge{}) {
-			keys, err := r.getKeysFromPattern(c, "!reverse%*")
+			keys, err := r.getKeysFromPattern(c, "[^$]*")
 			if err != nil {
 				return nil, err
 			}
@@ -66,10 +66,12 @@ func (r *RedisRepository) Get(c context.Context, edge domain.Edge,
 					Name: edge.ObjName,
 					Rel:  edge.ObjRel,
 				})
-				keys, err := r.getKeysFromPattern(c, "[^%]"+to)
+				fmt.Println(to)
+				keys, err := r.getKeysFromPattern(c, to)
 				if err != nil {
 					return nil, err
 				}
+				fmt.Println(keys)
 				edges := []domain.Edge{}
 				for _, key := range keys {
 					res := r.client.SMembers(c, key)
@@ -173,7 +175,7 @@ func (r *RedisRepository) Delete(c context.Context, edge domain.Edge,
 				}
 				if match {
 					r.client.SRem(c, key, val)
-					r.client.SRem(c, "reverse%"+val, key)
+					r.client.SRem(c, addReverse(val), key)
 				}
 			}
 		}
@@ -246,5 +248,5 @@ func (r *RedisRepository) getKeysFromPattern(c context.Context,
 }
 
 func addReverse(in string) string {
-	return "%reverse%" + in
+	return "$" + in
 }
