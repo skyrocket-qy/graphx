@@ -1,6 +1,7 @@
-# zanazibar-dag
+# Authnet
 
-Zanzibar-dag is a DAG(directed acyclic graph) based with Google's Zanzibar format, which can be the infrastructure below permission app.
+Authnet is a graph based auth service.
+
 
 ## Features
 
