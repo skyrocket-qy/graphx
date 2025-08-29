@@ -1,6 +1,6 @@
-# zanazibar-dag
+# Graphx
 
-Zanzibar-dag is a DAG(directed acyclic graph) based with Google's Zanzibar format, which can be the infrastructure below permission app.
+A DAG(directed acyclic graph) service
 
 ## Features
 
